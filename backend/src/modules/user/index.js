@@ -11,11 +11,4 @@ const resolvers = {
   Mutation: {
     ...mutations,
   },
-  User: {
-    async quacks(parent, _, { dbConnection }) {
-      return await dbConnection.query(`SELECT * FROM quack WHERE userId = ?`, [
-        parent.id,
-      ]);
-    },
-  },
 };

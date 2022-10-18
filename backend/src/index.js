@@ -7,13 +7,15 @@ import { MOCKS, PORT } from './config/variables';
 import { getConnection } from './libs/connection';
 import { schema } from './modules/executableSchema';
 
-const main = async () => {
+const startServer = async () => {
   const app = express();
 
-  app.disable('x-powered-by');
+  app.disable('x-powered-by'); 
   app.use(cors());
+ 
+  //const dbConnection = MOCKS ? console.log('MOCKS loaded'): await getConnection();
 
-  const dbConnection = MOCKS ? null : await getConnection();
+  const dbConnection = await getConnection();
 
   const apolloServer = new ApolloServer({
     schema,
@@ -37,8 +39,8 @@ const main = async () => {
   app.get('/', (_, res) => res.redirect('/graphql'));
 
   app.listen(port, () => {
-    console.info(`Server started at http://localhost:${port}/graphql`);
+    console.info(`✅ Server started at http://localhost:${port}/graphql`);
   });
 };
-
-main();
+  
+startServer();
