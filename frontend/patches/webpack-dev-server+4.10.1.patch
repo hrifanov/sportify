@@ -1,0 +1,13 @@
+diff --git a/node_modules/webpack-dev-server/client/utils/createSocketURL.js b/node_modules/webpack-dev-server/client/utils/createSocketURL.js
+index 9ed0386..23032fa 100644
+--- a/node_modules/webpack-dev-server/client/utils/createSocketURL.js
++++ b/node_modules/webpack-dev-server/client/utils/createSocketURL.js
+@@ -22,7 +22,7 @@ function format(objURL) {
+   if (objURL.hostname) {
+     host = auth + (objURL.hostname.indexOf(":") === -1 ? objURL.hostname : "[".concat(objURL.hostname, "]"));
+ 
+-    if (objURL.port) {
++    if (objURL.port && process.env.REACT_APP_IS_VSE_SERVER !== 'true') {
+       host += ":".concat(objURL.port);
+     }
+   }
