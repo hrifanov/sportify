@@ -12,6 +12,7 @@ export const typeDef = gql`
     password: String!
     name: String!
     email: String!
+    count: Int
     profileImageUrl: String
   }
 
@@ -39,6 +40,7 @@ export const typeDef = gql`
 
   type AuthInfo {
     user: AuthUser!
-    token: String!
+    accessToken: String!
+    refreshToken: String!
   }
 `;
