@@ -1,9 +1,9 @@
 import * as argon2 from 'argon2';
-import { createToken } from '../../libs/token';
+import { createAccessToken, createRefreshToken } from '../../libs/token';
 import { GraphQLError } from 'graphql';
 import User from '../../models/User';
 
-export const signin = async (_, { userName, password }) => {
+export const signin = async (_, { userName, password }, { res }) => {
   const user = await User.findOne({ userName: userName.toLowerCase() }).exec();
 
   if (!user || !user.id) {
@@ -15,11 +15,16 @@ export const signin = async (_, { userName, password }) => {
   }
 
   if (await argon2.verify(user.password, password)) {
-    const token = createToken({ ID: user.id });
+    const refreshToken = createRefreshToken({ id: user.id, count: user.count });
+    const accessToken = createAccessToken({ id: user.id });
+    
+    res.cookie('refresh-token', refreshToken, { expiresIn: 60 * 60 * 24 * 7 });
+    res.cookie('access-token', accessToken, { expiresIn: 60 * 15 });
 
     return {
       user: { ...user },
-      token,
+      accessToken,
+      refreshToken,
     };
   } else {
     throw new GraphQLError('Password is incorrect', {
@@ -92,7 +97,7 @@ export const signup = async (_, { userInput }) => {
       });
     });
 
-    return res
+  return res;
 };
 
 // export const deleteUser = async (_, { userName }) => {

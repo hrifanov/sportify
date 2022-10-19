@@ -12,7 +12,7 @@ export const getConnection = async () => {
 
   return mongoose.connect(MONGODB, {useNewUrlParser: true, dbName: DB_NAME})
     .then(() => {
-        console.log('✅ MongoDB connection successful');
+        console.log('🚀 MongoDB connection successful');
     }) 
 };
 
