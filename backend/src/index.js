@@ -3,9 +3,9 @@ import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import cookieParser from 'cookie-parser';
-import { verifyToken } from './libs/token';
+import { verifyAccessToken } from './libs/token';
 
-import { PORT, JWT_SECRET } from './config/variables';
+import { PORT, ACCESS_TOKEN_SECRET } from './config/variables';
 import { getConnection } from './libs/connection';
 import { schema } from './modules/executableSchema';
 
@@ -42,7 +42,7 @@ const startServer = async () => {
     const accessToken = req.cookies['access-token'];
 
     try{
-      const data = verifyToken(accessToken, JWT_SECRET);
+      const data = verifyAccessToken(accessToken, ACCESS_TOKEN_SECRET);
       req.userId = data.id;
     } catch {
 
