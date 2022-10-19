@@ -25,14 +25,15 @@ export const typeDef = gql`
 
   type Mutation {
     deleteUser(ID: ID!): Boolean!
-    signin(email: String!, password: String!): AuthInfo!
+    signin(userName: String!, password: String!): AuthInfo!
     signup(userInput: UserInput!): AuthInfo! 
   }
 
   type AuthUser {
     id: Int!
-    name: String!
     userName: String!
+    email: String!
+    name: String!
     profileImageUrl: String
   }
 
