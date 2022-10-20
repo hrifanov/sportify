@@ -19,13 +19,15 @@
     "apollo-server-core": "^3.3.0",
     "apollo-server-express": "^3.3.0",
     "argon2": "^0.29.1",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv-flow": "^3.2.0",
     "express": "^4.17.1",
     "graphql": "^16.6.0",
     "jsonwebtoken": "^8.5.1",
     "lodash.merge": "^4.6.2",
-    "mariadb": "^3.0.1"
+    "mariadb": "^3.0.1",
+    "mongoose": "^6.6.5"
   },
   "devDependencies": {
     "backpack-core": "^0.8.4",

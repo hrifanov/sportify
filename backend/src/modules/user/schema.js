@@ -1,37 +1,46 @@
-export const typeDef = /* GraphQL */ `
-  extend type Query {
-    users: [User!]!
-    user(userName: String!): User
-  }
+const { gql } = require('apollo-server-express');
 
-  extend type Mutation {
-    signin(email: String!, password: String!): AuthInfo!
-    signup(
-      email: String!
-      password: String!
-      name: String!
-      userName: String!
-      profileImageUrl: String
-    ): AuthInfo!
-  }
+export const typeDef = gql`
+  type Query {
+      user(userName: String!): User
+      users: [User!]!
+    }
 
   type User {
-    id: Int!
-    name: String!
+    id: ID!
     userName: String!
+    password: String!
+    name: String!
+    email: String!
+    count: Int
     profileImageUrl: String
-    quacks: [Quack!]!
+  }
+
+  input UserInput {
+    userName: String!
+    password: String!
+    name: String! 
+    email: String! 
+    profileImageUrl: String
+    }
+
+  type Mutation {
+    #deleteUser(username: String!, password: String!): Boolean!
+    signin(userName: String!, password: String!): AuthInfo!
+    signup(userInput: UserInput!): AuthInfo! 
   }
 
   type AuthUser {
-    id: Int!
-    name: String!
+    id: ID!
     userName: String!
+    email: String!
+    name: String!
     profileImageUrl: String
   }
 
   type AuthInfo {
     user: AuthUser!
-    token: String!
+    accessToken: String!
+    refreshToken: String!
   }
 `;

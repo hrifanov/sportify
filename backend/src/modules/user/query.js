@@ -1,16 +1,13 @@
-export const users = async (_, __, { dbConnection }) => {
-  const users = await dbConnection.query('SELECT * FROM user');
-  return users;
+const User = require('../../models/User');
+
+export const users = async () => {
+  return await User.find();
 };
 
-export const user = async (_, { userName }, { dbConnection }) => {
-  const user = (
-    await dbConnection.query(`SELECT * FROM user WHERE userName = ?`, [
-      userName,
-    ])
-  )[0];
-  if (!user) {
+export const user = async (_, { userName }, { req }) => {
+  if (!req.userId) {
     return null;
   }
-  return user;
+
+  return await User.findOne({ userName: userName });
 };

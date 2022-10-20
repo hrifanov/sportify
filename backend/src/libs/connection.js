@@ -1,27 +1,18 @@
-import mariadb from 'mariadb';
+import mongoose from 'mongoose';
+
 import {
-  DB_HOST,
-  DB_PORT,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
 } from '../config/variables';
 
+
 export const getConnection = async () => {
-  try {
-    let conn;
-    if (!conn) {
-      conn = await mariadb.createConnection({
-        host: DB_HOST,
-        port: DB_PORT,
-        user: DB_USER,
-        password: DB_PASSWORD,
-        database: DB_NAME,
-      });
-    }
-    return conn;
-  } catch (err) {
-    console.log('err', err);
-    throw err;
-  }
+  const MONGODB = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.x6lebu3.mongodb.net/?retryWrites=true&w=majority`;
+
+  return mongoose.connect(MONGODB, {useNewUrlParser: true, dbName: DB_NAME})
+    .then(() => {
+        console.log('🚀 MongoDB connection successful');
+    }) 
 };
+

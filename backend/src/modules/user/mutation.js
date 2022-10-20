@@ -1,67 +1,105 @@
 import * as argon2 from 'argon2';
-import { createToken } from '../../libs/token';
+import { createAccessToken, createRefreshToken } from '../../libs/token';
+import { GraphQLError } from 'graphql';
+import User from '../../models/User';
 
-export const signin = async (_, { email, password }, { dbConnection }) => {
-  const dbResponse = await dbConnection.query(
-    `SELECT * FROM user WHERE email = ?`,
-    [email],
-  );
-  const user = dbResponse[0];
+export const signin = async (_, { userName, password }, { res }) => {
+  const user = await User.findOne({ userName: userName.toLowerCase() }).exec();
+
+  if (!user || !user.id) {
+    throw new GraphQLError('User does not exist', {
+      extensions: {
+        code: 'FORBIDDEN',
+      },
+    });
+  }
+
   if (await argon2.verify(user.password, password)) {
-    const token = createToken({ id: user.id });
+    const refreshToken = createRefreshToken({ id: user.id, count: user.count });
+    const accessToken = createAccessToken({ id: user.id });
+    
+    res.cookie('refresh-token', refreshToken, { expiresIn: 60 * 60 * 24 * 7 });
+    res.cookie('access-token', accessToken, { expiresIn: 60 * 15 });
+
     return {
       user: { ...user },
-      token,
+      accessToken,
+      refreshToken,
     };
+  } else {
+    throw new GraphQLError('Password is incorrect', {
+      extensions: {
+        code: 'FORBIDDEN',
+      },
+    });
   }
 };
 
-export const signup = async (
-  _,
-  {
-    email,
-    password,
-    name,
-    userName,
-    profileImageUrl = 'http://mrmrs.github.io/photos/p/1.jpg',
-  },
-  { dbConnection },
-) => {
-  const userByUserName = (
-    await dbConnection.query(`SELECT * FROM user WHERE userName = ?`, [
-      userName,
-    ])
-  )[0];
+export const signup = async (_, { userInput }) => {
+  const parsedUserInput = JSON.parse(JSON.stringify(userInput));
+
+  const userByUserName = await User.findOne({
+    userName: parsedUserInput.userName.toLowerCase(),
+  }).exec();
 
   if (userByUserName) {
-    throw new Error('Username already taken');
+    throw new GraphQLError('Username already taken', {
+      extensions: {
+        code: 'CONFLICT',
+      },
+    });
   }
 
-  const userByEmail = (
-    await dbConnection.query(`SELECT * FROM user WHERE email = ?`, [email])
-  )[0];
+  const userByEmail = await User.findOne({
+    email: parsedUserInput.email.toLowerCase(),
+  }).exec();
 
   if (userByEmail) {
-    throw new Error('Email already registered');
+    throw new GraphQLError('Email already registered', {
+      extensions: {
+        code: 'CONFLICT',
+      },
+    });
   }
 
-  const passwordHash = await argon2.hash(password);
+  const passwordHash = await argon2.hash(parsedUserInput.password);
 
-  const dbResponse = await dbConnection.query(
-    `INSERT INTO user (id, email, password, name, userName, profileImageUrl) 
-    VALUES (NULL, ?, ?, ?, ?, ?);`,
-    [email, passwordHash, name, userName, profileImageUrl],
-  );
+  const user = new User({
+    userName: parsedUserInput.userName.toLowerCase(),
+    password: passwordHash,
+    email: parsedUserInput.email.toLowerCase(),
+    name: parsedUserInput.name,
+  });
 
-  const token = createToken({ id: dbResponse.insertId });
+  const res = await user
+    .save()
+    .then((user) => {
+      const token = createToken({ id: user._id });
 
-  const userObject = {
-    id: dbResponse.insertId,
-    email,
-    name: name,
-    userName: userName,
-    profileImageUrl: profileImageUrl,
-  };
+      const userObject = {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        userName: user.userName,
+      };
 
-  return { user: userObject, token: token };
+      return {
+        user: { ...userObject },
+        token,
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      throw new GraphQLError('Unable to add user to the database', {
+        extensions: {
+          code: err,
+        },
+      });
+    });
+
+  return res;
 };
+
+// export const deleteUser = async (_, { userName }) => {
+//   return (await User.deleteOne({ userName: userName })).deletedCount;
+// };
