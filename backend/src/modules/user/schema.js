@@ -7,7 +7,7 @@ export const typeDef = gql`
     }
 
   type User {
-    id: String!
+    id: ID!
     userName: String!
     password: String!
     name: String!
@@ -31,7 +31,7 @@ export const typeDef = gql`
   }
 
   type AuthUser {
-    id: String!
+    id: ID!
     userName: String!
     email: String!
     name: String!
