@@ -1,6 +1,6 @@
 import * as argon2 from 'argon2';
-import { createAccessToken, createRefreshToken } from '../../libs/token';
 import { GraphQLError } from 'graphql';
+import { createTokens } from '../../libs/auth';
 import User from '../../models/User';
 
 export const signin = async (_, { userName, password }, { res }) => {
@@ -15,9 +15,8 @@ export const signin = async (_, { userName, password }, { res }) => {
   }
 
   if (await argon2.verify(user.password, password)) {
-    const refreshToken = createRefreshToken({ id: user.id, count: user.count });
-    const accessToken = createAccessToken({ id: user.id });
-    
+    const { refreshToken, accessToken } = createTokens(user);
+
     res.cookie('refresh-token', refreshToken, { expiresIn: 60 * 60 * 24 * 7 });
     res.cookie('access-token', accessToken, { expiresIn: 60 * 15 });
 
@@ -69,6 +68,7 @@ export const signup = async (_, { userInput }) => {
     password: passwordHash,
     email: parsedUserInput.email.toLowerCase(),
     name: parsedUserInput.name,
+    tokenCheckSum: 0,
   });
 
   const res = await user
