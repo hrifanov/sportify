@@ -45,7 +45,7 @@ const startServer = async () => {
       const data = verifyAccessToken(accessToken, ACCESS_TOKEN_SECRET);
       req.userId = data.id;
     } catch {
-
+      console.error('TODO: no cookie yet');
     }
     
 
