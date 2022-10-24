@@ -2,17 +2,18 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ApolloClient,
+  ApolloLink,
   ApolloProvider,
   InMemoryCache,
   createHttpLink,
-  ApolloLink,
   from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 
-import { useAuth } from 'src/modules/auth';
 import { config } from 'src/config';
 import { route } from 'src/Routes';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectToken, signOut } from 'src/modules/auth/authSlice';
 
 const UNAUTHENTICATED_CODE = 'UNAUTHENTICATED';
 
@@ -33,13 +34,14 @@ const httpLink = createHttpLink({
 
 export function EnhancedApolloProvider({ children }) {
   const navigate = useNavigate();
-  const { token, signout } = useAuth();
+  const token = useSelector(selectToken);
+  const dispatch = useDispatch();
 
   const handleSignOut = useCallback(() => {
-    signout();
+    dispatch(signOut());
     navigate(route.signIn());
     window.location.reload();
-  }, [signout, navigate]);
+  }, [dispatch, navigate]);
 
   const authLink = new ApolloLink((operation, forward) => {
     operation.setContext({

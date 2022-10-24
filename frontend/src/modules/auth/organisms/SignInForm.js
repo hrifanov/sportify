@@ -1,4 +1,4 @@
-import { Stack, Button, ErrorBanner } from 'src/shared/design-system';
+import { Button, ErrorBanner, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 
 const initialValues = {
@@ -45,7 +45,7 @@ export function SignInForm({ isLoading, errorMessage, onSubmit, children }) {
         size="lg"
         type="submit"
         isLoading={isLoading}
-        colorScheme="green"
+        variant="primary"
         mt="4"
         mb="2"
       >
