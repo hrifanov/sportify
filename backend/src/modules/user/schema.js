@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 export const typeDef = gql`
   type Query {
@@ -12,7 +12,7 @@ export const typeDef = gql`
     password: String!
     name: String!
     email: String!
-    tokenCheckSum: Int #TODO: mandatory
+    tokenSum: Int!
   }
 
   input UserInput {
@@ -25,21 +25,14 @@ export const typeDef = gql`
 
   type Mutation {
     #deleteUser(username: String!, password: String!): Boolean!
-    signin(userName: String!, password: String!): AuthInfo!
-    signup(userInput: UserInput!): AuthInfo!
+    signin(userName: String!, password: String!): LoginResponse!
+    signup(userInput: UserInput!): Boolean!
+    invalidateTokens: Boolean!
   }
 
-  type AuthUser {
-    id: ID!
-    userName: String!
-    email: String!
-    name: String!
-    profileImageUrl: String
+  type LoginResponse {
+    accessToken: String!,
+    user: User!
   }
 
-  type AuthInfo {
-    user: AuthUser!
-    accessToken: String!
-    refreshToken: String!
-  }
 `;

@@ -1,16 +1,22 @@
-import { createToken } from './token';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config/variables';
+import jwt, { sign } from 'jsonwebtoken';
 
-export const createTokens = (user) => {
-  const refreshToken = createToken(
-    { id: user.id, count: user.count },
-    REFRESH_TOKEN_SECRET,
-    { expiresIn: '7d' },
-  );
 
-  const accessToken = createToken({ id: user.id }, ACCESS_TOKEN_SECRET, {
-    expiresIn: '15min',
+export const createAccessToken = (user) => {
+  return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "15m"
   });
-
-  return { refreshToken, accessToken };
 };
+
+export const createRefreshToken = (user) => {
+  return sign(
+    { userId: user.id, tokenVersion: user.tokenVersion },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: "7d"
+    }
+  );
+};
+
+export function verifyToken(token, secret) {
+  return jwt.verify(token, secret);
+}

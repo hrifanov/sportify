@@ -1,37 +1,30 @@
 import * as argon2 from 'argon2';
-import { GraphQLError } from 'graphql';
-import { createTokens } from '../../libs/auth';
+import { createAccessToken, createRefreshToken } from '../../libs/auth';
 import User from '../../models/User';
 
-export const signin = async (_, { userName, password }, { res }) => {
+
+export const signin = async (_, { userName, password }, {res}) => {
   const user = await User.findOne({ userName: userName.toLowerCase() }).exec();
 
   if (!user || !user.id) {
-    throw new GraphQLError('User does not exist', {
-      extensions: {
-        code: 'FORBIDDEN',
-      },
-    });
+    throw new Error('could not find user');
   }
 
-  if (await argon2.verify(user.password, password)) {
-    const { refreshToken, accessToken } = createTokens(user);
+  const valid = await argon2.verify(user.password, password);
 
-    res.cookie('refresh-token', refreshToken, { expiresIn: 60 * 60 * 24 * 7 });
-    res.cookie('access-token', accessToken, { expiresIn: 60 * 15 });
-
-    return {
-      user: { ...user },
-      accessToken,
-      refreshToken,
-    };
-  } else {
-    throw new GraphQLError('Password is incorrect', {
-      extensions: {
-        code: 'FORBIDDEN',
-      },
-    });
+  if (!valid) {
+    throw new Error('bad password');
   }
+
+  res.cookie("jid", createRefreshToken(user), {
+    httpOnly: true,
+    //path: '/refresh-token',
+  });
+
+  return {
+    accessToken: createAccessToken(user),
+    user,
+  };
 };
 
 export const signup = async (_, { userInput }) => {
@@ -42,11 +35,7 @@ export const signup = async (_, { userInput }) => {
   }).exec();
 
   if (userByUserName) {
-    throw new GraphQLError('Username already taken', {
-      extensions: {
-        code: 'CONFLICT',
-      },
-    });
+    throw new Error('Username already taken');
   }
 
   const userByEmail = await User.findOne({
@@ -54,11 +43,7 @@ export const signup = async (_, { userInput }) => {
   }).exec();
 
   if (userByEmail) {
-    throw new GraphQLError('Email already registered', {
-      extensions: {
-        code: 'CONFLICT',
-      },
-    });
+    throw new Error('Email already registered');
   }
 
   const passwordHash = await argon2.hash(parsedUserInput.password);
@@ -68,36 +53,35 @@ export const signup = async (_, { userInput }) => {
     password: passwordHash,
     email: parsedUserInput.email.toLowerCase(),
     name: parsedUserInput.name,
-    tokenCheckSum: 0,
+    tokenSum: 0,
   });
 
-  const res = await user
+  await user
     .save()
-    .then((user) => {
-      const token = createToken({ id: user._id });
-
-      const userObject = {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        userName: user.userName,
-      };
-
-      return {
-        user: { ...userObject },
-        token,
-      };
-    })
     .catch((err) => {
       console.log(err);
-      throw new GraphQLError('Unable to add user to the database', {
-        extensions: {
-          code: err,
-        },
-      });
+      return false;
     });
 
-  return res;
+  return true;
+};
+
+export const invalidateTokens = async (_, __, { req }) => {
+  if (!req.userId) {
+    return false;
+  }
+
+  // TODO: user update
+  const user = await User.findOne(req.userId);
+  if (!user) {
+    return false;
+  }
+  user.count += 1;
+  await user.save();
+
+  // res.clearCookie('access-token')
+
+  return true;
 };
 
 // export const deleteUser = async (_, { userName }) => {
