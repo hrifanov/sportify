@@ -1,62 +1,78 @@
-import express from 'express';
-import cors from 'cors';
-import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
+import { ApolloServer } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
-import { verifyAccessToken } from './libs/token';
+import cors from 'cors';
+import express from 'express';
 
-import { PORT, ACCESS_TOKEN_SECRET } from './config/variables';
+import { PORT } from './config/variables';
+import { createAccessToken, createRefreshToken, verifyToken } from './libs/auth';
 import { getConnection } from './libs/connection';
+import User from './models/User';
 import { schema } from './modules/executableSchema';
 
 const startServer = async () => {
   const app = express();
 
   app.disable('x-powered-by');
-  app.use(cors());
 
-  //const dbConnection = MOCKS ? console.log('MOCKS loaded'): await getConnection();
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
 
-  const dbConnection = await getConnection();
+  app.use(cookieParser());
+
+  app.get('/', (_, res) => res.redirect('/graphql'));
+
+  app.post('/refresh_token', async (req, res) => {
+    const token = req.cookies.jid;
+    if (!token) {
+      return res.send({ ok: false, accessToken: '' });
+    }
+
+    let payload = null;
+    try {
+      payload = verifyToken(token, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+      console.log(err);
+      return res.send({ ok: false, accessToken: '' });
+    }
+
+    // token is valid and
+    // we can send back an access token
+    const user = await User.findOne({ id: payload.userId });
+
+    if (!user) {
+      return res.send({ ok: false, accessToken: '' });
+    }
+
+    if (user.count !== payload.count) {
+      return res.send({ ok: false, accessToken: '' });
+    }
+
+    res.cookie('jid', createRefreshToken(user), {
+      httpOnly: true,
+      path: '/refresh_token',
+    });
+
+    return res.send({ ok: true, accessToken: createAccessToken(user) });
+  });
+
+  await getConnection();
 
   const apolloServer = new ApolloServer({
     schema,
-    context: async ({ req, res }) => {
-      const auth = req.headers.Authorization || '';
-
-      return {
-        dbConnection,
-        auth,
-        res,
-        req,
-      };
-    },
+    context: async ({ req, res }) => ({ req, res }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
 
-  app.use(cookieParser());
-
-  app.use((req, res, next) => {
-    const accessToken = req.cookies['access-token'];
-
-    try{
-      const data = verifyAccessToken(accessToken, ACCESS_TOKEN_SECRET);
-      req.userId = data.id;
-    } catch {
-      console.error('TODO: no cookie yet');
-    }
-    
-
-    next();
-  });
-
   apolloServer.applyMiddleware({ app, cors: false });
 
   const port = PORT || 4000;
-
-  app.get('/', (_, res) => res.redirect('/graphql'));
 
   app.listen(port, () => {
     console.info(`🚀 Server started at http://localhost:${port}/graphql`);
