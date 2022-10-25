@@ -1,18 +1,18 @@
 import jwt, { sign } from 'jsonwebtoken';
-
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config/variables';
 
 export const createAccessToken = (user) => {
-  return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m"
+  return sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
+    expiresIn: '15m',
   });
 };
 
 export const createRefreshToken = (user) => {
   return sign(
     { userId: user.id, tokenVersion: user.tokenVersion },
-    process.env.REFRESH_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET,
     {
-      expiresIn: "7d"
+      expiresIn: '7d',
     }
   );
 };

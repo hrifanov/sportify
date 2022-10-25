@@ -2,9 +2,10 @@ import * as argon2 from 'argon2';
 import { createAccessToken, createRefreshToken } from '../../libs/auth';
 import User from '../../models/User';
 
-
-export const signin = async (_, { userName, password }, {res}) => {
-  const user = await User.findOne({ userName: userName.toLowerCase() }).exec();
+export const signin = async (_, { userName, password }, { res }) => {
+  const user = await User.findOne({
+    userName: userName.toLowerCase(),
+  }).exec();
 
   if (!user || !user.id) {
     throw new Error('could not find user');
@@ -16,9 +17,9 @@ export const signin = async (_, { userName, password }, {res}) => {
     throw new Error('bad password');
   }
 
-  res.cookie("jid", createRefreshToken(user), {
+  res.cookie('jid', createRefreshToken(user), {
     httpOnly: true,
-    //path: '/refresh-token',
+    path: '/refresh-token',
   });
 
   return {
@@ -56,12 +57,10 @@ export const signup = async (_, { userInput }) => {
     tokenSum: 0,
   });
 
-  await user
-    .save()
-    .catch((err) => {
-      console.log(err);
-      return false;
-    });
+  await user.save().catch((err) => {
+    console.log(err);
+    return false;
+  });
 
   return true;
 };

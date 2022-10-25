@@ -5,9 +5,8 @@ import cors from 'cors';
 import express from 'express';
 
 import { PORT } from './config/variables';
-import { createAccessToken, createRefreshToken } from './libs/auth';
+import { createAccessToken, createRefreshToken, verifyToken } from './libs/auth';
 import { getConnection } from './libs/connection';
-import { verifyToken } from './libs/auth';
 import User from './models/User';
 import { schema } from './modules/executableSchema';
 
@@ -20,7 +19,7 @@ const startServer = async () => {
     cors({
       origin: 'http://localhost:3000',
       credentials: true,
-    }),
+    })
   );
 
   app.use(cookieParser());
@@ -78,54 +77,6 @@ const startServer = async () => {
   app.listen(port, () => {
     console.info(`🚀 Server started at http://localhost:${port}/graphql`);
   });
-
-  // app.use(async (req, res, next) => {
-  //   const refreshToken = req.cookies['refresh-token'];
-  //   const accessToken = req.cookies['access-token'];
-
-  //   // missing tokens
-  //   if (!refreshToken && !accessToken) {
-  //     return next();
-  //   }
-
-  //   try {
-  //     // access token is valid
-  //     const data = verifyToken(accessToken, ACCESS_TOKEN_SECRET);
-  //     req.userId = data.id;
-  //     return next();
-  //   } catch {
-  //     console.error('access token not valid');
-  //   }
-
-  //   // missing refresh token
-  //   if (!refreshToken) {
-  //     return next();
-  //   }
-
-  //   let data;
-
-  //   try {
-  //     data = verifyToken(refreshToken, REFRESH_TOKEN_SECRET);
-  //   } catch {
-  //     console.error('refresh token not valid');
-  //     return next();
-  //   }
-
-  //   const user = await User.findOne({ id: data.userId });
-
-  //   // invalidated token
-  //   if (!user || user.count !== data.count) {
-  //     return next();
-  //   }
-
-  //   const tokens = createTokens(user);
-
-  //   res.cookie('refresh-token', tokens.refreshToken);
-  //   res.cookie('access-token', tokens.accessToken);
-  //   req.userId = user.id;
-
-  //   next();
-  // });
 };
 
 startServer();
