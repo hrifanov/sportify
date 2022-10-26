@@ -1,41 +1,18 @@
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
-import { useAuth } from 'src/modules/auth';
-
+import { signIn } from '../authSlice';
+import { SIGN_UP_MUTATION } from '../mutations';
 import { SignUpTemplate } from '../templates';
 
-const SIGNUP_MUTATION = gql`
-  mutation SignUp(
-    $email: String!
-    $name: String!
-    $password: String!
-    $userName: String!
-  ) {
-    signup(
-      email: $email
-      name: $name
-      password: $password
-      userName: $userName
-    ) {
-      user {
-        id
-        name
-        userName
-        profileImageUrl
-      }
-      token
-    }
-  }
-`;
-
 export function SignUpPage() {
-  const auth = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [signupRequest, signupRequestState] = useMutation(SIGNUP_MUTATION, {
-    onCompleted: ({ signup: { user, token } }) => {
-      auth.signin({ token, user });
+  const [signUpRequest, signUpRequestState] = useMutation(SIGN_UP_MUTATION, {
+    onCompleted: ({ signUp: { user, token } }) => {
+      dispatch(signIn({ token, user }));
       navigate('/');
     },
     onError: () => {},
@@ -43,15 +20,15 @@ export function SignUpPage() {
 
   const handleSignUpFormSubmit = useCallback(
     (variables) => {
-      signupRequest({ variables });
+      signUpRequest({ variables });
     },
-    [signupRequest],
+    [signUpRequest],
   );
 
   return (
     <SignUpTemplate
-      isLoading={signupRequestState.loading}
-      error={signupRequestState.error}
+      isLoading={signUpRequestState.loading}
+      error={signUpRequestState.error}
       onSubmit={handleSignUpFormSubmit}
     />
   );

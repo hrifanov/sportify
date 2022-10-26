@@ -1,31 +1,19 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { useDispatch } from 'react-redux';
+import { signIn } from '../authSlice';
 
-import { useAuth } from 'src/modules/auth';
+import { SIGN_IN_MUTATION } from '../mutations';
 
 import { SignInTemplate } from '../templates';
 
-const SIGNIN_MUTATION = gql`
-  mutation SignIn($email: String!, $password: String!) {
-    signin(email: $email, password: $password) {
-      user {
-        id
-        name
-        userName
-        profileImageUrl
-      }
-      token
-    }
-  }
-`;
-
 export function SignInPage() {
-  const auth = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [signinRequest, signinRequestState] = useMutation(SIGNIN_MUTATION, {
-    onCompleted: ({ signin: { user, token } }) => {
-      auth.signin({ token, user });
+  const [signInRequest, signInRequestState] = useMutation(SIGN_IN_MUTATION, {
+    onCompleted: ({ signIn: { user, token } }) => {
+      dispatch(signIn({ token, user }));
       navigate('/');
     },
     onError: () => {},
@@ -33,15 +21,15 @@ export function SignInPage() {
 
   const handleSignInFormSubmit = useCallback(
     (variables) => {
-      signinRequest({ variables });
+      signInRequest({ variables });
     },
-    [signinRequest],
+    [signInRequest],
   );
 
   return (
     <SignInTemplate
-      isLoading={signinRequestState.loading}
-      error={signinRequestState.error}
+      isLoading={signInRequestState.loading}
+      error={signInRequestState.error}
       onSubmit={handleSignInFormSubmit}
     />
   );

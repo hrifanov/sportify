@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertTitle, AlertDescription } from '../atoms';
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from '../atoms';
 
 export function ErrorBanner({ title, children, ...restProps }) {
   return (
