@@ -2,7 +2,10 @@ import { isAuth } from '../../libs/isAuth';
 
 const User = require('../../models/User');
 
-export const users = async () => {
+//TODO: refactor isAuth as middleware
+
+export const users = async (_, _params, context) => {
+  isAuth(context);
   return await User.find();
 };
 
