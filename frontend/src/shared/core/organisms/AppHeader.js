@@ -13,11 +13,10 @@ import {
   Spacer,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import { selectUser } from 'src/modules/auth/authSlice';
+import { useAuthClient } from 'src/modules/auth/apollo/client';
 
 export default function AppHeader() {
-  const user = useSelector(selectUser);
+  const { user } = useAuthClient();
 
   return (
     <Box as="header" py={3}>

@@ -1,19 +1,17 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
-import { useDispatch } from 'react-redux';
-import { signIn } from '../authSlice';
 
-import { SIGN_IN_MUTATION } from '../mutations';
+import { SIGN_IN_MUTATION } from 'src/modules/auth/apollo/mutations';
+import { signIn } from 'src/modules/auth/apollo/client';
 
 import { SignInTemplate } from '../templates';
 
 export function SignInPage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [signInRequest, signInRequestState] = useMutation(SIGN_IN_MUTATION, {
     onCompleted: ({ signIn: { user, token } }) => {
-      dispatch(signIn({ token, user }));
+      signIn({ token, user });
       navigate('/');
     },
     onError: () => {},
