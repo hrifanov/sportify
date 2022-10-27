@@ -19,7 +19,7 @@ export const signin = async (_, { userName, password }, { res }) => {
 
   res.cookie('jid', createRefreshToken(user), {
     httpOnly: true,
-    path: '/refresh-token',
+    path: '/refresh_token',
   });
 
   return {

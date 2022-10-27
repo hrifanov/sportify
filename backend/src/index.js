@@ -5,7 +5,11 @@ import cors from 'cors';
 import express from 'express';
 
 import { PORT } from './config/variables';
-import { createAccessToken, createRefreshToken, verifyToken } from './libs/auth';
+import {
+  createAccessToken,
+  createRefreshToken,
+  verifyToken,
+} from './libs/auth';
 import { getConnection } from './libs/connection';
 import User from './models/User';
 import { schema } from './modules/executableSchema';
