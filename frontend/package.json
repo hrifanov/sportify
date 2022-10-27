@@ -19,7 +19,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@hookform/resolvers": "^2.9.7",
-    "@reduxjs/toolkit": "^1.8.6",
+    "apollo3-cache-persist": "^0.14.1",
     "date-fns": "2.29.2",
     "framer-motion": "^7.3.1",
     "graphql": "^15.8.0",
@@ -28,36 +28,16 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
     "react-icons": "^4.4.0",
-    "react-redux": "^8.0.4",
     "react-router-dom": "6.3.0",
-    "redux-persist": "^6.0.0",
-    "reduxjs-toolkit-persist": "^7.2.1",
     "yup": "0.32.11"
   },
   "devDependencies": {
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "patch-package": "^6.4.7",
     "prettier": "^2.7.1",
     "react-scripts": "5.0.1"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "rules": {
-      "import/prefer-default-export": "off",
-      "no-console": "off",
-      "no-empty": "off",
-      "no-unused-vars": "warn",
-      "no-param-reassign": "off",
-      "no-shadow": "off",
-      "react/jsx-props-no-spreading": "off",
-      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-      "react/prop-types": "off",
-      "react/react-in-jsx-scope": "off",
-      "semi": ["error", "always"],
-      "quotes": ["error", "single"]
-    }
   },
   "browserslist": {
     "production": [

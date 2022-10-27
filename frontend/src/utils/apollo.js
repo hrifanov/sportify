@@ -9,11 +9,11 @@ import {
   from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 
 import { config } from 'src/config';
 import { route } from 'src/Routes';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, signOut } from 'src/modules/auth/authSlice';
+import { auth, signOut } from 'src/modules/auth/apollo/client';
 
 const UNAUTHENTICATED_CODE = 'UNAUTHENTICATED';
 
@@ -32,16 +32,27 @@ const httpLink = createHttpLink({
   uri: config.GRAPHQL_API,
 });
 
+const cache = new InMemoryCache();
+export const setupPersistence = async () => {
+  try {
+    await persistCache({
+      cache,
+      storage: new LocalStorageWrapper(window.localStorage),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export function EnhancedApolloProvider({ children }) {
   const navigate = useNavigate();
-  const token = useSelector(selectToken);
-  const dispatch = useDispatch();
+  const { token } = auth();
 
   const handleSignOut = useCallback(() => {
-    dispatch(signOut());
+    signOut();
     navigate(route.signIn());
     window.location.reload();
-  }, [dispatch, navigate]);
+  }, [navigate]);
 
   const authLink = new ApolloLink((operation, forward) => {
     operation.setContext({
@@ -64,7 +75,7 @@ export function EnhancedApolloProvider({ children }) {
 
   const client = new ApolloClient({
     link: from([logoutLink, authLink, httpLink]),
-    cache: new InMemoryCache(),
+    cache,
     defaultOptions: {
       watchQuery: {
         fetchPolicy: 'cache-and-network',
