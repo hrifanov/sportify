@@ -1,4 +1,4 @@
-import { Box, Heading } from 'src/shared/design-system';
+import { Box, Heading, Button } from 'src/shared/design-system';
 import { RouterLink } from 'src/shared/navigation';
 
 import { route } from 'src/Routes';
@@ -8,18 +8,26 @@ import { SignUpForm } from '../organisms';
 
 export function SignUpTemplate({ isLoading, error, onSubmit }) {
   return (
-    <MainSection maxW="prose">
-      <Heading mb="4">Sign Up</Heading>
+    <MainSection maxW="prose" mt={14}>
+      <Box bg="brand.boxBackground" p={12} borderRadius="base">
+        <Heading mb="4">Sign Up</Heading>
 
-      <SignUpForm
-        isLoading={isLoading}
-        errorMessage={error && error.message}
-        onSubmit={onSubmit}
-      >
-        <Box>
-          or <RouterLink to={route.signIn()}>Sign In</RouterLink>
+        <SignUpForm
+          isLoading={isLoading}
+          errorMessage={error && error.message}
+          onSubmit={onSubmit}
+        />
+        <Box textAlign="center" my={4}>
+          or
         </Box>
-      </SignUpForm>
+        <Box>
+          <RouterLink to={route.signIn()} style={{ textDecoration: 'none' }}>
+            <Button size="lg" variant="outline" w="full">
+              Sign In
+            </Button>
+          </RouterLink>
+        </Box>
+      </Box>
     </MainSection>
   );
 }

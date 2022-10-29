@@ -6,13 +6,14 @@ import { SIGN_IN_MUTATION } from 'src/modules/auth/apollo/mutations';
 import { signIn } from 'src/modules/auth/apollo/client';
 
 import { SignInTemplate } from '../templates';
+import { route } from 'src/Routes';
 
 export function SignInPage() {
   const navigate = useNavigate();
   const [signInRequest, signInRequestState] = useMutation(SIGN_IN_MUTATION, {
-    onCompleted: ({ signIn: { user, token } }) => {
-      signIn({ token, user });
-      navigate('/');
+    onCompleted: ({ signin: { user, accessToken } }) => {
+      signIn({ accessToken, user });
+      navigate(route.clubDetail());
     },
     onError: () => {},
   });

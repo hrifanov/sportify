@@ -11,19 +11,46 @@ import {
   PopoverCloseButton,
   Button,
   Spacer,
+  Image,
+  Stack,
+  Link,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
-import { useAuthClient } from 'src/modules/auth/apollo/client';
+import { signOut, useAuthClient } from 'src/modules/auth/apollo/client';
+import { RouterLink } from 'src/shared/navigation';
+import { route } from 'src/Routes';
+import logoFull from 'src/assets/logo_full.png';
 
 export default function AppHeader() {
   const { user } = useAuthClient();
-
   return (
     <Box as="header" py={3}>
       <Container maxW="container.xl">
-        <Flex>
-          <Heading>Sportify</Heading>
+        <Flex align={'center'}>
+          <Heading>
+            <Image
+              src={logoFull}
+              alt="Sportify logo"
+              width={170}
+              objectFit="cover"
+            />
+          </Heading>
           <Spacer />
+          <Stack direction={'row'} spacing={'30px'} ml={10} align="center">
+            <Link>Home</Link>
+            <Link>About</Link>
+            <Link>Pricing</Link>
+            {!user && (
+              <Box>
+                <RouterLink
+                  to={route.signIn()}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Button variant="primary">Sign In</Button>
+                </RouterLink>
+              </Box>
+            )}
+          </Stack>
           {user && (
             <Popover>
               <PopoverTrigger>
@@ -35,7 +62,9 @@ export default function AppHeader() {
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverBody>
-                  <Button w="full">Logout</Button>
+                  <Button variant="outline" w="full" onClick={signOut}>
+                    Logout
+                  </Button>
                 </PopoverBody>
               </PopoverContent>
             </Popover>
