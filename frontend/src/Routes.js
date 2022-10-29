@@ -5,9 +5,9 @@ import AppLayout from './shared/core/organisms/AppLayout';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
 
 export const route = {
-  signIn: () => `/`,
-  signUp: () => `/auth/signUp`,
-  clubDetail: () => `/club`,
+  signIn: () => '/',
+  signUp: () => '/auth/signUp',
+  clubDetail: () => '/club',
 };
 
 const useLayout = (Component) => <AppLayout>{Component}</AppLayout>;
