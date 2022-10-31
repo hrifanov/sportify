@@ -5,7 +5,8 @@ const userSchema = new Schema({
   password: String,
   name: String,
   email: String,
-  tokenSum: Number,
+  tokenVersion: Number,
+  verified: Boolean,
 });
 
 module.exports = model('Users', userSchema);
