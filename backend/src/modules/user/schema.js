@@ -2,8 +2,8 @@ import { gql } from 'apollo-server-express';
 
 export const typeDef = gql`
   type Query {
-    user(userName: String!): User
-    users: [User!]!
+    user(userName: String!): UserOutput
+    users: [UserOutput!]!
   }
 
   type User {
@@ -12,7 +12,8 @@ export const typeDef = gql`
     password: String!
     name: String!
     email: String!
-    tokenSum: Int!
+    tokenVersion: Int!
+    verified: Boolean!
   }
 
   input UserInput {
@@ -27,7 +28,17 @@ export const typeDef = gql`
     #deleteUser(username: String!, password: String!): Boolean!
     signin(userName: String!, password: String!): LoginResponse!
     signup(userInput: UserInput!): Boolean!
+    verifyUser(token: String!): Boolean!
     invalidateTokens: Boolean!
+  }
+
+  type UserOutput {
+    id: ID!
+    userName: String!
+    name: String!
+    email: String!
+    profileImageUrl: String
+    verified: Boolean
   }
 
   type LoginResponse {
