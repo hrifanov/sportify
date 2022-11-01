@@ -14,7 +14,7 @@ import { getConnection } from './libs/connection';
 import User from './models/User';
 import { schema } from './modules/executableSchema';
 
-const startServer = async () => {
+(async () => {
   const app = express();
 
   app.disable('x-powered-by');
@@ -76,11 +76,7 @@ const startServer = async () => {
 
   apolloServer.applyMiddleware({ app, cors: false });
 
-  const port = PORT || 4000;
-
-  app.listen(port, () => {
-    console.info(`🚀 Server started at http://localhost:${port}/graphql`);
+  app.listen(PORT, () => {
+    console.info(`🚀 Server started at http://localhost:${PORT}/graphql`);
   });
-};
-
-startServer();
+})();

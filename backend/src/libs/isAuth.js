@@ -6,7 +6,7 @@ export const isAuth = (context) => {
   const authorization = context.req.headers['authorization'];
   if (!authorization) {
     throw new GraphQLError('please authenticate by logging in', {
-      extensions: { code: 'not authenticated' },
+      extensions: { code: 'not-authenticated' },
     });
   }
 
@@ -15,9 +15,12 @@ export const isAuth = (context) => {
     const payload = verifyToken(token, ACCESS_TOKEN_SECRET);
     context.payload = payload;
   } catch (err) {
-    throw new GraphQLError('access token expired, please refresh your access token', {
-      extensions: { code: 'jwt expired' },
-    });
+    throw new GraphQLError(
+      'access token expired, please refresh your access token',
+      {
+        extensions: { code: 'jwt-expired' },
+      }
+    );
   }
 
   //return next();

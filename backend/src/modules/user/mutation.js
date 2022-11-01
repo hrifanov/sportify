@@ -13,13 +13,13 @@ export const signin = async (_, { userName, password }, { res }) => {
 
   if (!user || !user.id) {
     throw new GraphQLError(`could not find user ${userName}`, {
-      extensions: { code: 'user not found' },
+      extensions: { ref: 'username' },
     });
   }
 
   if (!user.verified) {
     throw new GraphQLError('please verify your email first to login', {
-      extensions: { code: 'invalid email' },
+      extensions: { ref: 'email' },
     });
   }
 
@@ -27,7 +27,7 @@ export const signin = async (_, { userName, password }, { res }) => {
 
   if (!valid) {
     throw new GraphQLError('bad password, please try again', {
-      extensions: { code: 'password' },
+      extensions: { ref: 'password' },
     });
   }
 
@@ -50,9 +50,12 @@ export const signup = async (_, { userInput }) => {
   }).exec();
 
   if (userByUserName) {
-    throw new GraphQLError(`username ${parsedUserInput.userName} is already taken`, {
-      extensions: { code: 'username taken' },
-    });
+    throw new GraphQLError(
+      `username ${parsedUserInput.userName} is already taken`,
+      {
+        extensions: { ref: 'username' },
+      }
+    );
   }
 
   const userByEmail = await User.findOne({
@@ -60,9 +63,12 @@ export const signup = async (_, { userInput }) => {
   }).exec();
 
   if (userByEmail) {
-    throw new GraphQLError(`email ${parsedUserInput.email} is already registered`, {
-      extensions: { code: 'email registered' },
-    });
+    throw new GraphQLError(
+      `email ${parsedUserInput.email} is already registered`,
+      {
+        extensions: { ref: 'email' },
+      }
+    );
   }
 
   const passwordHash = await argon2.hash(parsedUserInput.password);
@@ -81,25 +87,31 @@ export const signup = async (_, { userInput }) => {
     return false;
   });
 
-  const transporter = createGmailTransporter();
-
   jwt.sign(
     {
       user: parsedUserInput.userName,
+      email: parsedUserInput.email,
     },
     GMAIL_API_KEY,
     {
       expiresIn: '1d',
     },
-    (emailToken) => {
+    (err, emailToken) => {
+      if (err) {
+        console.error(err);
+        return false;
+      }
+
       //TODO: add env
-      const url = `http://localhost:3000/confirmation/${emailToken}`;
+      const url = `http://localhost:3000/verify-account/${emailToken}`;
+
+      const transporter = createGmailTransporter();
 
       try {
         sendMail(transporter, {
           to: parsedUserInput.email,
-          subject: 'Confirm Email',
-          html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
+          subject: 'Please confirm your registration',
+          html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
         });
       } catch (e) {
         console.error(e);
@@ -115,10 +127,42 @@ export const verifyUser = async (_, { token }) => {
     const { user } = jwt.verify(token, GMAIL_API_KEY);
     await User.findOneAndUpdate({ userName: user }, { verified: true });
   } catch (e) {
-    console.error(e);
+    const { user, email } = jwt.decode(token, GMAIL_API_KEY);
+
+    if (!user || !email) {
+      throw new GraphQLError('Cannot decode token', {
+        extensions: { code: 'token' },
+      });
+    }
+
+    jwt.sign(
+      { user: user, email: email },
+      GMAIL_API_KEY,
+      { expiresIn: '1d' },
+      (err, emailToken) => {
+        if (err) {
+          console.error(err);
+          return false;
+        }
+
+        //TODO: add env
+        const url = `http://localhost:3000/verify-account/${emailToken}`;
+        const transporter = createGmailTransporter();
+
+        try {
+          sendMail(transporter, {
+            to: email,
+            subject: 'Please confirm your registration',
+            html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    );
+
     return false;
   }
-
   return true;
 };
 
