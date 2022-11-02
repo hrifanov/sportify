@@ -8,8 +8,13 @@ import { SignUpForm } from '../organisms';
 
 export function SignUpTemplate({ isLoading, error, onSubmit }) {
   return (
-    <MainSection maxW="prose" mt={14}>
-      <Box bg="brand.boxBackground" p={12} borderRadius="base">
+    <MainSection maxW="prose" mt={[4, 10]}>
+      <Box
+        bg="brand.boxBackground"
+        px={[8, 12]}
+        py={[6, 12]}
+        borderRadius="base"
+      >
         <Heading mb="4">Sign Up</Heading>
 
         <SignUpForm
