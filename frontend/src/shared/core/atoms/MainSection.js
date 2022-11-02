@@ -5,7 +5,7 @@ export function MainSection({ children, size, maxW, ...restProps }) {
     <Container
       maxW={maxW ?? `container.${size ?? 'xl'}`}
       as="section"
-      mt={10}
+      my={10}
       {...restProps}
     >
       {children}
