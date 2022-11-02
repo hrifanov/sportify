@@ -4,13 +4,14 @@ import { useMutation } from '@apollo/client';
 import { SIGN_UP_MUTATION } from 'src/modules/auth/apollo/mutations';
 import { signIn } from 'src/modules/auth/apollo/client';
 import { SignUpTemplate } from 'src/modules/auth/templates';
+import { route } from 'src/Routes';
 
 export function SignUpPage() {
   const navigate = useNavigate();
   const [signUpRequest, signUpRequestState] = useMutation(SIGN_UP_MUTATION, {
-    onCompleted: ({ signUp: { user, token } }) => {
+    onCompleted: ({ signup: { user, token } }) => {
       signIn({ token, user });
-      navigate('/');
+      navigate(route.clubDetail());
     },
     onError: () => {},
   });
