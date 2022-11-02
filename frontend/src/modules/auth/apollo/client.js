@@ -10,10 +10,10 @@ const initialState = persistedAuth() ?? {
 };
 export const auth = makeVar(initialState);
 
-export const signIn = ({ user, token }) => {
+export const signIn = ({ user, accessToken }) => {
   auth({
     user,
-    token,
+    accessToken,
   });
 };
 

@@ -1,4 +1,4 @@
-import { Button, ErrorBanner, Stack } from 'src/shared/design-system';
+import { Button, Flex, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 
 const initialValues = {
@@ -28,24 +28,24 @@ export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
       defaultValues={initialValues}
       resolver={yupResolver(schema)}
     >
-      <Stack spacing="3" py="4">
-        {errorMessage && <ErrorBanner title={errorMessage} />}
+      <Stack spacing="3">
         <FormField
           id="name"
           name="name"
           label="Name"
           type="text"
+          placeholder="John Doe"
           autoFocus="autofocus"
           autoComplete="on"
           autoCorrect="off"
           autoCapitalize="off"
         />
-        F
         <FormField
           id="userName"
           name="userName"
           label="Username"
           type="text"
+          placeholder="jDoe98"
           autoComplete="on"
           autoCorrect="off"
           autoCapitalize="off"
@@ -55,7 +55,7 @@ export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
           name="email"
           label="Email"
           type="text"
-          placeholder="e.g. john@doe.com"
+          placeholder="john@doe.com"
           autoComplete="on"
           autoCorrect="off"
           autoCapitalize="off"
@@ -65,6 +65,7 @@ export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
           name="password"
           label="Password"
           type="password"
+          placeholder="Password"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
@@ -73,23 +74,25 @@ export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
           id="passwordConfirmation"
           name="passwordConfirmation"
           label="Password Confirmation"
+          placeholder="Repeat, so you don't forget :)"
           type="password"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
         />
+        <Flex align="center" justify="center">
+          <Button
+            size="lg"
+            type="submit"
+            isLoading={isLoading}
+            variant="primary"
+            w={['100%']}
+            mt="4"
+          >
+            Sign Up
+          </Button>
+        </Flex>
       </Stack>
-      <Button
-        size="lg"
-        type="submit"
-        isLoading={isLoading}
-        colorScheme="green"
-        mt="4"
-        mb="2"
-      >
-        Sign Up
-      </Button>
-      {children}
     </Form>
   );
 }

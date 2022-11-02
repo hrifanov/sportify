@@ -11,18 +11,26 @@ import {
   PopoverCloseButton,
   Button,
   Spacer,
+  Image,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
-import { useAuthClient } from 'src/modules/auth/apollo/client';
+import { signOut, useAuthClient } from 'src/modules/auth/apollo/client';
+import logoFull from 'src/assets/logo_full.png';
 
 export default function AppHeader() {
   const { user } = useAuthClient();
-
   return (
     <Box as="header" py={3}>
       <Container maxW="container.xl">
-        <Flex>
-          <Heading>Sportify</Heading>
+        <Flex align={'center'}>
+          <Heading flexShrink={0}>
+            <Image
+              src={logoFull}
+              alt="Sportify logo"
+              width={[100, 170]}
+              objectFit="cover"
+            />
+          </Heading>
           <Spacer />
           {user && (
             <Popover>
@@ -35,7 +43,9 @@ export default function AppHeader() {
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverBody>
-                  <Button w="full">Logout</Button>
+                  <Button variant="outline" w="full" onClick={signOut}>
+                    Logout
+                  </Button>
                 </PopoverBody>
               </PopoverContent>
             </Popover>
