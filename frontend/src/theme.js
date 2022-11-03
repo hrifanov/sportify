@@ -4,7 +4,8 @@ export const theme = extendTheme({
   colors: {
     brand: {
       primary: '#FB7143',
-      secondary: '#969AB9',
+      secondary: '#9FB2D1',
+      title: '#969AB9',
       dark: '#1F2833',
       boxBackground: '#283555',
     },
@@ -26,9 +27,6 @@ export const theme = extendTheme({
       PopoverArrow: {
         bg: '#1F2833',
         color: 'white',
-      },
-      header: {
-        bg: 'brand.boxBackground',
       },
     },
   },
@@ -57,6 +55,17 @@ export const theme = extendTheme({
             },
           },
         },
+        light: {
+          bg: '#3E4A66',
+          color: 'white',
+        },
+        popup: {
+          bg: 'brand.boxBackground',
+          color: 'white',
+          _hover: {
+            bg: 'brand.boxBackground',
+          },
+        },
         gray: {
           bg: 'gray.500',
           color: 'white',
@@ -78,6 +87,30 @@ export const theme = extendTheme({
           color: 'white',
           _hover: {
             color: 'brand.dark',
+          },
+        },
+      },
+    },
+    Table: {
+      parts: ['td'],
+      baseStyle: {
+        td: {
+          borderColor: 'brand.boxBackground',
+        },
+      },
+      variants: {
+        base: {
+          thead: {},
+          th: {
+            position: 'sticky',
+            top: 0,
+            bg: 'brand.boxBackground',
+            borderBottom: '1px solid #9FB2D1',
+            textAlign: 'center',
+          },
+          td: {
+            borderBottom: '1px solid #9FB2D1',
+            textAlign: 'center',
           },
         },
       },

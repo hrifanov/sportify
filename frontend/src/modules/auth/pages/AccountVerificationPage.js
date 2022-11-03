@@ -1,13 +1,13 @@
+import { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
+import { Spinner, Stack, Text, Container } from '@chakra-ui/react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { VERIFY_ACCOUNT_MUTATION } from 'src/modules/auth/apollo/mutations';
 import { route } from 'src/Routes';
 import { Box, Button, Heading } from 'src/shared/design-system';
-import { Spinner, Stack, Text } from '@chakra-ui/react';
-import { MainSection } from 'src/shared/core/atoms/MainSection';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import AppHeader from 'src/shared/core/organisms/AppHeader';
 
-export function AccountVerification() {
+export function AccountVerificationPage() {
   const navigate = useNavigate();
   const { token } = useParams();
   const [verifyAccountRequest, { data, loading, error }] = useMutation(VERIFY_ACCOUNT_MUTATION);
@@ -58,14 +58,17 @@ export function AccountVerification() {
   };
 
   return (
-    <MainSection maxW="prose" mt={[4, 10]}>
-      <Heading mb="4">Account verification</Heading>
+    <>
+      <AppHeader inApp={false} />
+      <Container maxW="prose" mt={[4, 10]}>
+        <Heading mb="4">Account verification</Heading>
 
-      <Box bg="brand.boxBackground" px={[8, 12]} py={[6, 12]} borderRadius="base">
-        <Stack spacing={4} align="center">
-          <Content />
-        </Stack>
-      </Box>
-    </MainSection>
+        <Box bg="brand.boxBackground" px={[8, 12]} py={[6, 12]} borderRadius="base">
+          <Stack spacing={4} align="center">
+            <Content />
+          </Stack>
+        </Box>
+      </Container>
+    </>
   );
 }

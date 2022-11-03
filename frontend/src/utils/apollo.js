@@ -13,12 +13,17 @@ import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 
 import { config } from 'src/config';
 import { route } from 'src/Routes';
-import { auth, signOut } from 'src/modules/auth/apollo/client';
+import { signOut, useAuthClient } from 'src/modules/auth/apollo/client';
 
 const UNAUTHENTICATED_CODE = 'UNAUTHENTICATED';
+const TOKEN_EXPIRED_CODE = 'jwt-expired';
 
 const hasUnauthenticatedErrorCode = (errors) => {
   return errors && errors.some((error) => error.extensions.code === UNAUTHENTICATED_CODE);
+};
+
+const hasTokenExpiredErrorCode = (errors) => {
+  return errors && errors.some((error) => error.extensions.code === TOKEN_EXPIRED_CODE);
 };
 
 const hasNetworkStatusCode = (error, code) => {
@@ -43,7 +48,7 @@ export const setupPersistence = async () => {
 
 export function EnhancedApolloProvider({ children }) {
   const navigate = useNavigate();
-  const { token } = auth();
+  const { accessToken } = useAuthClient();
 
   const handleSignOut = useCallback(() => {
     signOut();
@@ -54,21 +59,26 @@ export function EnhancedApolloProvider({ children }) {
   const authLink = new ApolloLink((operation, forward) => {
     operation.setContext({
       headers: {
-        Authorization: token ? `Bearer ${token}` : '',
+        Authorization: accessToken ? `Bearer ${accessToken}` : '',
       },
     });
 
     return forward(operation);
   });
 
-  const logoutLink = onError(({ graphQLErrors, networkError }) => {
+  const errorLink = onError(({ graphQLErrors, networkError }) => {
+    if (hasTokenExpiredErrorCode(graphQLErrors)) {
+      //  TODO: Refresh token
+      return handleSignOut();
+    }
+
     if (hasUnauthenticatedErrorCode(graphQLErrors) || hasNetworkStatusCode(networkError, 401)) {
       handleSignOut();
     }
   });
 
   const client = new ApolloClient({
-    link: from([logoutLink, authLink, httpLink]),
+    link: from([errorLink, authLink, httpLink]),
     cache,
     defaultOptions: {
       watchQuery: {
