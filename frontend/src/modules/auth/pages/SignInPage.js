@@ -19,8 +19,20 @@ export function SignInPage() {
   });
 
   const handleSignInFormSubmit = useCallback(
-    (variables) => {
+    ({ variables, methods }) => {
       signInRequest({ variables });
+      if (signInRequestState) {
+        const errors = signInRequestState.error.graphQLErrors;
+        errors.forEach((error) => {
+          console.log('error.extensions.ref', error.extensions.ref);
+          console.log('error.message', error.message);
+          methods.setError('username', {
+            type: error.extensions.ref,
+            message: error.message,
+          });
+        });
+      }
+      // methods.setError('username', { type: 'server', message: 'ahoj' });
     },
     [signInRequest],
   );
