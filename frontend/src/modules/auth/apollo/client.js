@@ -1,14 +1,15 @@
 import { makeVar, useReactiveVar } from '@apollo/client';
-import { makeSessionStorageItem } from 'src/utils/storage';
+import { makeLocalStorageItem } from 'src/utils/storage';
 import { useNavigate } from 'react-router-dom';
 
-const LOCAL_STORAGE_AUTH_KEY = 'auth-token';
-const persistedAuth = makeSessionStorageItem(LOCAL_STORAGE_AUTH_KEY);
+const LOCAL_STORAGE_AUTH_KEY = 'auth';
+const persistedAuth = makeLocalStorageItem(LOCAL_STORAGE_AUTH_KEY);
 
 const initialState = persistedAuth() ?? {
   user: null,
-  token: null,
+  accessToken: null,
 };
+
 export const auth = makeVar(initialState);
 
 export const signIn = ({ user, accessToken }) => {
@@ -21,7 +22,7 @@ export const signIn = ({ user, accessToken }) => {
 export const signOut = () => {
   auth({
     user: null,
-    token: null,
+    accessToken: null,
   });
 };
 
@@ -41,6 +42,7 @@ export const useAuthClient = () => {
   const authState = useReactiveVar(auth);
   return {
     user: authState.user,
+    accessToken: authState.accessToken,
     signOut: () => {
       signOut();
       navigate('/');

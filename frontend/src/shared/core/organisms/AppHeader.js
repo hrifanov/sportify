@@ -10,28 +10,39 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   Button,
-  Spacer,
   Image,
+  Spacer,
+  Show,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
+import logo from 'src/assets/logo.svg';
 import logoFull from 'src/assets/logo_full.png';
 
-export default function AppHeader() {
+export default function AppHeader({ inApp = true, title }) {
+  const headerBg = inApp ? 'transparent' : 'brand.boxBackground';
+
   const { user, signOut } = useAuthClient();
   return (
-    <Box as="header" py={3}>
+    <Box as="header" pt={5} pb={3} bg={headerBg}>
       <Container maxW="container.xl">
         <Flex align={'center'}>
-          <Heading flexShrink={0}>
-            <Image src={logoFull} alt="Sportify logo" width={[100, 170]} objectFit="cover" />
+          <Image
+            src={inApp ? logo : logoFull}
+            alt="Sportify logo"
+            width={inApp ? ['40px', '80px'] : ['100px', '170px']}
+            objectFit="cover"
+            mr={5}
+          />
+          <Heading mx={['auto', 0]} size={['', 'xl']}>
+            {title}
           </Heading>
           <Spacer />
           {user && (
             <Popover>
               <PopoverTrigger>
                 <Button py={5} variant="ghost" rightIcon={<FaUserCircle size={35} />}>
-                  {user.userName}
+                  <Show above="sm">{user.userName}</Show>
                 </Button>
               </PopoverTrigger>
               <PopoverContent w={40}>
