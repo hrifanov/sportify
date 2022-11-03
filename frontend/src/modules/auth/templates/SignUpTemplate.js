@@ -5,33 +5,48 @@ import { route } from 'src/Routes';
 
 import { MainSection } from 'src/shared/core/atoms/MainSection';
 import { SignUpForm } from '../organisms';
+import { Stack, Text } from '@chakra-ui/react';
 
-export function SignUpTemplate({ isLoading, error, onSubmit }) {
+export function SignUpTemplate({
+  isLoading,
+  error,
+  onSubmit,
+  isSignUpCompleted,
+  setIsSignUpCompleted,
+}) {
   return (
     <MainSection maxW="prose" mt={[4, 10]}>
-      <Box
-        bg="brand.boxBackground"
-        px={[8, 12]}
-        py={[6, 12]}
-        borderRadius="base"
-      >
-        <Heading mb="4">Sign Up</Heading>
+      <Heading mb="4">Sign Up</Heading>
 
-        <SignUpForm
-          isLoading={isLoading}
-          errorMessage={error && error.message}
-          onSubmit={onSubmit}
-        />
-        <Box textAlign="center" my={4}>
-          or
-        </Box>
-        <Box>
-          <RouterLink to={route.signIn()} style={{ textDecoration: 'none' }}>
-            <Button size="lg" variant="outline" w="full">
-              Sign In
+      <Box bg="brand.boxBackground" px={[8, 12]} py={[6, 12]} borderRadius="base">
+        {isSignUpCompleted ? (
+          <Stack spacing="8">
+            <Text fontSize="xl" fontWeight="semibold" lineHeight="7">
+              Please confirm your e-mail to finish the registration.
+            </Text>
+            <Button variant="outline" onClick={() => setIsSignUpCompleted(false)}>
+              Go back to registration
             </Button>
-          </RouterLink>
-        </Box>
+          </Stack>
+        ) : (
+          <>
+            <SignUpForm
+              isLoading={isLoading}
+              errorMessage={error && error.message}
+              onSubmit={onSubmit}
+            />
+            <Box textAlign="center" my={4}>
+              or
+            </Box>
+            <Box>
+              <RouterLink to={route.signIn()} style={{ textDecoration: 'none' }}>
+                <Button size="lg" variant="outline" w="full">
+                  Sign In
+                </Button>
+              </RouterLink>
+            </Box>
+          </>
+        )}
       </Box>
     </MainSection>
   );

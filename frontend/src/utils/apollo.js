@@ -18,10 +18,7 @@ import { auth, signOut } from 'src/modules/auth/apollo/client';
 const UNAUTHENTICATED_CODE = 'UNAUTHENTICATED';
 
 const hasUnauthenticatedErrorCode = (errors) => {
-  return (
-    errors &&
-    errors.some((error) => error.extensions.code === UNAUTHENTICATED_CODE)
-  );
+  return errors && errors.some((error) => error.extensions.code === UNAUTHENTICATED_CODE);
 };
 
 const hasNetworkStatusCode = (error, code) => {
@@ -65,10 +62,7 @@ export function EnhancedApolloProvider({ children }) {
   });
 
   const logoutLink = onError(({ graphQLErrors, networkError }) => {
-    if (
-      hasUnauthenticatedErrorCode(graphQLErrors) ||
-      hasNetworkStatusCode(networkError, 401)
-    ) {
+    if (hasUnauthenticatedErrorCode(graphQLErrors) || hasNetworkStatusCode(networkError, 401)) {
       handleSignOut();
     }
   });

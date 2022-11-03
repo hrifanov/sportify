@@ -10,10 +10,7 @@ const spin = keyframes({
   },
 });
 
-export const Icon = forwardRef(function Icon(
-  { isSpinning = false, ...restProps },
-  ref,
-) {
+export const Icon = forwardRef(function Icon({ isSpinning = false, ...restProps }, ref) {
   return (
     <ChakraIcon
       ref={ref}

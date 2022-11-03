@@ -1,4 +1,4 @@
-import { Button, Flex, Stack } from 'src/shared/design-system';
+import { Button, ErrorBanner, Flex, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 
 const initialValues = {
@@ -23,12 +23,9 @@ const schema = yup.object().shape({
 
 export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
   return (
-    <Form
-      onSubmit={onSubmit}
-      defaultValues={initialValues}
-      resolver={yupResolver(schema)}
-    >
+    <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
       <Stack spacing="3">
+        {errorMessage && <ErrorBanner title={errorMessage} />}
         <FormField
           id="name"
           name="name"

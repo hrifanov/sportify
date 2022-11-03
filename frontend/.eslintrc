@@ -36,7 +36,7 @@
       {
         "semi": true,
         "tabWidth": 2,
-        "printWidth": 80,
+        "printWidth": 100,
         "singleQuote": true,
         "trailingComma": "all",
         "endOfLine": "lf",

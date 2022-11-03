@@ -1,6 +1,1 @@
-export {
-  ChakraProvider,
-  chakra,
-  forwardRef,
-  keyframes,
-} from '@chakra-ui/react';
+export { ChakraProvider, chakra, forwardRef, keyframes } from '@chakra-ui/react';
