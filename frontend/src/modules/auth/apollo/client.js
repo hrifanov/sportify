@@ -1,5 +1,6 @@
 import { makeVar, useReactiveVar } from '@apollo/client';
 import { makeSessionStorageItem } from 'src/utils/storage';
+import { useNavigate } from 'react-router-dom';
 
 const LOCAL_STORAGE_AUTH_KEY = 'auth-token';
 const persistedAuth = makeSessionStorageItem(LOCAL_STORAGE_AUTH_KEY);
@@ -36,9 +37,13 @@ const onNextChange = () => {
 auth.onNextChange(onNextChange);
 
 export const useAuthClient = () => {
-  return useReactiveVar(auth);
+  const navigate = useNavigate();
+  const authState = useReactiveVar(auth);
+  return {
+    user: authState.user,
+    signOut: () => {
+      signOut();
+      navigate('/');
+    },
+  };
 };
-
-window.signIn = signIn;
-window.signOut = signOut;
-window.auth = () => auth();

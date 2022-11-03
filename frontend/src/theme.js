@@ -57,6 +57,21 @@ export const theme = extendTheme({
             },
           },
         },
+        gray: {
+          bg: 'gray.500',
+          color: 'white',
+          _hover: {
+            bg: 'gray.600',
+          },
+        },
+        ghost: {
+          _hover: {
+            bg: 'rgba(255,255,255,0.1)',
+          },
+          _focus: {
+            bg: 'rgba(255,255,255,0.2)',
+          },
+        },
         outline: {
           bg: 'transparent',
           borderColor: 'white',

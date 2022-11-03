@@ -1,28 +1,25 @@
-import { Link, theme } from '@chakra-ui/react';
-import { Button, Flex, Stack } from 'src/shared/design-system';
+// import { Link } from '@chakra-ui/react';
+import { Button, ErrorBanner, Flex, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 
 const initialValues = {
-  username: '',
+  userName: '',
   password: '',
 };
 
 const schema = yup.object().shape({
-  username: yup.string().required().label('Username'),
+  userName: yup.string().required().label('Username'),
   password: yup.string().required().label('Password'),
 });
 
 export function SignInForm({ isLoading, errorMessage, onSubmit, children }) {
   return (
-    <Form
-      onSubmit={onSubmit}
-      defaultValues={initialValues}
-      resolver={yupResolver(schema)}
-    >
+    <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
       <Stack spacing="3">
+        {errorMessage && <ErrorBanner title={errorMessage} />}
         <FormField
-          id="username"
-          name="username"
+          id="userName"
+          name="userName"
           label="Username"
           placeholder="Type your username"
           autoFocus="autofocus"
@@ -40,9 +37,9 @@ export function SignInForm({ isLoading, errorMessage, onSubmit, children }) {
           autoCorrect="off"
           autoCapitalize="off"
         />
-        <Flex justify="right">
-          <Link>Forgot password?</Link>
-        </Flex>
+        {/* <Flex justify="right"> */}
+        {/*   <Link>Forgot password?</Link> */}
+        {/* </Flex> */}
         <Flex align="center" justify="center">
           <Button
             size="lg"

@@ -4,17 +4,17 @@ export function ErrorBanner({ title, children, ...restProps }) {
   return (
     <Alert
       status="error"
-      variant="subtle"
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
       textAlign="center"
-      p="4"
+      p={[3, 4]}
       borderRadius="md"
+      color="gray.700"
       {...restProps}
     >
       <AlertIcon boxSize="6" mr="0" />
-      <AlertTitle mt="2" fontSize="lg">
+      <AlertTitle mt="2" fontWeight="semibold">
         {title || 'Unknown error'}
       </AlertTitle>
       {children && (
