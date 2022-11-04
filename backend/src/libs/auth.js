@@ -1,5 +1,11 @@
 import jwt, { sign } from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config/variables';
+import {
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+  NODE_ENV,
+  FE_HOSTNAME_DEV,
+  FE_HOSTNAME_PROD,
+} from '../config/variables';
 import { createGmailTransporter, sendMail } from './mail';
 
 export const createAccessToken = (user) => {
@@ -35,8 +41,10 @@ export const sendVerificationToken = (auth, secretKey, expiresIn) => {
         return false;
       }
 
+      const hostname = NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
+
       //TODO: add env
-      const url = `http://localhost:3000/verify-account/${emailToken}`;
+      const url = `http://${hostname}/verify-account/${emailToken}`;
 
       const transporter = createGmailTransporter();
 
@@ -44,7 +52,7 @@ export const sendVerificationToken = (auth, secretKey, expiresIn) => {
         sendMail(transporter, {
           to: auth.email,
           subject: 'Please confirm your registration',
-          html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+          html: `Hi ${auth.user},<br><br>Thank you for your registration.<br><br>Please click this link to confirm your email by clicking the link below:<br><a href="${url}">${url}</a><br><br>Thanks,<br>The Sportify Team`,
         });
       } catch (e) {
         console.error(e);
@@ -52,4 +60,3 @@ export const sendVerificationToken = (auth, secretKey, expiresIn) => {
     }
   );
 };
-

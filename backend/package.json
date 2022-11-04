@@ -6,10 +6,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=dev backpack",
+    "dev": "backpack",
     "start": "node ./build/main.js",
     "prestart": "run-s build",
-    "build": "NODE_ENV=prod backpack build",
+    "build": "backpack build",
     "postbuild": "nodetouch tmp/restart.txt",
     "build:watch": "nodemon --watch ./src --exec 'npm run build'",
     "prettier": "prettier --write \"src/**/*.js\" README.md",

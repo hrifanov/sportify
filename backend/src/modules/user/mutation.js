@@ -67,11 +67,11 @@ export const signup = async (_, { userInput }) => {
     email: registrationInput.email.toLowerCase(),
   }).exec();
 
-  if (userByEmail) {
-    throwCustomError(`email ${registrationInput.email} is already registered`, {
-      ref: 'email',
-    });
-  }
+  // if (userByEmail) {
+  //   throwCustomError(`email ${registrationInput.email} is already registered`, {
+  //     ref: 'email',
+  //   });
+  // }
 
   const passwordHash = await argon2.hash(registrationInput.password);
 
