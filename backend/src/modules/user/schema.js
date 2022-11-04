@@ -29,6 +29,7 @@ export const typeDef = gql`
     signin(userName: String!, password: String!): LoginResponse!
     signup(userInput: UserInput!): Boolean!
     verifyUser(token: String!): Boolean!
+    refreshToken(token: String!): RefreshTokenResponse!
     invalidateTokens: Boolean!
   }
 
@@ -44,5 +45,9 @@ export const typeDef = gql`
   type LoginResponse {
     accessToken: String!
     user: User!
+  }
+
+  type RefreshTokenResponse {
+    accessToken: String!
   }
 `;
