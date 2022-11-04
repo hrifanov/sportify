@@ -41,7 +41,8 @@ export const sendVerificationToken = (auth, secretKey, expiresIn) => {
         return false;
       }
 
-      const hostname = NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
+      const hostname =
+        NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
 
       //TODO: add env
       const url = `http://${hostname}/verify-account/${emailToken}`;

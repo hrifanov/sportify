@@ -4,10 +4,8 @@ const clubSchema = new Schema({
   name: String,
   sport: String,
   locality: String,
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
+  players: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  owner: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 module.exports = model('Clubs', clubSchema);
