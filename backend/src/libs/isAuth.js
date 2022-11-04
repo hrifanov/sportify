@@ -5,7 +5,9 @@ import { throwCustomError } from './error';
 export const isAuth = (context) => {
   const authorization = context.req.headers['authorization'];
   if (!authorization) {
-    throwCustomError('Please authenticate by logging in', { code: 'not-authenticated' })
+    throwCustomError('Please authenticate by logging in', {
+      code: 'not-authenticated',
+    });
   }
 
   try {
@@ -13,7 +15,9 @@ export const isAuth = (context) => {
     const payload = verifyToken(token, ACCESS_TOKEN_SECRET);
     context.payload = payload;
   } catch (err) {
-      throwCustomError('Access token expired, please refresh your access token', { code: 'jwt-expired' })
+    throwCustomError('Access token expired, please refresh your access token', {
+      code: 'jwt-expired',
+    });
   }
 
   //return next();

@@ -36,7 +36,7 @@ export const signin = async (_, { userName, password }, { res }) => {
   });
 
   const accessToken = createAccessToken(user);
-  
+
   res.cookie('access-token', accessToken, {
     httpOnly: true,
   });
@@ -67,11 +67,11 @@ export const signup = async (_, { userInput }) => {
     email: registrationInput.email.toLowerCase(),
   }).exec();
 
-  // if (userByEmail) {
-  //   throwCustomError(`email ${registrationInput.email} is already registered`, {
-  //     ref: 'email',
-  //   });
-  // }
+  if (userByEmail) {
+    throwCustomError(`email ${registrationInput.email} is already registered`, {
+      ref: 'email',
+    });
+  }
 
   const passwordHash = await argon2.hash(registrationInput.password);
 
@@ -169,12 +169,12 @@ export const refreshToken = async (_, _params, { req, res }) => {
   });
 
   const accessToken = createAccessToken(user);
-  
+
   res.cookie('access-token', accessToken, {
     httpOnly: true,
   });
 
-  return {accessToken: accessToken};
+  return { accessToken: accessToken };
 };
 
 // export const deleteUser = async (_, { userName }) => {

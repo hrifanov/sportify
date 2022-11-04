@@ -16,5 +16,8 @@ const resolvers = {
     async owner(parent) {
       return User.findById(parent.owner);
     },
+    async players(parent) {
+      return parent.players.map((userId) => User.findById(userId));
+    },
   },
 };
