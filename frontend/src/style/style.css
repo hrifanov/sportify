@@ -1,23 +1,31 @@
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #9FB2D1 transparent;
+    scrollbar-width: thin;
+    scrollbar-color: #9FB2D1 transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+    width: 6px;
+    height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
+}
+
+*::-webkit-scrollbar-corner {
+    background: rgba(0, 0, 0, 0);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #9FB2D1;
-  border-radius: 10px;
-  border: 3px solid transparent;
+    background-color: #9FB2D1;
+    border-radius: 10px;
+    border: 3px solid transparent;
 }
 
 .statistics-table td:nth-child(1) {
-  padding-right: 0;
+    padding-right: 0;
+}
+
+.label-nowrap {
+    white-space: nowrap;
 }
