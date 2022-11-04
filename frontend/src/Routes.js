@@ -2,6 +2,7 @@ import { Route, Routes as RouterRoutes, Navigate } from 'react-router-dom';
 import { NotFoundPage } from 'src/shared/navigation/pages/NotFoundPage';
 import { SignInPage, SignUpPage } from 'src/modules/auth';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
+import CreateMatchPage from './modules/matches/pages/CreateMatchPage';
 import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificationPage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
@@ -10,6 +11,7 @@ export const route = {
   signIn: () => '/',
   signUp: () => '/auth/signUp',
   clubDetail: () => '/club',
+  createMatch: () => '/matches/create',
   accountVerification: () => '/verify-account/:token',
 };
 
@@ -73,6 +75,14 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <ClubDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.createMatch()}
+        element={
+          <ProtectedRoute>
+            <CreateMatchPage />
           </ProtectedRoute>
         }
       />

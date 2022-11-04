@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "prettier": "prettier --write README.md \"{frontend,backend}/src/**/*.{js,json,css,scss}\" \"{frontend,backend}/README.md\""
+  },
+  "devDependencies": {
+    "prettier": "2.7.1"
+  },
+  "dependencies": {
+    "react-beautiful-dnd": "^13.1.1"
+  }
+}
