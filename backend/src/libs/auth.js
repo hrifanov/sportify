@@ -5,6 +5,7 @@ import {
   NODE_ENV,
   FE_HOSTNAME_DEV,
   FE_HOSTNAME_PROD,
+  GMAIL_API_KEY,
 } from '../config/variables';
 import { createGmailTransporter, sendMail } from './mail';
 
@@ -28,36 +29,26 @@ export const verifyToken = (token, secret) => {
   return jwt.verify(token, secret);
 };
 
-export const sendVerificationToken = (auth, secretKey, expiresIn) => {
-  jwt.sign(
-    auth,
-    secretKey,
-    {
-      expiresIn: expiresIn,
-    },
-    (err, emailToken) => {
-      if (err) {
-        console.error(err);
-        return false;
-      }
-
-      const hostname =
-        NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
-
-      //TODO: add env
-      const url = `http://${hostname}/verify-account/${emailToken}`;
-
-      const transporter = createGmailTransporter();
-
-      try {
-        sendMail(transporter, {
-          to: auth.email,
-          subject: 'Please confirm your registration',
-          html: `Hi ${auth.user},<br><br>Thank you for your registration.<br><br>Please click this link to confirm your email by clicking the link below:<br><a href="${url}">${url}</a><br><br>Thanks,<br>The Sportify Team`,
-        });
-      } catch (e) {
-        console.error(e);
-      }
+export const sendVerificationToken = (auth, route, mailOptions) => {
+  jwt.sign(auth, GMAIL_API_KEY, { expiresIn: '1d' }, (err, emailToken) => {
+    if (err) {
+      console.error(err);
+      return false;
     }
-  );
+
+    const hostname =
+      NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
+    const url = `http://${hostname}/${route}/${emailToken}`;
+
+    const transporter = createGmailTransporter();
+    const html = mailOptions.html.replaceAll('{url}', url);
+    try {
+      sendMail(transporter, {
+        ...mailOptions,
+        html: html,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  });
 };

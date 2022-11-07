@@ -4,6 +4,7 @@ export const typeDef = gql`
   type Query {
     user(userName: String!): UserOutput
     users: [UserOutput!]!
+    doesInvitationUserExist(token: String!): Boolean
   }
 
   type User {
@@ -21,11 +22,9 @@ export const typeDef = gql`
     password: String!
     name: String!
     email: String!
-    profileImageUrl: String
   }
 
   type Mutation {
-    #deleteUser(username: String!, password: String!): Boolean!
     signin(userName: String!, password: String!): LoginResponse!
     signup(userInput: UserInput!): Boolean!
     verifyUser(token: String!): Boolean!
@@ -38,7 +37,6 @@ export const typeDef = gql`
     userName: String!
     name: String!
     email: String!
-    profileImageUrl: String
     verified: Boolean
   }
 

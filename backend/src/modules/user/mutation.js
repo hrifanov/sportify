@@ -48,38 +48,37 @@ export const signin = async (_, { userName, password }, { res }) => {
 };
 
 export const signup = async (_, { userInput }) => {
-  const registrationInput = JSON.parse(JSON.stringify(userInput));
+  const { userName, email, password, name } = JSON.parse(
+    JSON.stringify(userInput)
+  );
 
   const userByUserName = await User.findOne({
-    userName: registrationInput.userName.toLowerCase(),
+    userName: userName.toLowerCase(),
   }).exec();
 
   if (userByUserName) {
-    throwCustomError(
-      `Username ${registrationInput.userName} is already taken`,
-      {
-        ref: 'username',
-      }
-    );
-  }
-
-  const userByEmail = await User.findOne({
-    email: registrationInput.email.toLowerCase(),
-  }).exec();
-
-  if (userByEmail) {
-    throwCustomError(`email ${registrationInput.email} is already registered`, {
-      ref: 'email',
+    throwCustomError(`Username ${userName} is already taken`, {
+      ref: 'username',
     });
   }
 
-  const passwordHash = await argon2.hash(registrationInput.password);
+  // const userByEmail = await User.findOne({
+  //   email: email.toLowerCase(),
+  // }).exec();
+
+  // if (userByEmail) {
+  //   throwCustomError(`email ${email} is already registered`, {
+  //     ref: 'email',
+  //   });
+  // }
+
+  const passwordHash = await argon2.hash(password);
 
   const user = new User({
-    userName: registrationInput.userName.toLowerCase(),
+    userName: userName.toLowerCase(),
     password: passwordHash,
-    email: registrationInput.email.toLowerCase(),
-    name: registrationInput.name,
+    email: email.toLowerCase(),
+    name: name,
     tokenVersion: 0,
     verified: false,
   });
@@ -91,11 +90,15 @@ export const signup = async (_, { userInput }) => {
 
   sendVerificationToken(
     {
-      user: registrationInput.userName,
-      email: registrationInput.email,
+      user: userName,
+      email: email,
     },
-    GMAIL_API_KEY,
-    '1d'
+    'verify-account',
+    {
+      to: email,
+      subject: 'Please confirm your registration',
+      html: `Hi ${userName},<br><br>Thank you for your registration.<br><br>Please confirm your email by clicking the link below.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
+    }
   );
 
   return true;
@@ -176,7 +179,3 @@ export const refreshToken = async (_, _params, { req, res }) => {
 
   return { accessToken: accessToken };
 };
-
-// export const deleteUser = async (_, { userName }) => {
-//   return (await User.deleteOne({ userName: userName })).deletedCount;
-// };
