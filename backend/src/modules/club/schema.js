@@ -8,7 +8,8 @@ export const typeDef = gql`
   }
 
   type Mutation {
-    addPlayer(clubId: ID!, userId: ID!): Boolean!
+    invitePlayer(clubId: ID!, email: String!): Boolean!
+    acceptInvite(token: String!): Boolean!
   }
 
   type Club {
