@@ -3,6 +3,7 @@ import { NotFoundPage } from 'src/shared/navigation/pages/NotFoundPage';
 import { SignInPage, SignUpPage } from 'src/modules/auth';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
 import CreateMatchPage from './modules/matches/pages/CreateMatchPage';
+import ClubEditPage from './modules/clubs/pages/ClubEditPage';
 import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificationPage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
@@ -12,6 +13,7 @@ export const route = {
   signUp: () => '/auth/signUp',
   clubDetail: () => '/club',
   createMatch: () => '/match/create',
+  clubEdit: () => '/club/edit',
   accountVerification: () => '/verify-account/:token',
 };
 
@@ -83,6 +85,14 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <CreateMatchPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.clubEdit()}
+        element={
+          <ProtectedRoute>
+            <ClubEditPage />
           </ProtectedRoute>
         }
       />
