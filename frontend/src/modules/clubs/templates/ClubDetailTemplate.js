@@ -31,6 +31,7 @@ import {
   RoleGoalKeeperIcon,
 } from 'src/shared/design-system/icons';
 import { BsFilter } from 'react-icons/bs';
+import { route } from 'src/Routes';
 
 export default function ClubDetailTemplate({ club, loading }) {
   const RoleIcon = ({ role }) => {
@@ -94,17 +95,17 @@ export default function ClubDetailTemplate({ club, loading }) {
                     </Tbody>
                   </Table>
                 </TableContainer>
-                <RouterLink
-                  as={Flex}
+                <Flex
+                  as={RouterLink}
                   mt={5}
-                  to="#"
+                  to={route.clubEdit()}
                   color="brand.secondary"
                   alignItems="center"
                   gap={2}
                 >
                   <Icon as={FiSettings} />
                   Manage team
-                </RouterLink>
+                </Flex>
               </Box>
               <Show above="md">
                 <Box w="full" h="full" bg="brand.boxBackground" borderRadius="base" py={4} px={5}>
