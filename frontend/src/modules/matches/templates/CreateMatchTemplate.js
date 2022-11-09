@@ -1,5 +1,5 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Text, Spinner, Stack, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Button, Spinner, Stack, Heading, HStack } from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiSettings } from 'react-icons/fi';
 import { players } from 'src/modules/clubs/players';
@@ -12,6 +12,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { ProvidedRequiredArgumentsRule } from 'graphql';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
+import { result } from 'lodash';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -54,7 +55,7 @@ export default function CreateMatchTemplate({ club, loading }) {
   const [columns, setColumns] = useState(teamsColumns);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
-      <AppHeader title="Club detail" />
+      <AppHeader title="Create a match" />
       <Container maxW="container.xl" h="full" minHeight={0} my={5}>
         {loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
@@ -62,7 +63,7 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Flex>
         )}
         {club && (
-          <Stack spacing={5} direction="row">
+          <Stack spacing={5} direction="row" h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
               {Object.entries(columns).map(([columnId, column], index) => {
                 return (
@@ -75,6 +76,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                     borderRadius="base"
                     py={4}
                     px={5}
+                    style={{ overflow: 'scroll' }}
                   >
                     <Heading size="md" align="middle" mb={4}>
                       {column.name}
@@ -86,6 +88,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             bg={snapshot.isDraggingOver ? 'brand.secondary' : 'brand.boxBackground'}
+                            h="full"
                           >
                             {column.items.map((item, index) => {
                               return (
@@ -124,6 +127,11 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Stack>
         )}
       </Container>
+      <HStack mb={5} justifyContent="center">
+        <Button variant="primary" onClick={() => console.log(columns[2].items)} w={40}>
+          Start match
+        </Button>
+      </HStack>
     </Flex>
   );
 }

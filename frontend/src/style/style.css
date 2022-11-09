@@ -12,6 +12,10 @@
   background: transparent;
 }
 
+*::-webkit-scrollbar-corner {
+  background: rgba(0,0,0,0);
+}
+
 *::-webkit-scrollbar-thumb {
   background-color: #9FB2D1;
   border-radius: 10px;
