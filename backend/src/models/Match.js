@@ -1,27 +1,28 @@
 const { model, Schema } = require('mongoose');
 
-const player = new Schema({
-  player: { type: Schema.Types.ObjectId, ref: 'User' },
+const teamPlayer = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   role: String,
 });
 
 const team = new Schema({
   name: String,
-  players: [player],
+  teamPlayers: [teamPlayer],
 });
 
 const event = new Schema({
   type: String,
-  time: Date,
+  teamPlayer: { type: Schema.Types.ObjectId, ref: 'User' },
+  value: String,
 });
 
 const matchSchema = new Schema({
   club: { type: Schema.Types.ObjectId, ref: 'Club' },
+  date: Date,
   teams: {
     home: team,
     guest: team,
   },
-  date: Date,
   events: [event],
 });
 

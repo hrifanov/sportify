@@ -9,13 +9,12 @@ import {
 } from '../../libs/auth';
 import { throwCustomError } from '../../libs/error';
 import User from '../../models/User';
+import { isAuth } from '../../libs/isAuth';
 
 export const signin = async (_, { userName, password }, { res }) => {
-  const user = await User.findOne({
-    userName: userName.toLowerCase(),
-  }).exec();
+  const user = await User.findOne({ userName });
 
-  if (!user || !user.id) {
+  if (!user) {
     throwCustomError(`Could not find user ${userName}`, { ref: 'username' });
   }
 
@@ -36,47 +35,38 @@ export const signin = async (_, { userName, password }, { res }) => {
   });
 
   const accessToken = createAccessToken(user);
-
   res.cookie('access-token', accessToken, {
     httpOnly: true,
   });
 
   return {
-    accessToken: accessToken,
+    accessToken: createAccessToken(user),
     user,
   };
 };
 
 export const signup = async (_, { userInput }) => {
-  const { userName, email, password, name } = JSON.parse(
-    JSON.stringify(userInput)
-  );
+  const { userName, email, password, name } = userInput;
 
-  const userByUserName = await User.findOne({
-    userName: userName.toLowerCase(),
-  }).exec();
+  await User.findOne({ userName: userName.toLowerCase() }).then((user) => {
+    if (user) {
+      throwCustomError(`username ${userName} is already taken`, {
+        ref: 'username',
+      });
+    }
+  });
 
-  if (userByUserName) {
-    throwCustomError(`Username ${userName} is already taken`, {
-      ref: 'username',
-    });
-  }
-
-  // const userByEmail = await User.findOne({
-  //   email: email.toLowerCase(),
-  // }).exec();
-
-  // if (userByEmail) {
-  //   throwCustomError(`email ${email} is already registered`, {
-  //     ref: 'email',
-  //   });
-  // }
-
-  const passwordHash = await argon2.hash(password);
+  await User.findOne({ email: email.toLowerCase() }).then((user) => {
+    if (user) {
+      throwCustomError(`email ${email} is already registered`, {
+        ref: 'email',
+      });
+    }
+  });
 
   const user = new User({
     userName: userName.toLowerCase(),
-    password: passwordHash,
+    password: await argon2.hash(password),
     email: email.toLowerCase(),
     name: name,
     tokenVersion: 0,
@@ -91,7 +81,7 @@ export const signup = async (_, { userInput }) => {
   sendVerificationToken(
     {
       user: userName,
-      email: email,
+      email,
     },
     'verify-account',
     {
@@ -108,21 +98,23 @@ export const verifyUser = async (_, { token }) => {
   try {
     const { user } = jwt.verify(token, GMAIL_API_KEY);
     await User.findOneAndUpdate({ userName: user }, { verified: true });
-  } catch (e) {
-    const { user, email } = jwt.decode(token, GMAIL_API_KEY);
+  } catch (err) {
+    console.error(err);
 
+    const { user, email } = jwt.decode(token, GMAIL_API_KEY);
     if (!user || !email) {
       throwCustomError('Cannot decode token', { code: 'token' });
     }
 
-    sendVerificationToken({ user: user, email: email }, GMAIL_API_KEY, '1d');
-
+    sendVerificationToken({ user, email }, GMAIL_API_KEY, '1d');
     return false;
   }
   return true;
 };
 
-export const invalidateTokens = async (_, _params, { req }) => {
+export const invalidateTokens = async (_, _params, { req, res }, context) => {
+  isAuth(context);
+
   if (!req.userId) {
     return false;
   }
@@ -135,7 +127,8 @@ export const invalidateTokens = async (_, _params, { req }) => {
   user.count += 1;
   await user.save();
 
-  // res.clearCookie('access-token')
+  res.clearCookie('access-token');
+  res.clearCookie('jid');
 
   return true;
 };
@@ -177,5 +170,5 @@ export const refreshToken = async (_, _params, { req, res }) => {
     httpOnly: true,
   });
 
-  return { accessToken: accessToken };
+  return { accessToken };
 };

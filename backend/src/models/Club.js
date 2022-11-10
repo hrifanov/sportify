@@ -4,7 +4,12 @@ const clubSchema = new Schema({
   name: String,
   sport: String,
   locality: String,
-  players: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  players: [
+    {
+      user: { type: Schema.Types.ObjectId, ref: 'User' },
+      isAdmin: Boolean,
+    },
+  ],
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
