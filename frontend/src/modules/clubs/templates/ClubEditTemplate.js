@@ -59,7 +59,7 @@ export default function ClubEditTemplate({ club, loading, onSubmit }) {
               <Stack w={350}>
                 <AddPlayerForm onSubmit={onSubmit} />
               </Stack>
-              <PlayersList />
+              <PlayersList players={club.players} />
             </Flex>
           </Flex>
         )}

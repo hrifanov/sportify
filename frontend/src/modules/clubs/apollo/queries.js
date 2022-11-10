@@ -7,6 +7,10 @@ export const FETCH_CLUBS = gql`
       name
       sport
       locality
+      players {
+        name
+        email
+      }
     }
   }
 `;

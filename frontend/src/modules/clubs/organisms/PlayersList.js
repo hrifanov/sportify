@@ -1,11 +1,17 @@
 import { PlayerItem } from '../molecules/PlayerItem';
 import { Box } from '@chakra-ui/react';
 
-export function PlayersList() {
+export function PlayersList(players) {
+  players = players.players;
+  players.forEach((player) => {
+    console.log(player.name);
+  });
   return (
     <Box>
-      <PlayerItem name="Petr" email="kjepii@gmail.com" hasAccepted={true} isAdmin={true} />
-      <PlayerItem name="Dalsi hrac" email="dalsi@gmail.com" hasAccepted={false} isAdmin={false} />
+      {players &&
+        players.map((player) => {
+          return <PlayerItem player={player} hasAccepted={true} isAdmin={true} />;
+        })}
     </Box>
   );
 }

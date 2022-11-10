@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { BsFillPersonFill, BsQuestionLg, BsThreeDots } from 'react-icons/bs';
 
-export function PlayerItem({ name, email, hasAccepted, isAdmin }) {
+export function PlayerItem({ player, hasAccepted, isAdmin }) {
   return (
     <Flex gap={[2, null, 5]} alignItems={{ md: 'center' }} direction={['column', null, 'row']}>
       <Flex direction="row" alignItems="center" p={3} border="1px" mt={3} borderRadius={8} w="full">
@@ -23,16 +23,16 @@ export function PlayerItem({ name, email, hasAccepted, isAdmin }) {
           borderRadius="50%"
         />
         <Text as="b" ml={5} width="150px">
-          {name}
+          {player.name}
         </Text>
-        <Text>{email}</Text>
+        <Text>{player.email}</Text>
         <Spacer />
         <Spacer />
         <Box>
           {hasAccepted && <BsFillPersonFill size={37} />}
           {!hasAccepted && <BsQuestionLg size={37} />}
         </Box>
-        <Box ml={4}>
+        <Box ml={4} position="relative">
           <Popover>
             <PopoverTrigger>
               <BsThreeDots
