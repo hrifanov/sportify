@@ -4,8 +4,11 @@ export const makeStorageItem = (storage, key) => {
       return storage.setItem(key, JSON.stringify(data));
     }
 
-    const item = storage.getItem(key);
-    return item ? JSON.parse(item) : null;
+    try {
+      return JSON.parse(storage.getItem(key));
+    } catch (e) {
+      return null;
+    }
   };
 };
 
