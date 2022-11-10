@@ -65,16 +65,14 @@ const onDragEnd = (result, columns, setColumns) => {
 
 export default function CreateMatchTemplate({ club, loading }) {
   const [columns, setColumns] = useState(teamsColumns);
-
-  const [listOfTasks, setTasks] = useState(teamsColumns);
   const handleChange = (e, index) => {
     const value = e.target.value;
     console.log(value);
     console.log(index);
-    setTasks((state) => [
-      ...state.slice(0, index),
+    setColumns((state) => [
+      ...Object.values(state).slice(0, index),
       { ...state[index], name: value },
-      ...state.slice(index + 1),
+      ...Object.values(state).slice(index + 1),
     ]);
   };
 
@@ -99,7 +97,7 @@ export default function CreateMatchTemplate({ club, loading }) {
         {club && (
           <Stack spacing={5} direction="row" h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
-              {Object.entries(listOfTasks).map(([columnId, column], index) => {
+              {Object.entries(columns).map(([columnId, column], index) => {
                 return (
                   <Flex
                     key={column.id}
