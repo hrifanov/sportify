@@ -14,10 +14,20 @@ const resolvers = {
   },
   Club: {
     async owner(parent) {
-      return User.findById(parent.owner);
+      return await User.findById(parent.owner);
     },
-    async players(parent) {
-      return parent.players.map((userId) => User.findById(userId));
+    players(parent) {
+      return parent.players.map(async (player) => {
+        const user = await User.findById(player.user).select(
+          'id userName name email'
+        );
+
+        return {
+          ...user.toObject(),
+          id: user.id, // id, not _id
+          isAdmin: player.isAdmin,
+        };
+      });
     },
   },
 };

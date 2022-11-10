@@ -13,7 +13,7 @@ export const users = async (_, _params, context) => {
 export const user = async (_, { userName }, context) => {
   isAuth(context);
 
-  return User.findOne({ userName: userName });
+  return User.findOne({ userName });
 };
 
 export const doesInvitationUserExist = async (_, { token }, context) => {
@@ -22,7 +22,7 @@ export const doesInvitationUserExist = async (_, { token }, context) => {
   try {
     const { email } = verifyToken(token, GMAIL_API_KEY);
     const user = await User.findOne({ email: email });
-    return user ? true : false;
+    return !!user;
   } catch (err) {
     return false;
   }

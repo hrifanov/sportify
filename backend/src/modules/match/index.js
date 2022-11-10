@@ -1,10 +1,12 @@
-import { typeDef } from './schema';
+import { matchTypeDef } from './schemas/matchSchema';
+import { teamTypeDef } from './schemas/teamSchema';
+import { eventTypeDef } from './schemas/eventSchema';
 import * as queries from './query';
 import * as mutations from './mutation';
 import Club from '../../models/Club';
+import User from '../../models/User';
 
-
-export { typeDef, resolvers };
+export { matchTypeDef, teamTypeDef, eventTypeDef, resolvers };
 
 const resolvers = {
   Query: {
@@ -15,7 +17,17 @@ const resolvers = {
   },
   Match: {
     async club(parent) {
-      return Club.findById(parent.clubId);
+      return Club.findById(parent.club);
+    },
+  },
+  TeamPlayer: {
+    async user(parent) {
+      return User.findById(parent.user);
+    },
+  },
+  Event: {
+    async teamPlayer(parent) {
+      return User.findById(parent.teamPlayer);
     },
   },
 };
