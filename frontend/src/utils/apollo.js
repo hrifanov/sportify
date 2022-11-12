@@ -6,12 +6,15 @@ import {
   InMemoryCache,
   createHttpLink,
   from,
+  gql,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 
 import { config } from 'src/config';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
+import * as events from 'events';
+import { interactiveMatchState } from '../modules/matches/apollo/interactiveMatchClient.js';
 
 const UNAUTHENTICATED_CODE = 'not-authenticated';
 const TOKEN_EXPIRED_CODE = 'jwt-expired';
@@ -32,7 +35,20 @@ const httpLink = createHttpLink({
   uri: config.GRAPHQL_API,
 });
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        interactiveMatch: {
+          read() {
+            return interactiveMatchState();
+          },
+        },
+      },
+    },
+  },
+});
+
 export const setupPersistence = async () => {
   try {
     await persistCache({

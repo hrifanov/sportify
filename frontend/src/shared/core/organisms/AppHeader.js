@@ -13,6 +13,7 @@ import {
   Image,
   Spacer,
   Show,
+  Link,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
@@ -27,13 +28,15 @@ export default function AppHeader({ inApp = true, title }) {
     <Box as="header" pt={5} pb={3} bg={headerBg}>
       <Container maxW="container.xl">
         <Flex align={'center'}>
-          <Image
-            src={inApp ? logo : logoFull}
-            alt="Sportify logo"
-            width={inApp ? ['40px', '80px'] : ['100px', '170px']}
-            objectFit="cover"
-            mr={5}
-          />
+          <Link href={'/'}>
+            <Image
+              src={inApp ? logo : logoFull}
+              alt="Sportify logo"
+              width={inApp ? ['40px', '80px'] : ['100px', '170px']}
+              objectFit="cover"
+              mr={5}
+            />
+          </Link>
           <Heading mx={['auto', 0]} size={['', 'xl']}>
             {title}
           </Heading>
