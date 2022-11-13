@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN_SECRET } from '../config/variables';
+import Club from '../models/Club';
 import { verifyToken } from './auth';
 import { throwCustomError } from './error';
 
@@ -22,4 +23,26 @@ export const isAuth = (context) => {
 
   //return next();
   return;
+};
+
+export const isClubAdmin = async (clubId, userId) => {
+  let user;
+
+  try {
+    const club = await Club.findById(clubId).select('players');
+    user = club.players.find(
+      (players) => players.user.toHexString() === userId
+    );
+  } catch (err) {
+    console.log(err);
+    throwCustomError('Club or userId not valid', {
+      code: 'not-valid',
+    });
+  }
+
+  if (!user || !user.isAdmin) {
+    throwCustomError('No permission to perform this action', {
+      code: 'no-admin',
+    });
+  }
 };

@@ -6,7 +6,7 @@ export const eventTypeDef = gql`
   }
 
   type Mutation {
-    addEvent(eventInput: EventInput!): Boolean!
+    addEvent(matchId:ID!, eventInput: EventInput!): Boolean!
   }
 
   # EVENTS
@@ -15,14 +15,14 @@ export const eventTypeDef = gql`
     id: ID!
     type: String!
     time: String!
-    teamPlayer: User!
-    value: String
+    TeamPlayer: User!
+    value: Int
   }
 
   input EventInput {
     type: String!
     time: String!
-    teamPlayer: ID!
-    value: String
+    TeamPlayer: ID!
+    value: Int
   }
 `;
