@@ -4,7 +4,7 @@ import { sendVerificationToken, verifyToken } from '../../libs/auth';
 import { throwCustomError } from '../../libs/error';
 import Club from '../../models/Club';
 import User from '../../models/User';
-import { isAuth } from '../../libs/isAuth';
+import { isClubAdmin, isAuth } from '../../libs/isAuth';
 
 export const createClub = async (_, { clubInput }, context) => {
   isAuth(context);
@@ -33,7 +33,8 @@ export const createClub = async (_, { clubInput }, context) => {
 };
 
 export const editClub = async (_, { clubId, name, locality }, context) => {
-  isAuth(context);
+  isAuth(context, clubId);
+  await isClubAdmin(clubId, context.payload.userId)
 
   if (!name && !locality) {
     throwCustomError('No data to update', { code: 400 });
@@ -50,6 +51,7 @@ export const editClub = async (_, { clubId, name, locality }, context) => {
 
 export const invitePlayer = async (_, { clubId, email }, context) => {
   isAuth(context);
+  await isClubAdmin(clubId, context.payload.userId)
   const club = await Club.findById(clubId).select('name');
 
   if (!club) {
@@ -117,7 +119,8 @@ export const acceptInvite = async (_, { token }, context) => {
 /// Will be added in the next PR
 
 // export const removePlayer = async (_, { clubId, playerId }, context) => {
-//   //isAuth(context);
+//   isAuth(context);
+//   await isClubAdmin(clubId, context.payload.userId)
 
 //   const token = context.req.headers.authorization.split(' ')[1];
 //   const { userId } = jwt.verify(token, ACCESS_TOKEN_SECRET);
@@ -129,11 +132,11 @@ export const acceptInvite = async (_, { token }, context) => {
 //     });
 //   }
 
-//   // if (!isUserAdmin(club, userId)) {
-//   //   throwCustomError("You don't have permission to perform this action", {
-//   //     code: 'not-admin',
-//   //   });
-//   // }
+//    if (!isUserAdmin(club, userId)) {
+//      throwCustomError("You don't have permission to perform this action", {
+//        code: 'not-admin',
+//      });
+//   }
 
 //   if (club.owner !== playerId) {
 //     throwCustomError(`You cannot remove club's owner.`, {
@@ -161,7 +164,8 @@ export const acceptInvite = async (_, { token }, context) => {
 //   { clubId, playerId, isAdmin },
 //   context
 // ) => {
-//   //isAuth(context);
+//   sAuth(context);
+//   await isClubAdmin(clubId, context.payload.userId)
 //   const token = context.req.headers.authorization.split(' ')[1];
 //   const { userId } = jwt.verify(token, ACCESS_TOKEN_SECRET);
 

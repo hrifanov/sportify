@@ -14,12 +14,12 @@ export const teamTypeDef = gql`
   type Team {
     id: ID!
     name: String!
-    teamPlayers: [TeamPlayer!]!
+    TeamPlayers: [TeamPlayer!]!
   }
 
   input TeamInput {
     name: String!
-    teamPlayers: [TeamPlayerInput!]!
+    TeamPlayers: [TeamPlayerInput!]!
   }
 
   # PLAYERS

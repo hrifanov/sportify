@@ -26,8 +26,8 @@ const resolvers = {
     },
   },
   Event: {
-    async teamPlayer(parent) {
-      return User.findById(parent.teamPlayer);
+    async TeamPlayer(parent) {
+      return User.findById(parent.TeamPlayer);
     },
   },
 };

@@ -1,19 +1,20 @@
 const { model, Schema } = require('mongoose');
 
-const teamPlayer = new Schema({
+const TeamPlayer = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   role: String,
 });
 
 const team = new Schema({
   name: String,
-  teamPlayers: [teamPlayer],
+  TeamPlayers: [TeamPlayer],
 });
 
 const event = new Schema({
   type: String,
-  teamPlayer: { type: Schema.Types.ObjectId, ref: 'User' },
-  value: String,
+  TeamPlayer: { type: Schema.Types.ObjectId, ref: 'User' },
+  time: String,
+  value: Number,
 });
 
 const matchSchema = new Schema({
