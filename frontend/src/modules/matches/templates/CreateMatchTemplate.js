@@ -12,6 +12,8 @@ import {
   InputGroup,
   InputRightAddon,
   IconButton,
+  Text,
+  Select,
 } from '@chakra-ui/react';
 import { FiSettings } from 'react-icons/fi';
 import { RouterLink } from 'src/shared/navigation';
@@ -25,6 +27,8 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
 import EditableHeading from 'src/shared/design-system/molecules/EditableHeading';
+import { GiHockey, GiCrosshair, GiWhistle } from 'react-icons/gi';
+import { useRadioGroup } from '@chakra-ui/react';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -85,6 +89,18 @@ export default function CreateMatchTemplate({ club, loading }) {
   const inc = getIncrementButtonProps();
   const dec = getDecrementButtonProps();
   const input = getInputProps();
+
+  const [isAttacker, setIsAttacker] = useState('outline');
+
+  const options = ['react', 'vue', 'svelte'];
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: 'framework',
+    defaultValue: 'react',
+    onChange: console.log,
+  });
+
+  const group = getRootProps();
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
@@ -129,7 +145,8 @@ export default function CreateMatchTemplate({ club, loading }) {
                                 <Draggable key={item.id} draggableId={'' + item.id} index={index}>
                                   {(provided, snapshot) => {
                                     return (
-                                      <Box
+                                      <HStack
+                                        justifyContent="space-between"
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
@@ -142,8 +159,49 @@ export default function CreateMatchTemplate({ club, loading }) {
                                           background: 'brand.dark',
                                         }}
                                       >
-                                        {item.name}
-                                      </Box>
+                                        <Text>{item.name}</Text>
+                                        {/*<HStack>
+                                          <IconButton
+                                            bg="brand.dark"
+                                            _hover={{ bg: 'brand.secondary' }}
+                                            aria-label="Set player role to attacker"
+                                            size="sm"
+                                            p={1}
+                                            icon={<GiHockey />}
+                                          />
+                                          <IconButton
+                                            variant={isAttacker}
+                                            bg="brand.dark"
+                                            _hover={{ bg: 'brand.secondary' }}
+                                            aria-label="Set player role to goalkeeper"
+                                            size="sm"
+                                            p={1}
+                                            icon={<RoleGoalKeeperIcon />}
+                                            onClick={() => setIsAttacker('outline')}
+                                          />
+                                      </HStack>*/}
+                                        <Stack spacing={3}>
+                                          <Select
+                                            bg="brand.dark"
+                                            variant="filled"
+                                            colorScheme="brand.dark"
+                                            _hover={{ bg: 'brand.secondary', cursor: 'pointer' }}
+                                          >
+                                            <option
+                                              style={{ backgroundColor: '#283555' }}
+                                              value="Attacker"
+                                            >
+                                              Attacker
+                                            </option>
+                                            <option
+                                              style={{ backgroundColor: '#283555' }}
+                                              value="Goalkeeper"
+                                            >
+                                              Goalkeeper
+                                            </option>
+                                          </Select>
+                                        </Stack>
+                                      </HStack>
                                     );
                                   }}
                                 </Draggable>
