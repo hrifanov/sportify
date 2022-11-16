@@ -11,7 +11,7 @@ import { createGmailTransporter, sendMail } from './mail';
 
 export const createAccessToken = (user) => {
   return sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m',
+    expiresIn: '30m',
   });
 };
 

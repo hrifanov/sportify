@@ -31,7 +31,7 @@ export const isClubAdmin = async (clubId, userId) => {
   try {
     const club = await Club.findById(clubId).select('players');
     user = club.players.find(
-      (players) => players.user.toHexString() === userId
+      (players) => players.user.toString() === userId
     );
   } catch (err) {
     console.log(err);
