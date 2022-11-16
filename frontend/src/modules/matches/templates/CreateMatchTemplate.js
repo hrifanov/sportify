@@ -91,40 +91,31 @@ export default function CreateMatchTemplate({ club, loading }) {
   const input = getInputProps();
 
   const [isAttacker, setIsAttacker] = useState('outline');
-
-  const options = ['react', 'vue', 'svelte'];
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: 'framework',
-    defaultValue: 'react',
-    onChange: console.log,
-  });
-
-  const group = getRootProps();
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
-      <Container maxW="container.xl" h="full" minHeight={0} my={5}>
+      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]}>
         {loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
             <Spinner />
           </Flex>
         )}
         {club && (
-          <Stack spacing={5} direction="row" h="full">
+          <Stack spacing={[2, 3, 5]} direction={['column', null, 'row']} h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
               {Object.entries(columns).map(([columnId, column], index) => {
                 return (
-                  <Flex
+                  <Stack
                     key={column.id}
                     direction="column"
                     w="full"
                     h="full"
                     bg="brand.boxBackground"
                     borderRadius="base"
-                    py={4}
-                    px={5}
+                    py={[1, 2, 4]}
+                    px={[1, 3, 5]}
                     style={{ overflow: 'scroll' }}
+                    spacing={[1, 2, 4]}
                   >
                     <EditableHeading
                       key={column.id}
@@ -137,7 +128,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                           <Box
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            bg={snapshot.isDraggingOver ? 'brand.secondary' : 'brand.boxBackground'}
+                            bg={snapshot.isDraggingOver ? 'brand.title' : 'brand.boxBackground'}
                             h="full"
                           >
                             {column.items.map((item, index) => {
@@ -145,19 +136,21 @@ export default function CreateMatchTemplate({ club, loading }) {
                                 <Draggable key={item.id} draggableId={'' + item.id} index={index}>
                                   {(provided, snapshot) => {
                                     return (
-                                      <HStack
+                                      <Stack
+                                        direction={['column', null, 'row']}
                                         justifyContent="space-between"
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        bg={
-                                          snapshot.isDragging ? 'brand.dark' : 'brand.boxBackground'
-                                        }
-                                        px={2}
+                                        bg={snapshot.isDragging ? 'brand.dark' : 'brand.dark'}
+                                        px={[1, null, 2]}
                                         py={2}
                                         _hover={{
-                                          background: 'brand.dark',
+                                          background: 'brand.title',
                                         }}
+                                        mb={2}
+                                        borderRadius="base"
+                                        alignItems="center"
                                       >
                                         <Text>{item.name}</Text>
                                         {/*<HStack>
@@ -182,10 +175,14 @@ export default function CreateMatchTemplate({ club, loading }) {
                                       </HStack>*/}
                                         <Stack spacing={3}>
                                           <Select
-                                            bg="brand.dark"
+                                            bg="brand.boxBackground"
                                             variant="filled"
-                                            colorScheme="brand.dark"
-                                            _hover={{ bg: 'brand.secondary', cursor: 'pointer' }}
+                                            colorScheme="brand.boxBackground"
+                                            _hover={{
+                                              bg: 'brand.dark',
+                                              cursor: 'pointer',
+                                            }}
+                                            size={['xs', null, 'md']}
                                           >
                                             <option
                                               style={{ backgroundColor: '#283555' }}
@@ -201,7 +198,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                                             </option>
                                           </Select>
                                         </Stack>
-                                      </HStack>
+                                      </Stack>
                                     );
                                   }}
                                 </Draggable>
@@ -212,7 +209,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                         );
                       }}
                     </Droppable>
-                  </Flex>
+                  </Stack>
                 );
               })}
             </DragDropContext>
@@ -220,8 +217,8 @@ export default function CreateMatchTemplate({ club, loading }) {
         )}
       </Container>
       <Container mb={5} maxW="container.xl">
-        <Stack direction={['column', 'row']} spacing={10} justifyContent="center">
-          <HStack maxW="320px">
+        <Stack direction={['column', 'row']} spacing={[1, null, 10]} justifyContent="center">
+          <HStack maxW={['100%', null, '320px']}>
             <label className="label-nowrap" htmlFor="game-time">
               Game time:
             </label>
