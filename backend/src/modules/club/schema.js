@@ -12,8 +12,8 @@ export const typeDef = gql`
     editClub(clubId: ID!, name: String, locality: String): Boolean!
     invitePlayer(clubId: ID!, email: String!): Boolean!
     acceptInvite(token: String!): Boolean!
-    #removePlayer(clubId: ID!, userId: ID!): Boolean!
-    #setClubAdminStatus(clubId: ID!, playerId: ID!, isAdmin: Boolean!): Boolean!
+    # setClubAdminStatus(clubId: ID!, userId: ID!, isAdmin: Boolean!): Boolean!
+    removePlayer(clubId: ID!, userId: ID!): Boolean!
   }
 
   type Club {
