@@ -18,16 +18,16 @@ export const addEvent = async (_, { matchId, eventInput }, context) => {
       .save({ session })
       .then((doc) => doc.id);
 
-    match.events.push(eventId)
+    match.events.push(eventId);
 
-    await match.save({session})
+    await match.save({ session });
     await session.commitTransaction();
 
     return true;
   } catch (err) {
     console.error(err);
     await session.abortTransaction();
-    throwCustomError(err.message)
+    throwCustomError(err.message);
   } finally {
     session.endSession();
   }
@@ -36,12 +36,14 @@ export const addEvent = async (_, { matchId, eventInput }, context) => {
 export const editEvent = async (_, { eventId, eventEditInput }, context) => {
   isAuth(context);
 
-  if(Object.entries(eventEditInput).length === 0){
-    throwCustomError('You must select at least one field to edit', {code: 'edit-missing'})
+  if (Object.entries(eventEditInput).length === 0) {
+    throwCustomError('You must select at least one field to edit', {
+      code: 'edit-missing',
+    });
   }
 
   try {
-    await Event.findByIdAndUpdate(eventId, {...eventEditInput})
+    await Event.findByIdAndUpdate(eventId, { ...eventEditInput });
     return true;
   } catch (err) {
     console.error(err);
@@ -55,24 +57,24 @@ export const removeEvent = async (_, { matchId, eventId }, context) => {
   const session = await context.client.startSession();
   try {
     session.startTransaction();
-    const match = await Match.findById(matchId).then(doc => {
+    const match = await Match.findById(matchId).then((doc) => {
       if (!doc) {
         throwCustomError('No such match', { code: 'match-error' });
       }
       return doc;
     });
-    
-    await Event.findByIdAndDelete(eventId, {session})
-    await match.update({$pullAll: {events: [eventId]}}, {session})
 
-    await session.commitTransaction()
+    await Event.findByIdAndDelete(eventId, { session });
+    await match.update({ $pullAll: { events: [eventId] } }, { session });
+
+    await session.commitTransaction();
 
     return true;
   } catch (err) {
     console.error(err);
-    await session.abortTransaction()
+    await session.abortTransaction();
     throwCustomError(err.message);
-  }finally {
+  } finally {
     session.endSession();
   }
 };
