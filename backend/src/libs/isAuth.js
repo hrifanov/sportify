@@ -30,9 +30,7 @@ export const isClubAdmin = async (clubId, userId) => {
 
   try {
     const club = await Club.findById(clubId).select('players');
-    user = club.players.find(
-      (players) => players.user.toString() === userId
-    );
+    user = club.players.find((players) => players.user.toString() === userId);
   } catch (err) {
     console.log(err);
     throwCustomError('Club or userId not valid', {

@@ -13,6 +13,6 @@ export const matches = async (_, { clubId }, context) => {
 
 export const events = async (_, { matchId }, context) => {
   isAuth(context);
-  const {events} = await Match.findById(matchId).select('events');
+  const { events } = await Match.findById(matchId).select('events');
   return events;
 };

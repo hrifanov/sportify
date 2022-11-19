@@ -1,7 +1,9 @@
 import { GMAIL_API_KEY } from '../../config/variables';
 import { verifyToken } from '../../libs/auth';
+import { throwCustomError } from '../../libs/error';
 import { isAuth } from '../../libs/isAuth';
 const User = require('../../models/User');
+const Club = require('../../models/Club');
 
 //TODO: refactor isAuth as middleware
 
@@ -16,14 +18,18 @@ export const user = async (_, { userName }, context) => {
   return User.findOne({ userName });
 };
 
-export const doesInvitationUserExist = async (_, { token }, context) => {
+export const invitationDetail = async (_, { token }, context) => {
   isAuth(context);
 
   try {
-    const { email } = verifyToken(token, GMAIL_API_KEY);
-    const user = await User.findOne({ email: email });
-    return !!user;
+    const { clubId, email } = verifyToken(token, GMAIL_API_KEY);
+
+    const { name } = await Club.findOne({ id: clubId }).select('name');
+    const user = await User.findOne({ email });
+
+    return { clubName: name, email, doesUserExist: !!user };
   } catch (err) {
-    return false;
+    console.error(err);
+    throwCustomError('Provided token is not valid', { code: 'invalid-token' });
   }
 };
