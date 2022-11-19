@@ -4,7 +4,7 @@ import Event from '../../models/Event';
 
 export const events = async (_, { matchId }, context) => {
   isAuth(context);
-  
+
   const { events } = await Match.findById(matchId).select('events');
-  return await Event.find({ _id: { $in: events  } });
+  return await Event.find({ _id: { $in: events } });
 };
