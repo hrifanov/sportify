@@ -16,13 +16,38 @@ export const matchTypeDef = gql`
     id: ID!
     club: Club
     date: String!
-    teams: MatchTeams!
+    place: String
+    teams: MatchTeams
     events: [Event]
   }
 
   input MatchInput {
     club: ID!
     date: String!
-    teams: InputMatchTeams!
+    place: String
+    teams: InputMatchTeams
+  }
+
+  # MATCH TEAMS
+
+  type MatchTeams {
+    home: Team!
+    guest: Team!
+  }
+
+  input InputMatchTeams {
+    home: TeamInput!
+    guest: TeamInput!
+  }
+
+  type Team {
+    id: ID!
+    name: String!
+    teamPlayers: [TeamPlayer]!
+  }
+
+  input TeamInput {
+    name: String!
+    teamPlayers: [TeamPlayerInput]!
   }
 `;

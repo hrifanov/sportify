@@ -1,12 +1,13 @@
 import { gql } from 'apollo-server-express';
 
-export const eventTypeDef = gql`
+export const typeDef = gql`
   type Query {
     events(matchId: ID!): [Event]
   }
 
   type Mutation {
-    addEvent(matchId:ID!, eventInput: EventInput!): Boolean!
+    addEvent(matchId: ID!, eventInput: EventInput!): Boolean!
+    removeEvent(matchId: ID!, eventId: ID!): Boolean!
   }
 
   # EVENTS
@@ -15,14 +16,10 @@ export const eventTypeDef = gql`
     id: ID!
     type: String!
     time: String!
-    TeamPlayer: User!
-    value: Int
   }
 
   input EventInput {
     type: String!
     time: String!
-    TeamPlayer: ID!
-    value: Int
   }
 `;

@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import { GMAIL_API_KEY } from '../../config/variables';
 import { sendVerificationToken, verifyToken } from '../../libs/auth';
 import { throwCustomError } from '../../libs/error';
+import { isAuth, isClubAdmin } from '../../libs/isAuth';
 import Club from '../../models/Club';
 import User from '../../models/User';
-import { isClubAdmin, isAuth } from '../../libs/isAuth';
 
 export const createClub = async (_, { clubInput }, context) => {
   isAuth(context);
@@ -61,18 +61,11 @@ export const invitePlayer = async (_, { clubId, email }, context) => {
     });
   }
 
-  sendVerificationToken(
-    {
-      clubId: clubId,
-      email: email,
-    },
-    'accept-invite',
-    {
-      to: email,
-      subject: 'New Sportify invitation',
-      html: `Hi,<br><br>You've been invited to join the ${club.name} club.<br><br>To accept the invitation please click the link below.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
-    }
-  );
+  sendVerificationToken({ clubId, email }, 'accept-invite', {
+    to: email,
+    subject: 'New Sportify invitation',
+    html: `Hi,<br><br>You've been invited to join the ${club.name} club.<br><br>To accept the invitation please click the link below.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
+  });
 
   return true;
 };
@@ -97,7 +90,7 @@ export const acceptInvite = async (_, { token }, context) => {
       });
     }
 
-    if (!club.players.includes(user.id)) {
+    if (!club.players.find((player) => player.user.toString() === user.id)) {
       await Club.findByIdAndUpdate(clubId, {
         $push: { players: { user: user.id, isAdmin: false } },
       });
@@ -138,36 +131,31 @@ export const removePlayer = async (_, { clubId, userId }, context) => {
   return true;
 };
 
-// export const setClubAdminStatus = async (
-//   _,
-//   { clubId, userId, isAdmin },
-//   context
-// ) => {
-//   isAuth(context);
-//   await isClubAdmin(clubId, context.payload.userId);
+export const setClubAdminStatus = async (
+  _,
+  { clubId, userId, isAdmin },
+  context
+) => {
+  isAuth(context);
+  await isClubAdmin(clubId, context.payload.userId);
 
-//   const club = await Club.findById(clubId);
-//   if (!club) {
-//     throwCustomError(`Club with id ${clubId} does not exits`, {
-//       code: 'no-club',
-//     });
-//   }
+  const club = await Club.findById(clubId);
+  if (!club) {
+    throwCustomError(`Club with id ${clubId} does not exits`, {
+      code: 'no-club',
+    });
+  }
 
-//   if (club.owner.toString() === userId) {
-//     throwCustomError(`You cannot adjust admin status of the club's owner.`, {
-//       code: 'owner-admin',
-//     });
-//   }
+  if (club.owner.toString() === userId) {
+    throwCustomError(`You cannot adjust admin status of the club's owner.`, {
+      code: 'owner-admin',
+    });
+  }
 
-//   await club.updateOne(
-//     { 'players.user': mongoose.Types.ObjectId(userId) },
-//     { $set: { 'players.$.isAdmin': isAdmin } }
-//   );
+  await Club.updateOne(
+    { 'players.user': userId, id: clubId },
+    { $set: { 'players.$.isAdmin': isAdmin } }
+  );
 
-//   // await club.updateOne(
-//   //   { players: {$elemMatch: {user: userId}} },
-//   //   { $set: { 'players.$.isAdmin': isAdmin } }
-//   // );
-
-//   return true;
-// };
+  return true;
+};

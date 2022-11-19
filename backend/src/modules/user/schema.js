@@ -4,7 +4,7 @@ export const typeDef = gql`
   type Query {
     user(userName: String!): UserOutput
     users: [UserOutput!]!
-    doesInvitationUserExist(token: String!): Boolean
+    invitationDetail(token: String!): InvitationInfo
   }
 
   type User {
@@ -47,5 +47,11 @@ export const typeDef = gql`
 
   type RefreshTokenResponse {
     accessToken: String!
+  }
+
+  type InvitationInfo {
+    clubName: String
+    email: String
+    doesUserExist: Boolean
   }
 `;

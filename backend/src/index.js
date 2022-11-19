@@ -24,11 +24,11 @@ import { schema } from './modules/executableSchema';
 
   app.get('/', (_, res) => res.redirect('/graphql'));
 
-  await getConnection();
+  const client = await getConnection();
 
   const apolloServer = new ApolloServer({
     schema,
-    context: async ({ req, res }) => ({ req, res }),
+    context: async ({ req, res }) => ({ client, req, res }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
