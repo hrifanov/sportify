@@ -22,7 +22,7 @@ const resolvers = {
   },
   Team: {
     async teamPlayers(parent) {
-      return TeamPlayer.find({ _id: { $in: parent.teamPlayers } });
+      return await TeamPlayer.find({ _id: { $in: parent.teamPlayers } });
     },
   },
   TeamPlayer: {

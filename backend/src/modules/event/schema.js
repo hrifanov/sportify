@@ -7,6 +7,7 @@ export const typeDef = gql`
 
   type Mutation {
     addEvent(matchId: ID!, eventInput: EventInput!): Boolean!
+    editEvent(eventId: ID!, eventEditInput: EventEditInput!): Boolean!
     removeEvent(matchId: ID!, eventId: ID!): Boolean!
   }
 
@@ -16,10 +17,21 @@ export const typeDef = gql`
     id: ID!
     type: String!
     time: String!
+    teamPlayer: TeamPlayer
+    value: Int
   }
 
   input EventInput {
     type: String!
     time: String!
+    teamPlayer: ID
+    value: Int
+  }
+
+  input EventEditInput {
+    type: String
+    time: String
+    teamPlayer: ID
+    value: Int
   }
 `;

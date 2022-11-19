@@ -19,8 +19,8 @@ export const createMatch = async (_, { matchInput }, context) => {
     );
 
     const matchId = await new Match({
-      club: club,
-      date: date,
+      club,
+      date,
       teams: {
         home: {
           name: teams.home.name,
