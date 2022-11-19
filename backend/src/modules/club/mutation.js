@@ -127,7 +127,7 @@ export const removePlayer = async (_, { clubId, userId }, context) => {
     });
   }
 
-  await club.update({ $pull: { players: { user: userId } } });
+  await club.update({ $pullAll: { players: { user: userId } } });
   return true;
 };
 
