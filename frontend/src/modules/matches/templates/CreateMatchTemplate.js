@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import {
   Box,
@@ -6,29 +8,19 @@ import {
   Button,
   Spinner,
   Stack,
-  HStack,
   Input,
   useNumberInput,
   InputGroup,
   InputRightAddon,
-  IconButton,
   Text,
   Select,
 } from '@chakra-ui/react';
-import { FiSettings } from 'react-icons/fi';
-import { RouterLink } from 'src/shared/navigation';
-import { players } from 'src/modules/clubs/players';
-import {
-  RoleAttackerIcon,
-  RoleDefenderIcon,
-  RoleGoalKeeperIcon,
-} from 'src/shared/design-system/icons';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
 import EditableHeading from 'src/shared/design-system/molecules/EditableHeading';
-import { GiHockey, GiCrosshair, GiWhistle } from 'react-icons/gi';
-import { useRadioGroup } from '@chakra-ui/react';
+import { useMutation } from '@apollo/client';
+import { CREATE_MATCH_MUTATION } from '../apollo/mutations';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -68,7 +60,17 @@ const onDragEnd = (result, columns, setColumns) => {
 };
 
 export default function CreateMatchTemplate({ club, loading }) {
-  const [columns, setColumns] = useState(teamsColumns);
+  const [createMatchRequest, createMatchRequestState] = useMutation(CREATE_MATCH_MUTATION, {
+    onCompleted: () => console.log('Match created'),
+    onError: () => {},
+  });
+
+  const [columns, setColumns] = useState([]);
+
+  useEffect(() => {
+    setColumns(teamsColumns(club?.players));
+  }, [club]);
+
   const handleChange = (e, index) => {
     const value = e.target.value;
     console.log(value);
@@ -90,10 +92,11 @@ export default function CreateMatchTemplate({ club, loading }) {
   const dec = getDecrementButtonProps();
   const input = getInputProps();
 
-  const [isAttacker, setIsAttacker] = useState('outline');
+  //const [isAttacker, setIsAttacker] = useState('outline');
   const date = new Date().toISOString().split('T')[0];
 
   const [gameDate, setGameDate] = useState(date);
+  console.log(teamsColumns(club?.players));
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
@@ -106,7 +109,7 @@ export default function CreateMatchTemplate({ club, loading }) {
         {club && (
           <Stack spacing={[2, 3, 5]} direction={['column', null, 'row']} h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
-              {Object.entries(columns).map(([columnId, column], index) => {
+              {Object.entries(columns).map(([columnId, column], columnIndex) => {
                 return (
                   <Stack
                     key={column.id}
@@ -124,7 +127,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                   >
                     <EditableHeading
                       key={column.id}
-                      onChange={(e) => handleChange(e, index)}
+                      onChange={(e) => handleChange(e, columnIndex)}
                       name={column.name}
                     />
                     <Droppable droppableId={columnId} key={columnId}>
@@ -136,9 +139,13 @@ export default function CreateMatchTemplate({ club, loading }) {
                             bg={snapshot.isDraggingOver ? 'brand.title' : 'brand.boxBackground'}
                             h="full"
                           >
-                            {column.items.map((item, index) => {
+                            {column.items?.map((item, itemIndex) => {
                               return (
-                                <Draggable key={item.id} draggableId={'' + item.id} index={index}>
+                                <Draggable
+                                  key={item.id}
+                                  draggableId={'' + item.id}
+                                  index={itemIndex}
+                                >
                                   {(provided, snapshot) => {
                                     return (
                                       <Stack
@@ -188,6 +195,16 @@ export default function CreateMatchTemplate({ club, loading }) {
                                               cursor: 'pointer',
                                             }}
                                             size="sm"
+                                            // TODO: Does not work, need to refactor
+                                            // onChange={(selectedOption) => {
+                                            //   const modifiedColumns = [...columns];
+                                            //   modifiedColumns[columnIndex].items[itemIndex] = {
+                                            //     ...column.items[itemIndex],
+                                            //     role: selectedOption.target.value,
+                                            //   };
+
+                                            //   setColumns(modifiedColumns);
+                                            // }}
                                           >
                                             <option
                                               style={{ backgroundColor: '#283555' }}
@@ -261,17 +278,43 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Stack>
           <Button
             variant="primary"
-            onClick={
+            /*onClick={
               (console.log('První sloupec hráči:'),
               console.log(columns[0].items),
-              console.log('Druhý sloupec hráči:'),
               console.log(columns[2].items),
               console.log('Název prvního týmu:' + columns[0].name),
               console.log('Název druhého týmu:' + columns[2].name),
-              console.log('Doba zápasu:'),
               console.log(input.value),
               console.log(gameDate))
-            }
+            }*/
+            onClick={async () => {
+              // transform data for request query
+              const teamPlayers1 = columns[0].items.map((item) => ({
+                user: item.id,
+                role: 'attack',
+              }));
+              const teamPlayers2 = columns[2].items.map((item) => ({
+                user: item.id,
+                role: 'attack',
+              }));
+
+              const matchInput = {
+                club: club.id,
+                date: gameDate,
+                //place: '', // TODO implement place input
+                teams: {
+                  home: {
+                    name: columns[0].name,
+                    teamPlayers: teamPlayers1,
+                  },
+                  guest: {
+                    name: columns[2].name,
+                    teamPlayers: teamPlayers2,
+                  },
+                },
+              };
+              await createMatchRequest({ variables: { matchInput } });
+            }}
             w={40}
           >
             Start match
