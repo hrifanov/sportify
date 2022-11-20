@@ -91,6 +91,9 @@ export default function CreateMatchTemplate({ club, loading }) {
   const input = getInputProps();
 
   const [isAttacker, setIsAttacker] = useState('outline');
+  const date = new Date().toISOString().split('T')[0];
+
+  const [gameDate, setGameDate] = useState(date);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
@@ -112,10 +115,12 @@ export default function CreateMatchTemplate({ club, loading }) {
                     h="full"
                     bg="brand.boxBackground"
                     borderRadius="base"
-                    py={[1, 2, 4]}
-                    px={[1, 3, 5]}
+                    py={[2, 2, 4]}
+                    px={[2, 2, 5]}
                     style={{ overflow: 'scroll' }}
-                    spacing={[1, 2, 4]}
+                    spacing={[1, 2, 2]}
+                    maxH={['375px', '625px', '100%']}
+                    pl={[2, 2, 5]}
                   >
                     <EditableHeading
                       key={column.id}
@@ -137,14 +142,14 @@ export default function CreateMatchTemplate({ club, loading }) {
                                   {(provided, snapshot) => {
                                     return (
                                       <Stack
-                                        direction={['column', null, 'row']}
+                                        direction="row"
                                         justifyContent="space-between"
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
                                         bg={snapshot.isDragging ? 'brand.dark' : 'brand.dark'}
-                                        px={[1, null, 2]}
-                                        py={2}
+                                        px={[2, 3, 3]}
+                                        py={3}
                                         _hover={{
                                           background: 'brand.title',
                                         }}
@@ -182,7 +187,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                                               bg: 'brand.dark',
                                               cursor: 'pointer',
                                             }}
-                                            size={['xs', null, 'md']}
+                                            size="sm"
                                           >
                                             <option
                                               style={{ backgroundColor: '#283555' }}
@@ -216,37 +221,59 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Stack>
         )}
       </Container>
-      <Container mb={5} maxW="container.xl">
-        <Stack direction={['column', 'row']} spacing={[1, null, 10]} justifyContent="center">
-          <HStack maxW={['100%', null, '320px']}>
+      <Container mb={6} maxW="container.xl">
+        <Stack
+          direction={['column', 'column', 'row']}
+          spacing={[3, 5, 10]}
+          justifyContent="center"
+          alignItems={['start', 'start', 'end']}
+        >
+          <Stack maxW={['230px', '280px', '320px']}>
             <label className="label-nowrap" htmlFor="game-time">
               Game time:
             </label>
-            <Button {...inc} color="brand.secondary">
-              +
-            </Button>
-            <InputGroup id="game-time">
-              <Input {...input} color="brand.secondary" />
-              <InputRightAddon children="min" bg="white" color="brand.secondary" />
-            </InputGroup>
-            <Button {...dec} color="brand.secondary">
-              -
-            </Button>
-          </HStack>
-          <HStack>
+            <Stack direction="row">
+              <Button {...inc} color="black">
+                +
+              </Button>
+              <InputGroup id="game-time">
+                <Input {...input} color="black" />
+                <InputRightAddon children="min" bg="white" color="brand.secondary" />
+              </InputGroup>
+              <Button {...dec} color="black">
+                -
+              </Button>
+            </Stack>
+          </Stack>
+          <Stack mb={2}>
             <label className="label-nowrap" htmlFor="date-of-match">
               Date of the match:
             </label>
             <Input
               id="date-of-match"
-              color="brand.secondary"
-              placeholder="Select Date"
+              color="black"
+              value={gameDate}
               size="md"
               type="date"
-              w={300}
+              w={['230px', '280px', '320px']}
+              onChange={(event) => setGameDate(event.target.value)}
             />
-          </HStack>
-          <Button variant="primary" onClick={() => console.log(columns[2].items)} w={40}>
+          </Stack>
+          <Button
+            variant="primary"
+            onClick={
+              (console.log('První sloupec hráči:'),
+              console.log(columns[0].items),
+              console.log('Druhý sloupec hráči:'),
+              console.log(columns[2].items),
+              console.log('Název prvního týmu:' + columns[0].name),
+              console.log('Název druhého týmu:' + columns[2].name),
+              console.log('Doba zápasu:'),
+              console.log(input.value),
+              console.log(gameDate))
+            }
+            w={40}
+          >
             Start match
           </Button>
         </Stack>
