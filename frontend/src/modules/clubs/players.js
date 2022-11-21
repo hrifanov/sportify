@@ -1,7 +1,7 @@
 export const players = [
   {
     id: '634f03e1a7948355de4fe8cf',
-    role: 'attack',
+    role: 'attacker',
     name: 'Ronaldo Nazario',
   },
   {
