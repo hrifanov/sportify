@@ -28,7 +28,7 @@ export default function ClubEditPage() {
   const [emailFromInvitation, setEmailForInvitation] = useState('');
 
   const [invitePlayerRequest, invitePlayerRequestState] = useMutation(INVITE_PLAYER_MUTATION, {
-    onCompleted: (variables) => {
+    onCompleted: () => {
       setIsInvitePlayerCompleted(true);
     },
     onError: (e) => {
@@ -38,10 +38,12 @@ export default function ClubEditPage() {
 
   const handleSubmitInvitePlayer = useCallback(
     (variables) => {
+      const clubId = club?.id;
+      variables = { ...variables, clubId };
       invitePlayerRequest({ variables });
       setEmailForInvitation(variables.email);
     },
-    [invitePlayerRequest],
+    [invitePlayerRequest, club.id],
   );
 
   //** Request for editing the club */
@@ -112,6 +114,7 @@ export default function ClubEditPage() {
       // console.log(player.isAdmin);
       return player.isAdmin;
     }
+    return undefined;
   });
 
   if (!isCurrUserAdmin) {

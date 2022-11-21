@@ -67,7 +67,7 @@ export function AddPlayerForm({
                 </Button>
               </Flex>
             </Stack>
-            <FormField id="clubID" name="clubID" display="none" />
+            {/* <FormField id="clubID" name="clubID" display="none" /> */}
           </Form>
         </Stack>
       )}

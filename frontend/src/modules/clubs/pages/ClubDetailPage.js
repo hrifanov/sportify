@@ -16,6 +16,7 @@ export default function ClubDetailPage() {
       // console.log(player.isAdmin);
       return player.isAdmin;
     }
+    return undefined;
   });
   return <ClubDetailTemplate club={club} loading={loading} isCurrUserAdmin={isCurrUserAdmin} />;
 }

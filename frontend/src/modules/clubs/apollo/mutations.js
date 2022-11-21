@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const INVITE_PLAYER_MUTATION = gql`
-  mutation invitePlayer($clubID: ID!, $email: String!) {
-    invitePlayer(clubId: $clubID, email: $email)
+  mutation invitePlayer($clubId: ID!, $email: String!) {
+    invitePlayer(clubId: $clubId, email: $email)
   }
 `;
 
