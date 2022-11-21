@@ -10,7 +10,7 @@ export default function ClubDetailPage() {
   const { user } = useAuthClient();
   // console.log('user: ' + user.email);
 
-  const isCurrUserAdmin = club.players.find((player) => {
+  const isCurrUserAdmin = club?.players?.find((player) => {
     if (player.email === user.email) {
       // console.log(player.email);
       // console.log(player.isAdmin);

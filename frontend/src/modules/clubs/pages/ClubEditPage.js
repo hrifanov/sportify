@@ -9,11 +9,19 @@ import {
 } from 'src/modules/clubs/apollo/mutations';
 import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
+import { useAuthClient } from 'src/modules/auth/apollo/client';
+import { route } from 'src/Routes';
+import { Navigate } from 'react-router-dom';
+import { useToast } from '@chakra-ui/react';
 
 export default function ClubEditPage() {
+  const toast = useToast();
   const { data, loading } = useQuery(FETCH_CLUBS);
   const club = data?.clubs?.[0];
   const clubRQ = { club, loading };
+
+  const { user } = useAuthClient();
+  // console.log('user: ' + user.email);
 
   //** Request for inviting a player */
   const [isInvitePlayerCompleted, setIsInvitePlayerCompleted] = useState(false);
@@ -93,6 +101,27 @@ export default function ClubEditPage() {
     },
     [makePlayerAdminRequest],
   );
+
+  const isCurrUserAdmin = club?.players?.find((player) => {
+    if (player?.email === user.email) {
+      // console.log(player.email);
+      // console.log(player.isAdmin);
+      return player.isAdmin;
+    }
+  });
+
+  if (!isCurrUserAdmin) {
+    toast({
+      title: `What a naughty boy :)
+       Next time, ask your admin to give you a permission to do that, please.
+        `,
+      status: 'error',
+      position: 'top-right',
+      duration: 4000,
+      isClosable: true,
+    });
+    return <Navigate to={route.clubDetail()} replace />;
+  }
 
   return (
     <ClubEditTemplate
