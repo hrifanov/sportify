@@ -56,11 +56,15 @@ export default function ClubEditPage() {
     },
   });
 
+  console.log('club.id: ' + club.id);
+
   const handleSubmitEditClub = useCallback(
-    (variables) => {
+    (variables, clubId) => {
+      clubId = club.id;
+      variables = { ...variables, clubId };
       editClubRequest({ variables });
     },
-    [editClubRequest],
+    [editClubRequest, club.id],
   );
 
   //** Request for removing a player */
