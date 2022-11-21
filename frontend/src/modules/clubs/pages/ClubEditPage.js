@@ -16,7 +16,7 @@ import { useToast } from '@chakra-ui/react';
 
 export default function ClubEditPage() {
   const toast = useToast();
-  const { data, loading } = useQuery(FETCH_CLUBS);
+  const { data, loading, refetch } = useQuery(FETCH_CLUBS);
   const club = data?.clubs?.[0];
   const clubRQ = { club, loading };
 
@@ -102,8 +102,8 @@ export default function ClubEditPage() {
   });
 
   const handleSubmitmakePlayerAdmin = useCallback(
-    (variables) => {
-      makePlayerAdminRequest({ variables });
+    async (variables) => {
+      await makePlayerAdminRequest({ variables });
     },
     [makePlayerAdminRequest],
   );
@@ -114,10 +114,10 @@ export default function ClubEditPage() {
       // console.log(player.isAdmin);
       return player.isAdmin;
     }
-    return undefined;
+    return null;
   });
 
-  if (!isCurrUserAdmin) {
+  if (!isCurrUserAdmin && club) {
     toast({
       title: 'You naughty naughty :)',
       status: 'error',
@@ -157,6 +157,7 @@ export default function ClubEditPage() {
         onSubmit: handleSubmitmakePlayerAdmin,
         loading: makePlayerAdminRequestState.loading,
         error: makePlayerAdminRequestState.error,
+        refetch: refetch,
       }}
     />
   );

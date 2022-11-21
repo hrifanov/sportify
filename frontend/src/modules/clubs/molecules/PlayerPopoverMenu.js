@@ -8,8 +8,7 @@ import {
 } from '@chakra-ui/react';
 
 import { BsThreeDots } from 'react-icons/bs';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { route } from 'src/Routes';
+import { useNavigate } from 'react-router-dom';
 
 export function PlayerPopoverMenu({
   clubId,
@@ -19,7 +18,6 @@ export function PlayerPopoverMenu({
   setDisplayPlayer,
   makePlayerAdminRQ,
 }) {
-  const navigate = useNavigate();
   return (
     <Popover border={0}>
       <PopoverTrigger>
@@ -38,7 +36,7 @@ export function PlayerPopoverMenu({
       <PopoverContent maxW={{ md: 40 }} bg="#3E4A66" border="0px">
         <PopoverBody as={Flex} gap={2} direction="column" border="0px">
           <Button
-            variant="popup"
+            variant="ghost"
             size="sm"
             onClick={() => {
               removePlayerRQ.onSubmit({ clubId: clubId, userId: playerId }, setDisplayPlayer);
@@ -48,15 +46,16 @@ export function PlayerPopoverMenu({
           </Button>
           {isAdmin && (
             <Button
-              variant="popup"
+              variant="ghost"
               size="sm"
-              onClick={() => {
-                makePlayerAdminRQ.onSubmit({
+              onClick={async () => {
+                await makePlayerAdminRQ.onSubmit({
                   clubId: clubId,
                   userId: playerId,
                   isAdmin: false,
                 });
-                navigate(route.clubDetail);
+                // navigate(route.clubDetail);
+                makePlayerAdminRQ.refetch();
               }}
             >
               UnAdmin
@@ -66,13 +65,13 @@ export function PlayerPopoverMenu({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                makePlayerAdminRQ.onSubmit({
+              onClick={async () => {
+                await makePlayerAdminRQ.onSubmit({
                   clubId: clubId,
                   userId: playerId,
                   isAdmin: true,
                 });
-                navigate(route.clubDetail);
+                makePlayerAdminRQ.refetch();
               }}
             >
               Make admin
