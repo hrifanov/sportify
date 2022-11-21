@@ -6,7 +6,6 @@ import CreateMatchPage from './modules/matches/pages/CreateMatchPage';
 import ClubEditPage from './modules/clubs/pages/ClubEditPage';
 import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificationPage';
 import { AcceptInvitePage } from 'src/modules/clubs/pages/AcceptInvitePage';
-import { AcceptInviteConfirmPage } from 'src/modules/clubs/pages/AcceptInviteConfirmPage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
 
@@ -17,7 +16,13 @@ export const route = {
   createMatch: () => '/match/create',
   clubEdit: () => '/club/edit',
   accountVerification: () => '/verify-account/:token',
-  acceptInvite: () => '/accept-invite/:token',
+  // acceptInvite: () => '/accept-invite/:token',
+  acceptInvite: (token) => {
+    if (token) {
+      return '/accept-invite/' + token;
+    }
+    return '/accept-invite/:token';
+  },
   // acceptInviteConfirm: () => '/accept-invite/',
 };
 
