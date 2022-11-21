@@ -1,4 +1,4 @@
-import { FormControl, FormErrorMessage, FormLabel, Input, Select } from '../atoms';
+import { FormControl, FormErrorMessage, FormLabel, Input } from '../atoms';
 import { forwardRef } from '../system';
 
 export const Field = forwardRef(function Field({ id, label, error, InputType, ...props }, ref) {

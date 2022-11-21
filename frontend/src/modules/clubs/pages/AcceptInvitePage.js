@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useCallback, useState } from 'react';
+import { useMutation } from '@apollo/client';
 import { Container, Text, Button, Box, Stack, Flex, Spinner } from '@chakra-ui/react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { route } from 'src/Routes';
@@ -7,13 +7,9 @@ import { Heading } from 'src/shared/design-system';
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import { putTokenLS, getTokenLS } from '../molecules/TokenLS';
 import { ACCEPT_INVITE_MUTATION } from 'src/modules/clubs/apollo/mutations';
-import { INVITATION_DETAIL_QUERY } from 'src/modules/clubs/apollo/queries';
-import { id } from 'date-fns/locale';
 import { signOut } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
-import { replace } from 'lodash';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
-import { isExists } from 'date-fns';
 import { GetTokenInfo } from '../organisms/GetTokenInfo';
 
 export function AcceptInvitePage() {

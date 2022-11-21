@@ -1,5 +1,5 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Icon, Spinner, Stack, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Icon, Spinner, Heading } from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { route } from 'src/Routes';

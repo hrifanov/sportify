@@ -8,7 +8,6 @@ import {
 } from '@chakra-ui/react';
 
 import { BsThreeDots } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
 
 export function PlayerPopoverMenu({
   clubId,
