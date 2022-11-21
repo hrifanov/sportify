@@ -23,8 +23,9 @@ import StatisticsComp from '../molecules/StatisticsComp';
 import MatchesComp from '../molecules/MatchesComp';
 import { FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
+import { route } from '../../../Routes.js';
 
-export default function ClubDetailTemplate({ club, loading, matches }) {
+export default function ClubDetailTemplate({ club, loading, matches, isCurrUserAdmin }) {
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
