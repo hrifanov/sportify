@@ -1,9 +1,13 @@
 import { Container } from '@chakra-ui/react';
+import AppHeader from '../organisms/AppHeader.js';
 
-export function MainSection({ children, size, maxW, ...restProps }) {
+export function MainSection({ children, containerProps = {}, headerProps = {} }) {
   return (
-    <Container maxW={maxW ?? `container.${size ?? 'xl'}`} as="section" my={10} {...restProps}>
-      {children}
-    </Container>
+    <>
+      <AppHeader {...headerProps} />
+      <Container maxW="container.xl" as="main" {...containerProps}>
+        {children}
+      </Container>
+    </>
   );
 }

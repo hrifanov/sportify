@@ -21,6 +21,10 @@ import { teamsColumns } from '../teamsColumns';
 import EditableHeading from 'src/shared/design-system/molecules/EditableHeading';
 import { useMutation } from '@apollo/client';
 import { CREATE_MATCH_MUTATION } from '../apollo/mutations';
+import {
+  startInteractiveMatch,
+  useInteractiveMatchClient,
+} from 'src/modules/matches/apollo/interactiveMatchClient';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -61,11 +65,13 @@ const onDragEnd = (result, columns, setColumns) => {
 
 export default function CreateMatchTemplate({ club, loading }) {
   const [createMatchRequest, createMatchRequestState] = useMutation(CREATE_MATCH_MUTATION, {
-    onCompleted: () => console.log('Match created'),
+    onCompleted: () => {},
     onError: () => {},
   });
 
   const [columns, setColumns] = useState([]);
+
+  const interactiveMatchClient = useInteractiveMatchClient();
 
   useEffect(() => {
     setColumns(teamsColumns(club?.players));
@@ -262,31 +268,22 @@ export default function CreateMatchTemplate({ club, loading }) {
           {/*     </Button> */}
           {/*   </Stack> */}
           {/* </Stack> */}
-          <Stack>
-            <label className="label-nowrap" htmlFor="date-of-match">
-              Date of the match:
-            </label>
-            <Input
-              id="date-of-match"
-              color="black"
-              value={gameDate}
-              size="md"
-              type="date"
-              w={['230px', '280px', '320px']}
-              onChange={(event) => setGameDate(event.target.value)}
-            />
-          </Stack>
+          {/* <Stack> */}
+          {/*   <label className="label-nowrap" htmlFor="date-of-match"> */}
+          {/*     Date of the match: */}
+          {/*   </label> */}
+          {/*   <Input */}
+          {/*     id="date-of-match" */}
+          {/*     color="black" */}
+          {/*     value={gameDate} */}
+          {/*     size="md" */}
+          {/*     type="date" */}
+          {/*     w={['230px', '280px', '320px']} */}
+          {/*     onChange={(event) => setGameDate(event.target.value)} */}
+          {/*   /> */}
+          {/* </Stack> */}
           <Button
             variant="primary"
-            /*onClick={
-              (console.log('První sloupec hráči:'),
-              console.log(columns[0].items),
-              console.log(columns[2].items),
-              console.log('Název prvního týmu:' + columns[0].name),
-              console.log('Název druhého týmu:' + columns[2].name),
-              console.log(input.value),
-              console.log(gameDate))
-            }*/
             onClick={async () => {
               // transform data for request query
               const teamPlayers1 = columns[0].items.map((item) => ({
@@ -313,9 +310,10 @@ export default function CreateMatchTemplate({ club, loading }) {
                   },
                 },
               };
-              await createMatchRequest({ variables: { matchInput } });
+              const { data } = await createMatchRequest({ variables: { matchInput } });
+              interactiveMatchClient.startInteractiveMatch(data.createMatch);
             }}
-            w={40}
+            w={60}
           >
             Start match
           </Button>

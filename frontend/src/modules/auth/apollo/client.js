@@ -5,12 +5,16 @@ import { useNavigate } from 'react-router-dom';
 const LOCAL_STORAGE_AUTH_KEY = 'auth';
 const persistedAuth = makeLocalStorageItem(LOCAL_STORAGE_AUTH_KEY);
 
-const initialState = persistedAuth() ?? {
-  user: null,
-  accessToken: null,
+const getInitialState = () => {
+  const { user, accessToken } = persistedAuth() ?? {};
+
+  return {
+    user,
+    accessToken,
+  };
 };
 
-export const auth = makeVar(initialState);
+export const auth = makeVar(getInitialState());
 
 export const signIn = ({ user, accessToken }) => {
   auth({

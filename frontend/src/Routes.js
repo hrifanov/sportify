@@ -8,6 +8,7 @@ import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificat
 import { AcceptInvitePage } from 'src/modules/clubs/pages/AcceptInvitePage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
+import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPage.js';
 
 export const route = {
   signIn: () => '/',
@@ -15,6 +16,11 @@ export const route = {
   clubDetail: () => '/club',
   createMatch: () => '/match/create',
   clubEdit: () => '/club/edit',
+  matches: () => '/matches',
+  matchDetail: (id) => `/matches/${id}`,
+  matchEdit: (id) => `/matches/${id}/edit`,
+  matchCreate: () => '/match/create',
+  matchInteractive: () => '/match/interactive',
   accountVerification: () => '/verify-account/:token',
   // acceptInvite: () => '/accept-invite/:token',
   acceptInvite: (token) => {
@@ -94,6 +100,14 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <CreateMatchPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.matchInteractive()}
+        element={
+          <ProtectedRoute>
+            <InteractiveMatchPage />
           </ProtectedRoute>
         }
       />
