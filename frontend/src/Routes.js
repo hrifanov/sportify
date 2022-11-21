@@ -3,7 +3,9 @@ import { NotFoundPage } from 'src/shared/navigation/pages/NotFoundPage';
 import { SignInPage, SignUpPage } from 'src/modules/auth';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
 import CreateMatchPage from './modules/matches/pages/CreateMatchPage';
+import ClubEditPage from './modules/clubs/pages/ClubEditPage';
 import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificationPage';
+import { AcceptInvitePage } from 'src/modules/clubs/pages/AcceptInvitePage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
 
@@ -12,7 +14,16 @@ export const route = {
   signUp: () => '/auth/signUp',
   clubDetail: () => '/club',
   createMatch: () => '/match/create',
+  clubEdit: () => '/club/edit',
   accountVerification: () => '/verify-account/:token',
+  // acceptInvite: () => '/accept-invite/:token',
+  acceptInvite: (token) => {
+    if (token) {
+      return '/accept-invite/' + token;
+    }
+    return '/accept-invite/:token';
+  },
+  // acceptInviteConfirm: () => '/accept-invite/',
 };
 
 const ProtectedRoute = ({ children }) => {
@@ -86,6 +97,23 @@ export function Routes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path={route.clubEdit()}
+        element={
+          <ProtectedRoute>
+            <ClubEditPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path={route.acceptInvite()} element={<AcceptInvitePage />} />
+      {/* <Route
+        path={route.acceptInviteConfirm()}
+        element={
+          <ProtectedRoute>
+            <AcceptInviteConfirmPage />
+          </ProtectedRoute>
+        }
+      /> */}
       <Route path="*" element={<NotFoundPage />} />
     </RouterRoutes>
   );

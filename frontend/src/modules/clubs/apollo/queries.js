@@ -7,6 +7,22 @@ export const FETCH_CLUBS = gql`
       name
       sport
       locality
+      players {
+        id
+        name
+        email
+        isAdmin
+      }
+    }
+  }
+`;
+
+export const INVITATION_DETAIL_QUERY = gql`
+  query invitationDetail($token: String!) {
+    invitationDetail(token: $token) {
+      clubName
+      email
+      doesUserExist
     }
   }
 `;

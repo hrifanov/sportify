@@ -72,17 +72,19 @@ export default function ClubDetailTemplate({ club, loading, matches }) {
                     </Tbody>
                   </Table>
                 </TableContainer>
-                <RouterLink
-                  as={Flex}
-                  mt={5}
-                  to="#"
-                  color="brand.secondary"
-                  alignItems="center"
-                  gap={2}
-                >
-                  <Icon as={FiSettings} />
-                  Manage team
-                </RouterLink>
+                {isCurrUserAdmin && (
+                  <Flex
+                    as={RouterLink}
+                    mt={5}
+                    to={route.clubEdit()}
+                    color="brand.secondary"
+                    alignItems="center"
+                    gap={2}
+                  >
+                    <Icon as={FiSettings} />
+                    Manage team
+                  </Flex>
+                )}
               </Box>
               <RequestsComp></RequestsComp>
             </Flex>

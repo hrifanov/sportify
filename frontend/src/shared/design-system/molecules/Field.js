@@ -1,11 +1,12 @@
 import { FormControl, FormErrorMessage, FormLabel, Input } from '../atoms';
 import { forwardRef } from '../system';
 
-export const Field = forwardRef(function Field({ id, label, error, ...props }, ref) {
+export const Field = forwardRef(function Field({ id, label, error, InputType, ...props }, ref) {
+  InputType = InputType ? InputType : Input;
   return (
     <FormControl id={id} isInvalid={!!error}>
       <FormLabel>{label}</FormLabel>
-      <Input ref={ref} {...props} />
+      <InputType ref={ref} {...props} />
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );
