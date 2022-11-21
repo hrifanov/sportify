@@ -2,10 +2,14 @@ import { Table, TableContainer, Td, Text, Tr, Tbody, Spacer, Button, Box } from 
 import _ from 'lodash';
 import { matches } from 'src/modules/clubs/matches.js';
 import { FiPlayCircle } from 'react-icons/fi';
+import { route } from '../../../Routes.js';
+import { useNavigate } from 'react-router-dom';
 
 const groupedMatches = _.groupBy(matches, 'date');
 
 export default function StatisticsComp() {
+  const navigate = useNavigate();
+
   return (
     <>
       <Box h="full" borderRadius="base" pt={4} pb={6} px={5}>
@@ -49,7 +53,12 @@ export default function StatisticsComp() {
           </Table>
         </TableContainer>
       </Box>
-      <Button padding={7} colorScheme="orange" w="full">
+      <Button
+        padding={7}
+        colorScheme="orange"
+        w="full"
+        onClick={() => navigate(route.createMatch())}
+      >
         <Text>Start a new match </Text>
         <FiPlayCircle style={{ position: 'absolute', right: '2%' }} size={40} />
       </Button>

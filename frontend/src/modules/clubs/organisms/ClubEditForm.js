@@ -46,7 +46,7 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
               id="sport"
               name="sport"
               label="Sport"
-              InputType={Select}
+              input={Select}
               autoFocus="autofocus"
               autoComplete="on"
               autoCorrect="off"

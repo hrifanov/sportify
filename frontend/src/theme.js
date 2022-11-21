@@ -129,8 +129,7 @@ export const theme = extendTheme({
       },
     },
     Select: {
-      baseStyle: {
-      },
+      baseStyle: {},
     },
   },
 });
