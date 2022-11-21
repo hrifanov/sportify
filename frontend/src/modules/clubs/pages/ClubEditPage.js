@@ -43,7 +43,7 @@ export default function ClubEditPage() {
       invitePlayerRequest({ variables });
       setEmailForInvitation(variables.email);
     },
-    [invitePlayerRequest, club.id],
+    [invitePlayerRequest, club?.id],
   );
 
   //** Request for editing the club */
@@ -58,15 +58,15 @@ export default function ClubEditPage() {
     },
   });
 
-  console.log('club.id: ' + club.id);
+  console.log('club?.id: ' + club?.id);
 
   const handleSubmitEditClub = useCallback(
     (variables, clubId) => {
-      clubId = club.id;
+      clubId = club?.id;
       variables = { ...variables, clubId };
       editClubRequest({ variables });
     },
-    [editClubRequest, club.id],
+    [editClubRequest, club?.id],
   );
 
   //** Request for removing a player */
@@ -119,9 +119,7 @@ export default function ClubEditPage() {
 
   if (!isCurrUserAdmin) {
     toast({
-      title: `What a naughty boy :)
-       Next time, ask your admin to give you a permission to do that, please.
-        `,
+      title: 'You naughty naughty :)',
       status: 'error',
       position: 'top-right',
       duration: 4000,
