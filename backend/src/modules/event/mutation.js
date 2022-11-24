@@ -54,7 +54,7 @@ export const removeEvent = async (_, { matchId, eventId }, context) => {
   const session = await context.client.startSession();
   try {
     session.startTransaction();
-    
+
     const match = await Match.findById(matchId);
     if (!match) {
       throwCustomError('No such match', { code: 'match-error' });

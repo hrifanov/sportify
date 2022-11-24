@@ -39,7 +39,7 @@ export const editClub = async (_, { clubId, name, locality }, context) => {
   }
 
   const club = await Club.findByIdAndUpdate(clubId, { name, locality });
-  
+
   if (!club) {
     throwCustomError('Club not found', { code: 404 });
   }
