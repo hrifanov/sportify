@@ -13,9 +13,7 @@ import { schema } from './modules/executableSchema';
 
   app.disable('x-powered-by');
 
-  app.use(
-    cors()
-  );
+  app.use(cors());
 
   app.use(cookieParser());
 
