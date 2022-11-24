@@ -31,8 +31,7 @@ export const createMatch = async (_, { matchInput }, context) => {
           teamPlayers: playerIds.slice(teams.home.teamPlayers.length),
         },
       },
-    })
-      .save({ session })
+    }).save({ session });
 
     await session.commitTransaction();
     //await session.abortTransaction();
@@ -56,7 +55,6 @@ const createTeamPlayers = async (teamPlayers, session) => {
     });
   }
 
-  return await TeamPlayer.insertMany(teamPlayers, { session }).then((doc) =>
-    doc.map((player) => player.id)
-  );
+  const teams = await TeamPlayer.insertMany(teamPlayers, { session });
+  return teams.map((player) => player.id);
 };
