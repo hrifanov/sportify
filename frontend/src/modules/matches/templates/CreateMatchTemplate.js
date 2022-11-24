@@ -63,6 +63,12 @@ const onDragEnd = (result, columns, setColumns) => {
   }
 };
 
+const Players = () => (
+  <Box id="results" className="search-results">
+    Some Results
+  </Box>
+);
+
 export default function CreateMatchTemplate({ club, loading }) {
   const [createMatchRequest, createMatchRequestState] = useMutation(CREATE_MATCH_MUTATION, {
     onCompleted: () => {},
@@ -103,10 +109,18 @@ export default function CreateMatchTemplate({ club, loading }) {
 
   const [gameDate, setGameDate] = useState(date);
   console.log(teamsColumns(club?.players));
+
+  const [openPlayers, setOpenPlayers] = useState(false);
+
+  const handleOpenPlayers = () => {
+    setOpenPlayers(true);
+  };
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
       <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]}>
+        {openPlayers ? <Players /> : null}
         {loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
             <Spinner />
@@ -171,26 +185,6 @@ export default function CreateMatchTemplate({ club, loading }) {
                                         alignItems="center"
                                       >
                                         <Text>{item.name}</Text>
-                                        {/*<HStack>
-                                          <IconButton
-                                            bg="brand.dark"
-                                            _hover={{ bg: 'brand.secondary' }}
-                                            aria-label="Set player role to attacker"
-                                            size="sm"
-                                            p={1}
-                                            icon={<GiHockey />}
-                                          />
-                                          <IconButton
-                                            variant={isAttacker}
-                                            bg="brand.dark"
-                                            _hover={{ bg: 'brand.secondary' }}
-                                            aria-label="Set player role to goalkeeper"
-                                            size="sm"
-                                            p={1}
-                                            icon={<RoleGoalKeeperIcon />}
-                                            onClick={() => setIsAttacker('outline')}
-                                          />
-                                      </HStack>*/}
                                         <Stack spacing={3}>
                                           <Select
                                             bg="brand.boxBackground"
@@ -233,6 +227,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                               );
                             })}
                             {provided.placeholder}
+                            <Button onClick={handleOpenPlayers()}>+</Button>
                           </Box>
                         );
                       }}

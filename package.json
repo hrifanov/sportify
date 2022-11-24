@@ -7,6 +7,7 @@
     "prettier": "2.7.1"
   },
   "dependencies": {
-    "react-beautiful-dnd": "^13.1.1"
+    "react-beautiful-dnd": "^13.1.1",
+    "uniqid": "^5.4.0"
   }
 }
