@@ -14,10 +14,7 @@ import { schema } from './modules/executableSchema';
   app.disable('x-powered-by');
 
   app.use(
-    cors({
-      origin: 'http://localhost:3000',
-      credentials: true,
-    })
+    cors()
   );
 
   app.use(cookieParser());
