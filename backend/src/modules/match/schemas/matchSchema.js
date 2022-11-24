@@ -7,7 +7,7 @@ export const matchTypeDef = gql`
   }
 
   type Mutation {
-    createMatch(matchInput: MatchInput): ID!
+    createMatch(matchInput: MatchInput): Match!
   }
 
   # MATCH
@@ -15,8 +15,6 @@ export const matchTypeDef = gql`
   type Match {
     id: ID!
     club: Club
-    date: String!
-    place: String
     teams: MatchTeams
     events: [Event]
   }

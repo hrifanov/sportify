@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   ApolloClient,
   ApolloLink,
@@ -7,15 +6,17 @@ import {
   InMemoryCache,
   createHttpLink,
   from,
+  gql,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 
 import { config } from 'src/config';
-import { route } from 'src/Routes';
-import { signOut, useAuthClient } from 'src/modules/auth/apollo/client';
+import { useAuthClient } from 'src/modules/auth/apollo/client';
+import * as events from 'events';
+import { interactiveMatchState } from '../modules/matches/apollo/interactiveMatchClient.js';
 
-const UNAUTHENTICATED_CODE = 'UNAUTHENTICATED';
+const UNAUTHENTICATED_CODE = 'not-authenticated';
 const TOKEN_EXPIRED_CODE = 'jwt-expired';
 
 const hasUnauthenticatedErrorCode = (errors) => {
@@ -34,7 +35,20 @@ const httpLink = createHttpLink({
   uri: config.GRAPHQL_API,
 });
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        interactiveMatch: {
+          read() {
+            return interactiveMatchState();
+          },
+        },
+      },
+    },
+  },
+});
+
 export const setupPersistence = async () => {
   try {
     await persistCache({
@@ -47,14 +61,11 @@ export const setupPersistence = async () => {
 };
 
 export function EnhancedApolloProvider({ children }) {
-  const navigate = useNavigate();
-  const { accessToken } = useAuthClient();
+  const { accessToken, signOut } = useAuthClient();
 
   const handleSignOut = useCallback(() => {
     signOut();
-    navigate(route.signIn());
-    window.location.reload();
-  }, [navigate]);
+  }, [signOut]);
 
   const authLink = new ApolloLink((operation, forward) => {
     operation.setContext({

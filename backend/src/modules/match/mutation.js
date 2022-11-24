@@ -18,7 +18,7 @@ export const createMatch = async (_, { matchInput }, context) => {
       session
     );
 
-    const matchId = await new Match({
+    const match = await new Match({
       club,
       date,
       teams: {
@@ -33,11 +33,10 @@ export const createMatch = async (_, { matchInput }, context) => {
       },
     })
       .save({ session })
-      .then((doc) => doc.id);
 
     await session.commitTransaction();
     //await session.abortTransaction();
-    return matchId;
+    return match;
   } catch (err) {
     console.error(err);
     await session.abortTransaction();

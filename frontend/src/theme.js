@@ -24,6 +24,9 @@ export const theme = extendTheme({
       a: {
         color: 'brand.secondary',
       },
+      option: {
+        color: 'black',
+      },
       PopoverArrow: {
         bg: '#1F2833',
         color: 'white',
@@ -45,6 +48,9 @@ export const theme = extendTheme({
       },
     },
     Button: {
+      baseStyle: {
+        cursor: 'pointer',
+      },
       variants: {
         primary: {
           bg: 'brand.primary',
@@ -114,6 +120,16 @@ export const theme = extendTheme({
           },
         },
       },
+    },
+    Modal: {
+      baseStyle: {
+        dialog: {
+          bg: 'brand.boxBackground',
+        },
+      },
+    },
+    Select: {
+      baseStyle: {},
     },
   },
 });
