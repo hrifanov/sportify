@@ -2,26 +2,9 @@ import { gql } from 'apollo-server-express';
 
 export const typeDef = gql`
   type Query {
-    user(userName: String!): UserOutput
-    users: [UserOutput!]!
+    user(userName: String!): User
+    users: [User!]!
     invitationDetail(token: String!): InvitationInfo
-  }
-
-  type User {
-    id: ID!
-    userName: String!
-    password: String!
-    name: String!
-    email: String!
-    tokenVersion: Int!
-    verified: Boolean!
-  }
-
-  input UserInput {
-    userName: String!
-    password: String!
-    name: String!
-    email: String!
   }
 
   type Mutation {
@@ -32,12 +15,18 @@ export const typeDef = gql`
     invalidateTokens: Boolean!
   }
 
-  type UserOutput {
+  type User {
     id: ID!
     userName: String!
     name: String!
     email: String!
-    verified: Boolean
+  }
+
+  input UserInput {
+    userName: String!
+    password: String!
+    name: String!
+    email: String!
   }
 
   type LoginResponse {

@@ -20,8 +20,7 @@ export const user = async (_, { userName }, context) => {
 
 // export const invitationDetail = async (_, { token }, context) => {
 //   isAuth(context);
-  export const invitationDetail = async (_, { token }) => {
-
+export const invitationDetail = async (_, { token }) => {
   try {
     const { clubId, email } = verifyToken(token, GMAIL_API_KEY);
 
