@@ -13,7 +13,7 @@
     "postbuild": "nodetouch tmp/restart.txt",
     "build:watch": "nodemon --watch ./src --exec 'npm run build'",
     "prettier": "prettier --write \"src/**/*.js\" README.md",
-    "lint": "eslint ."
+    "lint": "eslint ./src/**/*.js"
   },
   "dependencies": {
     "@graphql-tools/schema": "^9.0.2",
