@@ -14,11 +14,8 @@ export const addEvent = async (_, { matchId, eventInput }, context) => {
       throwCustomError('No such match', { code: 'match-error' });
     }
 
-    const eventId = await new Event({ ...eventInput })
-      .save({ session })
-      .then((doc) => doc.id);
-
-    match.events.push(eventId);
+    const { id } = await new Event({ ...eventInput }).save({ session });
+    match.events.push(id);
 
     await match.save({ session });
     await session.commitTransaction();
@@ -57,12 +54,11 @@ export const removeEvent = async (_, { matchId, eventId }, context) => {
   const session = await context.client.startSession();
   try {
     session.startTransaction();
-    const match = await Match.findById(matchId).then((doc) => {
-      if (!doc) {
-        throwCustomError('No such match', { code: 'match-error' });
-      }
-      return doc;
-    });
+    
+    const match = await Match.findById(matchId);
+    if (!match) {
+      throwCustomError('No such match', { code: 'match-error' });
+    }
 
     await Event.findByIdAndDelete(eventId, { session });
     await match.update({ $pullAll: { events: [eventId] } }, { session });

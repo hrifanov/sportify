@@ -10,26 +10,24 @@ export const createClub = async (_, { clubInput }, context) => {
   isAuth(context);
   const { name, owner } = clubInput;
 
-  await Club.findOne({ name }).then((club) => {
-    if (club) {
-      throwCustomError(`Club with name ${name} already exists`, {
-        code: 'club-exists',
-      });
-    }
-  });
+  const existingClub = await Club.findOne({ name });
+  if (existingClub) {
+    throwCustomError(`Club with name ${name} already exists`, {
+      code: 'club-exists',
+    });
+  }
 
   const club = new Club({
     ...clubInput,
     players: [{ user: owner, isAdmin: true }],
   });
 
-  return await club
-    .save()
-    .then((saveDoc) => saveDoc.id)
-    .catch((err) => {
-      console.log(err);
-      throwCustomError('Error creating club', { code: 500 });
-    });
+  const { id } = await club.save().catch((err) => {
+    console.log(err);
+    throwCustomError('Error creating club', { code: 500 });
+  });
+
+  return id;
 };
 
 export const editClub = async (_, { clubId, name, locality }, context) => {
@@ -40,11 +38,11 @@ export const editClub = async (_, { clubId, name, locality }, context) => {
     throwCustomError('No data to update', { code: 400 });
   }
 
-  await Club.findByIdAndUpdate(clubId, { name, locality }).then((doc) => {
-    if (!doc) {
-      throwCustomError('Club not found', { code: 404 });
-    }
-  });
+  const club = await Club.findByIdAndUpdate(clubId, { name, locality });
+  
+  if (!club) {
+    throwCustomError('Club not found', { code: 404 });
+  }
 
   return true;
 };

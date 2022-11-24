@@ -48,21 +48,23 @@ export const signin = async (_, { userName, password }, { res }) => {
 export const signup = async (_, { userInput }) => {
   const { userName, email, password, name } = userInput;
 
-  await User.findOne({ userName: userName.toLowerCase() }).then((user) => {
-    if (user) {
-      throwCustomError(`username ${userName} is already taken`, {
-        ref: 'username',
-      });
-    }
+  const existingUserByUsername = await User.findOne({
+    userName: userName.toLowerCase(),
   });
+  if (existingUserByUsername) {
+    throwCustomError(`username ${userName} is already taken`, {
+      ref: 'username',
+    });
+  }
 
-  await User.findOne({ email: email.toLowerCase() }).then((user) => {
-    if (user) {
-      throwCustomError(`email ${email} is already registered`, {
-        ref: 'email',
-      });
-    }
+  const existingUserByEmail = await User.findOne({
+    email: email.toLowerCase(),
   });
+  if (existingUserByEmail) {
+    throwCustomError(`email ${email} is already registered`, {
+      ref: 'email',
+    });
+  }
 
   const user = new User({
     userName: userName.toLowerCase(),
