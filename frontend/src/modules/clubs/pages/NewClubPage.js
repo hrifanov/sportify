@@ -5,6 +5,8 @@ import { useMutation } from '@apollo/client';
 import { route } from 'src/Routes';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
+import { useQuery } from '@apollo/client';
 
 export default function NewClubPage(user) {
   const navigate = useNavigate();

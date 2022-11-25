@@ -1,6 +1,7 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import { Box, Container, Flex, Heading, Icon } from '@chakra-ui/react';
 import { Button, Stack, ErrorBanner } from 'src/shared/design-system';
+import { Button, Stack, Select } from 'src/shared/design-system';
 
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { RouterLink } from 'src/shared/navigation';
@@ -14,7 +15,6 @@ const schema = yup.object().shape({
 });
 
 export default function NewClubTemplate({ createClubRQ }) {
-  console.log('error: ' + createClubRQ?.error?.message);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="New club" />

@@ -21,7 +21,6 @@ export const route = {
   signUp: () => '/auth/signUp',
   clubDetail: (id = ':id') => `/club/${id}`,
   clubEdit: (id = ':id') => `/club/${id}/edit`,
-  createMatch: () => '/match/create',
   matches: () => '/matches',
   matchCreate: () => '/match/create',
   matchDetail: (id = ':id') => `/matches/${id}`,
@@ -38,16 +37,12 @@ export const route = {
   newClub: () => '/new-club',
   manageSeasons: (id = ':id') => `/club/${id}/seasons`,
   accountVerification: () => '/verify-account/:token',
-  clubDetail: () => '/club',
-  clubEdit: () => '/club/edit',
   matchCreate: () => '/match/create',
   matchDetail: (id = ':id') => `/matches/${id}`,
   matchEdit: (id) => `/matches/${id}/edit`,
   matchInteractive: () => '/match/interactive',
   signIn: () => '/',
-  // acceptInvite: () => '/accept-invite/:token',
   signUp: () => '/auth/signUp',
-  // acceptInviteConfirm: () => '/accept-invite/',
 };
 
 const ProtectedRoute = ({ children }) => {
@@ -168,6 +163,7 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <ManageSeasonsPage user={user} />
+            <NewClubPage />
           </ProtectedRoute>
         }
       />

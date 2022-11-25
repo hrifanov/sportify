@@ -8,6 +8,10 @@ import { useToast } from '@chakra-ui/react';
 
 export default function ClubDetailPage() {
   const { data, loading } = useQuery(FETCH_CLUBS);
+  const matches = data?.matches;
+  const players = data?.clubByID.players;
+  //console.log(players);
+  //console.log(matches);
   const { id } = useParams();
   const toast = useToast();
   const club = data?.clubs?.find((club) => {
@@ -25,6 +29,9 @@ export default function ClubDetailPage() {
     }
     return null;
   });
+
+  // console.log({ matches });
+
   if (!club) {
     toast({
       title: 'Club was not found',
@@ -35,6 +42,7 @@ export default function ClubDetailPage() {
     });
     return <Navigate to={route.dashboard()} replace />;
   }
+
   return (
     <ClubDetailTemplate
       club={club}
