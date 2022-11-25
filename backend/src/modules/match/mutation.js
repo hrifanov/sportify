@@ -5,9 +5,9 @@ import TeamPlayer from '../../models/TeamPlayer';
 import User from '../../models/User';
 
 export const createMatch = async (_, { matchInput }, context) => {
-  isAuth(context);
+  //isAuth(context);
 
-  const { club, date, teams } = matchInput;
+  const { club, date, teams, score, timer } = matchInput;
   const session = await context.client.startSession();
 
   try {
@@ -31,6 +31,8 @@ export const createMatch = async (_, { matchInput }, context) => {
           teamPlayers: playerIds.slice(teams.home.teamPlayers.length),
         },
       },
+      score,
+      timer
     }).save({ session });
 
     await session.commitTransaction();

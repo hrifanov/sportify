@@ -14,9 +14,12 @@ export const matchTypeDef = gql`
 
   type Match {
     id: ID!
+    date: String!
+    timer: Int!
     club: Club
     teams: MatchTeams
     events: [Event]
+    score: Score!
   }
 
   input MatchInput {
@@ -24,6 +27,8 @@ export const matchTypeDef = gql`
     date: String!
     place: String
     teams: InputMatchTeams
+    timer: Int!
+    score: ScoreInput!
   }
 
   # MATCH TEAMS
@@ -47,5 +52,15 @@ export const matchTypeDef = gql`
   input TeamInput {
     name: String!
     teamPlayers: [TeamPlayerInput]!
+  }
+
+  type Score {
+    home: Int!
+    guest: Int!
+  }
+
+  input ScoreInput{
+    home: Int!
+    guest: Int!
   }
 `;

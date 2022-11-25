@@ -1,4 +1,5 @@
 const { model, Schema } = require('mongoose');
+const events = require('./Event');
 
 const team = new Schema({
   name: String,
@@ -9,11 +10,16 @@ const matchSchema = new Schema({
   club: { type: Schema.Types.ObjectId, ref: 'Club' },
   date: Date,
   place: String,
+  timer: Number,
   teams: {
     home: team,
     guest: team,
   },
-  events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+  score: {
+    home: Number,
+    guest: Number
+  },
+  events: [events.schema],
 });
 
 module.exports = model('Matches', matchSchema);
