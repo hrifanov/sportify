@@ -16,12 +16,9 @@ export function SignInPage() {
   const getDestination = () => {
     const inviteToken = getTokenLS('inviteToken');
     if (inviteToken && inviteToken !== '') {
-      // console.log('jsme na login page a hodnota tokenu je: ' + inviteToken);
-      // return route.acceptInvite().substring(0, route.acceptInvite().indexOf(':')) + inviteToken;
       return route.acceptInvite(inviteToken);
     }
-    // console.log('Jsme na login a invite token neexistuje: ' + inviteToken);
-    return route.clubDetail();
+    return route.dashboard();
   };
 
   const destination = getDestination();

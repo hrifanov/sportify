@@ -21,7 +21,7 @@ import {
 import { RouterLink } from 'src/shared/navigation';
 import StatisticsComp from '../molecules/StatisticsComp';
 import MatchesComp from '../molecules/MatchesComp';
-import { FiSettings } from 'react-icons/fi';
+import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
 import { route } from '../../../Routes.js';
 
@@ -39,9 +39,15 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
           <Flex gap={6} h="full" direction={['column', null, 'row']}>
             <Flex direction="column" w={{ md: '20%' }} gap={4}>
               <Box w="full" bg="brand.boxBackground" borderRadius="base" pt={4} pb={6} px={5}>
-                <Text fontWeight="bold" color="brand.title" fontSize="xl">
-                  Information
-                </Text>
+                <Flex direction="row" align="center">
+                  <Flex as={RouterLink} to={route.dashboard()} color="brand.title" align="center">
+                    <Icon as={FiArrowLeftCircle} boxSize={6} />
+                  </Flex>
+
+                  <Text fontWeight="bold" color="brand.title" fontSize="xl" pl={2}>
+                    Information
+                  </Text>
+                </Flex>
                 <Flex alignItems="center" gap={4} mt={2}>
                   <Image src={require('src/assets/club.png')} w="100px" h="100px" />
                   <Box>

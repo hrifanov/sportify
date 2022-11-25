@@ -12,10 +12,7 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
     name: club && club.name ? club.name : '',
     locality: club && club.locality ? club.locality : '',
     sport: 'Hockey',
-    // clubId: '636ecd9840d0be5c9a93e4f2',
-    //TODO rest of the form
   };
-  // console.log(onSubmit);
 
   return (
     <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>

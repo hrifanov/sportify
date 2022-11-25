@@ -20,9 +20,6 @@ export function AcceptInvitePage() {
 
   if (!getTokenLS('inviteToken') && !invitationIsFinished) {
     putTokenLS('inviteToken', token);
-    console.log('Token byl uložen a jeho hodnota je: ' + getTokenLS('inviteToken'));
-  } else {
-    console.log('Token již je inicializován na: ' + getTokenLS('inviteToken'));
   }
 
   const { user } = useAuthClient();
@@ -50,7 +47,6 @@ export function AcceptInvitePage() {
         <>
           <Spinner size="xl" />
           <Text>Loading...</Text>
-          {console.log('Loading')}
         </>
       );
     }

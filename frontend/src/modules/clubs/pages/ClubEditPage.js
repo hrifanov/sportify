@@ -21,7 +21,6 @@ export default function ClubEditPage() {
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();
-  // console.log('user: ' + user.email);
 
   //** Request for inviting a player */
   const [isInvitePlayerCompleted, setIsInvitePlayerCompleted] = useState(false);
@@ -110,8 +109,6 @@ export default function ClubEditPage() {
 
   const isCurrUserAdmin = club?.players?.find((player) => {
     if (player?.email === user.email) {
-      // console.log(player.email);
-      // console.log(player.isAdmin);
       return player.isAdmin;
     }
     return null;
@@ -150,8 +147,6 @@ export default function ClubEditPage() {
         onSubmit: handleSubmitRemovePlayer,
         loading: removePlayerRequestState.loading,
         error: removePlayerRequestState.error,
-        // isCompleted: isEditClubRequestCompleted,
-        // setIsCompleted: setIsEditClubRequestCompleted,
       }}
       makePlayerAdminRQ={{
         onSubmit: handleSubmitmakePlayerAdmin,
