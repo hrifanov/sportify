@@ -11,10 +11,5 @@ const resolvers = {
   },
   Mutation: {
     ...mutations,
-  },
-  Event: {
-    async teamPlayer(parent) {
-      return await TeamPlayer.findById(parent.teamPlayer);
-    },
-  },
+  }
 };
