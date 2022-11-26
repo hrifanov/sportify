@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import React from 'react';
 
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import {
@@ -16,6 +17,8 @@ import {
   Select,
   IconButton,
   Checkbox,
+  Radio,
+  RadioGroup,
 } from '@chakra-ui/react';
 import { FiPlus, FiXCircle } from 'react-icons/fi';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -100,7 +103,6 @@ export default function CreateMatchTemplate({ club, loading }) {
   const dec = getDecrementButtonProps();
   const input = getInputProps();
 
-  //const [isAttacker, setIsAttacker] = useState('outline');
   const date = new Date().toISOString().split('T')[0];
 
   const [gameDate, setGameDate] = useState(date);
@@ -115,15 +117,23 @@ export default function CreateMatchTemplate({ club, loading }) {
     setOpenPlayers(false);
   };
 
+  const [value, setValue] = React.useState('2');
+
   const Players = () =>
     club?.players.map((item, itemIndex) => {
       return (
         <Stack justifyContent="space-between" direction="row" key={item.id} p={1}>
           <Text>{item.name}</Text>
-          <Checkbox
-            /*checked={checkedState[itemIndex]}*/
-            onChange={(e) => handleChecked(e, itemIndex, columns, setColumns)}
-          />
+          <RadioGroup
+            onChange={(setValue, (e) => handleSelected(e, itemIndex, columns, setColumns))}
+            value={value}
+          >
+            <Stack direction="row">
+              <Radio value="1">First</Radio>
+              <Radio value="2">Second</Radio>
+              <Radio value="3">Third</Radio>
+            </Stack>
+          </RadioGroup>
         </Stack>
       );
     });
@@ -141,10 +151,31 @@ export default function CreateMatchTemplate({ club, loading }) {
     setCheckedState(updatedCheckedState);
   };*/
 
-  const handleChecked = (e, index, columns, setColumns) => {
-    if (e.target.checked) {
+  const handleSelected = (e, index, columns, setColumns) => {
+    if (value === '2') {
       const sourceColumn = columns[1];
       const destColumn = columns[0];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(index, 1);
+      destItems.splice(index, 0, removed);
+      console.log(index);
+      console.log(removed);
+      setColumns({
+        ...columns,
+        0: {
+          ...destColumn,
+          items: destItems,
+        },
+        1: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+      });
+    }
+    if (value === '2') {
+      const sourceColumn = columns[0];
+      const destColumn = columns[1];
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(index, 1);
@@ -160,9 +191,7 @@ export default function CreateMatchTemplate({ club, loading }) {
           items: sourceItems,
         },
       });
-      console.log(index);
     } else {
-      console.log(columns[1]);
     }
   };
 
@@ -274,26 +303,25 @@ export default function CreateMatchTemplate({ club, loading }) {
                                               cursor: 'pointer',
                                             }}
                                             size="sm"
-                                            // TODO: Does not work, need to refactor
-                                            // onChange={(selectedOption) => {
-                                            //   const modifiedColumns = [...columns];
-                                            //   modifiedColumns[columnIndex].items[itemIndex] = {
-                                            //     ...column.items[itemIndex],
-                                            //     role: selectedOption.target.value,
-                                            //   };
-
-                                            //   setColumns(modifiedColumns);
-                                            // }}
+                                            defaultValue="attack"
+                                            onChange={(selectedOption) => {
+                                              const modifiedColumns = [...Object.values(columns)];
+                                              modifiedColumns[columnIndex].items[itemIndex] = {
+                                                ...column.items[itemIndex],
+                                                role: selectedOption.target.value,
+                                              };
+                                              setColumns(modifiedColumns);
+                                            }}
                                           >
                                             <option
-                                              style={{ backgroundColor: '#283555' }}
-                                              value="Attacker"
+                                              style={{ backgroundColor: '#283555', color: 'white' }}
+                                              value="attack"
                                             >
                                               Attacker
                                             </option>
                                             <option
-                                              style={{ backgroundColor: '#283555' }}
-                                              value="Goalkeeper"
+                                              style={{ backgroundColor: '#283555', color: 'white' }}
+                                              value="goalkeeper"
                                             >
                                               Goalkeeper
                                             </option>
@@ -383,17 +411,16 @@ export default function CreateMatchTemplate({ club, loading }) {
               // transform data for request query
               const teamPlayers1 = columns[0].items.map((item) => ({
                 user: item.id,
-                role: 'attack',
+                role: item.role ? item.role : 'attack',
               }));
               const teamPlayers2 = columns[2].items.map((item) => ({
                 user: item.id,
-                role: 'attack',
+                role: item.role ? item.role : 'attack',
               }));
 
               const matchInput = {
                 club: club.id,
                 date: gameDate,
-                //place: '', // TODO implement place input
                 teams: {
                   home: {
                     name: columns[0].name,
