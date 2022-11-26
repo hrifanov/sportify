@@ -6,7 +6,6 @@ import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
 import { FiArrowLeftCircle } from 'react-icons/fi';
-// import Combobox from '../organisms/Combobox';
 import Combobox from 'react-widgets/Combobox';
 
 const schema = yup.object().shape({

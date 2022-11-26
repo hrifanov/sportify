@@ -65,8 +65,6 @@ export default function ClubEditPage() {
     },
   });
 
-  console.log('club?.id: ' + club?.id);
-
   const handleSubmitEditClub = useCallback(
     (variables, clubId) => {
       console.log(variables);

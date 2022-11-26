@@ -5,9 +5,8 @@ import { Navigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { useCallback } from 'react';
 
-export default function NewClubPage() {
-  const user = { userId: '634f03e1a7948355de4fe8cf' }; //Mock, delete
-
+export default function NewClubPage(user) {
+  user = user?.user;
   const [createClubRequest, createClubRequestState] = useMutation(CREATE_CLUB_MUTATION, {
     onCompleted: (data) => {
       console.log(data);
@@ -20,13 +19,11 @@ export default function NewClubPage() {
 
   const handleCreateClub = useCallback(
     (variables) => {
-      variables = { ...variables, playerId: user.userId };
+      variables = { ...variables, playerId: user?.id };
       createClubRequest({ variables });
     },
-    [createClubRequest, user.userId],
-    () => {
-      console.log('I made it here. ');
-    },
+    [createClubRequest, user?.id],
+    () => {},
   );
 
   return (

@@ -64,6 +64,7 @@ const AuthRoute = ({ children }) => {
 };
 
 export function Routes() {
+  const { user } = useAuthClient();
   return (
     <RouterRoutes>
       <Route
@@ -143,7 +144,7 @@ export function Routes() {
         path={route.newClub()}
         element={
           <ProtectedRoute>
-            <NewClubPage />
+            <NewClubPage user={user} />
           </ProtectedRoute>
         }
       />
