@@ -14,7 +14,10 @@ import {
   InputRightAddon,
   Text,
   Select,
+  IconButton,
+  Checkbox,
 } from '@chakra-ui/react';
+import { FiPlus, FiXCircle } from 'react-icons/fi';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
@@ -63,12 +66,6 @@ const onDragEnd = (result, columns, setColumns) => {
   }
 };
 
-const Players = () => (
-  <Box id="results" className="search-results">
-    Some Results
-  </Box>
-);
-
 export default function CreateMatchTemplate({ club, loading }) {
   const [createMatchRequest, createMatchRequestState] = useMutation(CREATE_MATCH_MUTATION, {
     onCompleted: () => {},
@@ -85,8 +82,6 @@ export default function CreateMatchTemplate({ club, loading }) {
 
   const handleChange = (e, index) => {
     const value = e.target.value;
-    console.log(value);
-    console.log(index);
     setColumns((state) => [
       ...Object.values(state).slice(0, index),
       { ...state[index], name: value },
@@ -108,7 +103,6 @@ export default function CreateMatchTemplate({ club, loading }) {
   const date = new Date().toISOString().split('T')[0];
 
   const [gameDate, setGameDate] = useState(date);
-  console.log(teamsColumns(club?.players));
 
   const [openPlayers, setOpenPlayers] = useState(false);
 
@@ -116,11 +110,53 @@ export default function CreateMatchTemplate({ club, loading }) {
     setOpenPlayers(true);
   };
 
+  const handleClosePlayers = () => {
+    setOpenPlayers(false);
+  };
+
+  const Players = () =>
+    Object.entries(columns)[1][1].items?.map((item, itemIndex) => {
+      return (
+        <Stack justifyContent="space-between" direction="row" key={item.id} p={1}>
+          <Text>{item.name}</Text>
+          <Checkbox />
+        </Stack>
+      );
+    });
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
-      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]}>
-        {openPlayers ? <Players /> : null}
+      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]} position="relative">
+        {openPlayers ? (
+          <Box
+            position="absolute"
+            bg="brand.title"
+            zIndex={10}
+            left={0}
+            right={0}
+            top={0}
+            bottom={0}
+            w={400}
+            m="auto"
+            px={5}
+            pt={10}
+            pb={5}
+            borderRadius="base"
+          >
+            <IconButton
+              mt={-10}
+              mr={-5}
+              bg="brand.title"
+              aria-label="Save column name"
+              size="md"
+              icon={<FiXCircle />}
+              float="right"
+              onClick={handleClosePlayers}
+            />
+            <Players />
+          </Box>
+        ) : null}
         {loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
             <Spinner />
@@ -158,6 +194,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                             ref={provided.innerRef}
                             bg={snapshot.isDraggingOver ? 'brand.title' : 'brand.boxBackground'}
                             h="full"
+                            position="relative"
                           >
                             {column.items?.map((item, itemIndex) => {
                               return (
@@ -227,7 +264,6 @@ export default function CreateMatchTemplate({ club, loading }) {
                               );
                             })}
                             {provided.placeholder}
-                            <Button onClick={handleOpenPlayers()}>+</Button>
                           </Box>
                         );
                       }}
@@ -235,6 +271,28 @@ export default function CreateMatchTemplate({ club, loading }) {
                   </Stack>
                 );
               })}
+              <Button
+                height={100}
+                width={100}
+                borderRadius="50%"
+                onClick={handleOpenPlayers}
+                color="brand.dark"
+                fontSize={64}
+                _hover={{
+                  bg: 'brand.dark',
+                  color: 'brand.secondary',
+                }}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                position="absolute"
+                bottom={0}
+                mx="auto"
+                left={0}
+                right={0}
+              >
+                <FiPlus />
+              </Button>
             </DragDropContext>
           </Stack>
         )}
