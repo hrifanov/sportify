@@ -98,9 +98,7 @@ export default function ClubDetailTemplate({ club, loading, matches, isCurrUserA
                 <TabPanel>
                   <StatisticsComp></StatisticsComp>
                 </TabPanel>
-                <TabPanel>
-                  <MatchesComp></MatchesComp>
-                </TabPanel>
+                <TabPanel>{matches && <MatchesComp matches={matches}></MatchesComp>}</TabPanel>
               </TabPanels>
             </Tabs>
             <Flex
@@ -119,11 +117,12 @@ export default function ClubDetailTemplate({ club, loading, matches, isCurrUserA
               direction="column"
               borderRadius="base"
               w={{ md: '30%' }}
+              h="97%"
               gap={4}
-              display={{ Base: 'none', md: 'flex' }}
+              display={{ base: 'none', md: 'flex' }}
               bg="brand.boxBackground"
             >
-              <MatchesComp></MatchesComp>
+              {matches && <MatchesComp matches={matches}></MatchesComp>}
             </Flex>
           </Flex>
         )}

@@ -6,7 +6,9 @@ import { useAuthClient } from 'src/modules/auth/apollo/client';
 export default function ClubDetailPage() {
   const { data, loading } = useQuery(FETCH_CLUBS);
   const club = data?.clubs?.[0];
-
+  const matches = data?.matches;
+  //console.log(club);
+  //console.log(matches);
   const { user } = useAuthClient();
   // console.log('user: ' + user.email);
 
@@ -18,5 +20,12 @@ export default function ClubDetailPage() {
     }
     return undefined;
   });
-  return <ClubDetailTemplate club={club} loading={loading} isCurrUserAdmin={isCurrUserAdmin} />;
+  return (
+    <ClubDetailTemplate
+      club={club}
+      matches={matches}
+      loading={loading}
+      isCurrUserAdmin={isCurrUserAdmin}
+    />
+  );
 }
