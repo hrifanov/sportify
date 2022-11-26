@@ -14,23 +14,23 @@ import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPa
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
 
 export const route = {
+  signIn: () => '/',
+  signUp: () => '/auth/signUp',
+  clubDetail: (id = ':id') => `/club/${id}`,
+  clubEdit: (id = ':id') => `/club/${id}/edit`,
+  createMatch: () => '/match/create',
+  matches: () => '/matches',
+  matchCreate: () => '/match/create',
+  matchDetail: (id = ':id') => `/matches/${id}`,
+  matchEdit: (id) => `/matches/${id}/edit`,
+  matchInteractive: () => '/match/interactive',
+  accountVerification: () => '/verify-account/:token',
   acceptInvite: (token) => {
     if (token) {
       return '/accept-invite/' + token;
     }
     return '/accept-invite/:token';
   },
-  accountVerification: () => '/verify-account/:token',
-  matchCreate: () => '/match/create',
-  matchDetail: (id = ':id') => `/matches/${id}`,
-  matchEdit: (id) => `/matches/${id}/edit`,
-  matchInteractive: () => '/match/interactive',
-  signIn: () => '/',
-  signUp: () => '/auth/signUp',
-  clubDetail: (id = ':id') => `/club/${id}`,
-  clubEdit: (id = '') => `/club/${id}`,
-  createMatch: () => '/match/create',
-  matches: () => '/matches',
   dashboard: () => '/dashboard',
   newClub: () => '/new-club',
 };

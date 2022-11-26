@@ -83,7 +83,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
                   <Flex
                     as={RouterLink}
                     mt={5}
-                    to={route.clubEdit()}
+                    to={route.clubEdit(club.id)}
                     color="brand.secondary"
                     alignItems="center"
                     gap={2}

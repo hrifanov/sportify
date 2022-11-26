@@ -29,3 +29,9 @@ export const SET_CLUB_ADMIN_STATUS = gql`
     setClubAdminStatus(clubId: $clubId, userId: $userId, isAdmin: $isAdmin)
   }
 `;
+
+export const CREATE_CLUB_MUTATION = gql`
+  mutation createClub($name: String!, $sport: String!, $locality: String!, $playerId: ID!) {
+    createClub(clubInput: { name: $name, sport: $sport, locality: $locality, owner: $playerId })
+  }
+`;

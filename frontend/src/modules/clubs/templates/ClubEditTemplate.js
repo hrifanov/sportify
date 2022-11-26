@@ -11,6 +11,7 @@ export default function ClubEditTemplate(
   { clubRQ, invitePlayerRQ, editClubRQ, removePlayerRQ, makePlayerAdminRQ },
   { ...props },
 ) {
+  console.log('clubRQ.club.id: ' + clubRQ.club.id);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
@@ -35,7 +36,7 @@ export default function ClubEditTemplate(
                 <Flex
                   as={RouterLink}
                   mt={5}
-                  to={route.clubDetail()}
+                  to={route.clubDetail(clubRQ.club.id)}
                   color="brand.secondary"
                   alignItems="center"
                   gap={2}

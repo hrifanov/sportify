@@ -1,5 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 
+import 'react-widgets/styles.css';
+
 export const theme = extendTheme({
   colors: {
     brand: {

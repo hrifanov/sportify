@@ -11,13 +11,21 @@ import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { route } from 'src/Routes';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react';
 
 export default function ClubEditPage() {
   const toast = useToast();
   const { data, loading, refetch } = useQuery(FETCH_CLUBS);
-  const club = data?.clubs?.[0];
+
+  const { id } = useParams();
+  const club = data?.clubs?.find((club) => {
+    if (club.id === id && id) {
+      return club;
+    }
+    return null;
+  });
+
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();
@@ -61,6 +69,7 @@ export default function ClubEditPage() {
 
   const handleSubmitEditClub = useCallback(
     (variables, clubId) => {
+      console.log(variables);
       clubId = club?.id;
       variables = { ...variables, clubId };
       editClubRequest({ variables });
@@ -88,7 +97,7 @@ export default function ClubEditPage() {
     [removePlayerRequest],
   );
 
-  //** Request for makink a player a admin */
+  //** Request for making a player a admin */
   // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
 
   const [makePlayerAdminRequest, makePlayerAdminRequestState] = useMutation(SET_CLUB_ADMIN_STATUS, {

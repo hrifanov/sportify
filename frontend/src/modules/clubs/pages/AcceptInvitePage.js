@@ -5,7 +5,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { Heading } from 'src/shared/design-system';
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { putTokenLS, getTokenLS } from '../molecules/TokenLS';
+import { putTokenLS, getTokenLS } from '../../../utils/TokenLS';
 import { ACCEPT_INVITE_MUTATION } from 'src/modules/clubs/apollo/mutations';
 import { signOut } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
@@ -57,7 +57,7 @@ export function AcceptInvitePage() {
           <Button
             variant="primary"
             onClick={() => {
-              navigate(route.clubDetail());
+              navigate(route.dashboard());
             }}
           >
             Sign In
@@ -72,7 +72,7 @@ export function AcceptInvitePage() {
           <Button
             variant="primary"
             onClick={() => {
-              navigate(route.clubDetail());
+              navigate(route.dashboard());
             }}
           >
             Get me to my team

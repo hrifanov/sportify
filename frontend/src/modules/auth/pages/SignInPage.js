@@ -8,7 +8,7 @@ import { signIn } from 'src/modules/auth/apollo/client';
 import { SignInTemplate } from '../templates';
 import { route } from 'src/Routes';
 
-import { getTokenLS } from '../../clubs/molecules/TokenLS';
+import { getTokenLS } from '../../../utils/TokenLS';
 
 export function SignInPage() {
   const navigate = useNavigate();
