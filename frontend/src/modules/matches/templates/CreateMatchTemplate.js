@@ -28,6 +28,7 @@ import {
   startInteractiveMatch,
   useInteractiveMatchClient,
 } from 'src/modules/matches/apollo/interactiveMatchClient';
+import { players } from 'src/modules/clubs/players';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -115,14 +116,55 @@ export default function CreateMatchTemplate({ club, loading }) {
   };
 
   const Players = () =>
-    Object.entries(columns)[1][1].items?.map((item, itemIndex) => {
+    club?.players.map((item, itemIndex) => {
       return (
         <Stack justifyContent="space-between" direction="row" key={item.id} p={1}>
           <Text>{item.name}</Text>
-          <Checkbox />
+          <Checkbox
+            /*checked={checkedState[itemIndex]}*/
+            onChange={(e) => handleChecked(e, itemIndex, columns, setColumns)}
+          />
         </Stack>
       );
     });
+
+  /*const [checkedState, setCheckedState] = useState(new Array().fill(false)); //fill array with column items in new Array
+
+  const handleChecked = (e, index) => {
+    if (e.target.checked) {
+      console.log(index);
+    } else {
+      console.log(columns[1]);
+    }
+    const updatedCheckedState = checkedState.map((item, i) => (i === index ? !item : item));
+
+    setCheckedState(updatedCheckedState);
+  };*/
+
+  const handleChecked = (e, index, columns, setColumns) => {
+    if (e.target.checked) {
+      const sourceColumn = columns[1];
+      const destColumn = columns[0];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(index, 1);
+      destItems.splice(index, 0, removed);
+      setColumns({
+        ...columns,
+        0: {
+          ...destColumn,
+          items: destItems,
+        },
+        1: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+      });
+      console.log(index);
+    } else {
+      console.log(columns[1]);
+    }
+  };
 
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
