@@ -10,6 +10,7 @@ export const typeDef = gql`
   type Mutation {
     createClub(clubInput: ClubInput!): ID!
     editClub(editClubInput: EditClubInput): Boolean!
+    deleteClub(clubId: ID!): Boolean!
     invitePlayer(clubId: ID!, email: String!): Boolean!
     acceptInvite(token: String!): Boolean!
     setClubAdminStatus(clubId: ID!, userId: ID!, isAdmin: Boolean!): Boolean!
