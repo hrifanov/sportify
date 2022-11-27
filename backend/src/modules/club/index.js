@@ -13,8 +13,8 @@ const resolvers = {
     ...mutations,
   },
   Club: {
-    async owner(parent) {
-      return await User.findById(parent.owner);
+    async contactPerson(parent) {
+      return await User.findById(parent.contactPerson);
     },
     players(parent) {
       return parent.players.map(async (player) => {

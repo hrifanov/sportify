@@ -7,8 +7,8 @@ import Club from '../../models/Club';
 import User from '../../models/User';
 
 export const createClub = async (_, { clubInput }, context) => {
-  isAuth(context);
-  const { name, owner } = clubInput;
+  //isAuth(context);
+  const { name, sport, locality, players, contactPerson, imageURL } = clubInput;
 
   const existingClub = await Club.findOne({ name });
   if (existingClub) {
@@ -19,7 +19,7 @@ export const createClub = async (_, { clubInput }, context) => {
 
   const club = new Club({
     ...clubInput,
-    players: [{ user: owner, isAdmin: true }],
+    players: [{ user: contactPerson, isAdmin: true }],
   });
 
   const { id } = await club.save().catch((err) => {
@@ -30,15 +30,18 @@ export const createClub = async (_, { clubInput }, context) => {
   return id;
 };
 
-export const editClub = async (_, { clubId, name, locality }, context) => {
-  isAuth(context, clubId);
-  await isClubAdmin(clubId, context.payload.userId);
+export const editClub = async (_, { editClubInput }, context) => {
+  const {id, name, sport, locality, players, contactPerson, imageURL} = editClubInput;
+  //isAuth(context, id);
+  //await isClubAdmin(id, context.payload.userId);
 
-  if (!name && !locality) {
+  if (Object.keys(editClubInput).length <= 1) {
     throwCustomError('No data to update', { code: 400 });
   }
 
-  const club = await Club.findByIdAndUpdate(clubId, { name, locality });
+  const club = await Club.findByIdAndUpdate(id, { 
+    name, locality, sport, players, contactPerson, imageURL 
+  });
 
   if (!club) {
     throwCustomError('Club not found', { code: 404 });
@@ -119,8 +122,8 @@ export const removePlayer = async (_, { clubId, userId }, context) => {
     });
   }
 
-  if (club.owner === userId) {
-    throwCustomError(`You cannot remove club's owner.`, {
+  if (club.contactPerson === userId) {
+    throwCustomError(`You cannot remove club's contact person.`, {
       code: 'owner-admin',
     });
   }
@@ -144,8 +147,8 @@ export const setClubAdminStatus = async (
     });
   }
 
-  if (club.owner.toString() === userId) {
-    throwCustomError(`You cannot adjust admin status of the club's owner.`, {
+  if (club.contactPerson.toString() === userId) {
+    throwCustomError(`You cannot adjust admin status of the club's contact person.`, {
       code: 'owner-admin',
     });
   }

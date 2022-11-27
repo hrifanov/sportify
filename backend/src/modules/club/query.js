@@ -8,12 +8,14 @@ export const clubs = async (_, _params, context) => {
   return await Club.find();
 };
 
-export const club_by_owner = async (_, { owner_id }, context) => {
+export const clubByContactPerson = async (_, { contactPersonId }, context) => {
   isAuth(context);
-  return await Club.findOne({ owner: owner_id });
+  const club = await Club.findOne({ contactPerson: contactPersonId });
+  return club;
 };
 
-export const club_by_id = async (_, { id }, context) => {
-  isAuth(context);
-  return await Club.findOne({ id: id });
+export const clubByID = async (_, { id }, context) => {
+  //isAuth(context);
+  const club = await Club.findOne({ _id: id })
+  return club;
 };

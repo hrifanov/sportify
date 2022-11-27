@@ -5,7 +5,7 @@ import TeamPlayer from '../../models/TeamPlayer';
 import User from '../../models/User';
 
 export const createMatch = async (_, { matchInput }, context) => {
-  //isAuth(context);
+  isAuth(context);
 
   const { club, date, teams, score, timer, shots } = matchInput;
   const session = await context.client.startSession();
