@@ -19,8 +19,16 @@ import {
   Switch,
   Radio,
   RadioGroup,
+  Hide,
 } from '@chakra-ui/react';
-import { FiPlus, FiXCircle } from 'react-icons/fi';
+import {
+  FiPlus,
+  FiXCircle,
+  FiArrowRight,
+  FiArrowLeft,
+  FiArrowDown,
+  FiArrowUp,
+} from 'react-icons/fi';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
@@ -121,23 +129,21 @@ export default function CreateMatchTemplate({ club, loading }) {
     setOpenPlayers(false);
   };
 
-  const [value, setValue] = React.useState('2');
+  const [value, setValue] = React.useState('1');
 
   const Players = () =>
     club?.players.map((item, itemIndex) => {
       return (
         <Stack justifyContent="space-between" direction="row" key={item.id} p={1}>
           <Text>{item.name}</Text>
-          <RadioGroup
-            onChange={(setValue, (e) => handleSelected(e, itemIndex, columns, setColumns))}
-            value={value}
+          <Stack
+            direction="row"
+            onChange={(e) => handleSelected(e, itemIndex, columns, setColumns)}
           >
-            <Stack direction="row">
-              <Radio value="1">First</Radio>
-              <Radio value="2">Second</Radio>
-              <Radio value="3">Third</Radio>
-            </Stack>
-          </RadioGroup>
+            <input type="radio" name={item.name} value="0" on />
+            <input type="radio" name={item.name} value="1" defaultChecked />
+            <input type="radio" name={item.name} value="2" />
+          </Stack>
         </Stack>
       );
     });
@@ -156,7 +162,8 @@ export default function CreateMatchTemplate({ club, loading }) {
   };*/
 
   const handleSelected = (e, index, columns, setColumns) => {
-    if (value === '1') {
+    console.log(e.target.value);
+    if (e.target.value === '0') {
       const sourceColumn = columns[1];
       const destColumn = columns[0];
       const sourceItems = [...sourceColumn.items];
@@ -177,26 +184,52 @@ export default function CreateMatchTemplate({ club, loading }) {
         },
       });
     }
-    if (value === '2') {
-      const sourceColumn = columns[0];
-      const destColumn = columns[1];
-      const sourceItems = [...sourceColumn.items];
-      const destItems = [...destColumn.items];
-      const [removed] = sourceItems.splice(index, 1);
-      destItems.splice(index, 0, removed);
-      setColumns({
-        ...columns,
-        0: {
-          ...destColumn,
-          items: destItems,
-        },
-        1: {
-          ...sourceColumn,
-          items: sourceItems,
-        },
-      });
-    } else {
-    }
+  };
+
+  const handleLeftMove = (e, index, columns, setColumns, column) => {
+    console.log(column.id);
+    const sourceColumn = columns[column.id];
+    const destColumn = columns[column.id - 1];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(index, 1);
+    destItems.splice(index, 0, removed);
+    console.log(index);
+    console.log(removed);
+    setColumns({
+      ...columns,
+      [column.id - 1]: {
+        ...destColumn,
+        items: destItems,
+      },
+      [column.id]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+    });
+  };
+
+  const handleRightMove = (e, index, columns, setColumns, column) => {
+    console.log(column.id);
+    const sourceColumn = columns[column.id];
+    const destColumn = columns[column.id + 1];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(index, 1);
+    destItems.splice(index, 0, removed);
+    console.log(index);
+    console.log(removed);
+    setColumns({
+      ...columns,
+      [column.id]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+      [column.id + 1]: {
+        ...destColumn,
+        items: destItems,
+      },
+    });
   };
 
   return (
@@ -302,6 +335,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                             position="relative"
                           >
                             {column.items?.map((item, itemIndex) => {
+                              console.log(itemIndex);
                               return (
                                 <Draggable
                                   key={item.id}
@@ -313,6 +347,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                                       <Stack
                                         direction="row"
                                         justifyContent="space-between"
+                                        flexWrap="wrap"
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
@@ -361,6 +396,73 @@ export default function CreateMatchTemplate({ club, loading }) {
                                             </option>
                                           </Select>
                                         </Stack>
+                                        <Stack
+                                          direction="row"
+                                          w="100%"
+                                          mt="8px !important"
+                                          marginInlineStart="0 !important"
+                                        >
+                                          <Button
+                                            bg="brand.secondary"
+                                            variant="filled"
+                                            colorScheme="brand.secondary"
+                                            _hover={{
+                                              bg: 'brand.dark',
+                                              cursor: 'pointer',
+                                            }}
+                                            w="50%"
+                                            size="sm"
+                                            onClick={(e) =>
+                                              handleLeftMove(
+                                                e,
+                                                itemIndex,
+                                                columns,
+                                                setColumns,
+                                                column,
+                                              )
+                                            }
+                                          >
+                                            <Stack direction="row">
+                                              <Hide below="md">
+                                                <FiArrowLeft />
+                                              </Hide>
+                                              <Hide above="md">
+                                                <FiArrowUp />
+                                              </Hide>
+                                              <Text>home</Text>
+                                            </Stack>
+                                          </Button>
+                                          <Button
+                                            bg="brand.secondary"
+                                            variant="filled"
+                                            colorScheme="brand.secondary"
+                                            _hover={{
+                                              bg: 'brand.dark',
+                                              cursor: 'pointer',
+                                            }}
+                                            w="50%"
+                                            size="sm"
+                                            onClick={(e) =>
+                                              handleRightMove(
+                                                e,
+                                                itemIndex,
+                                                columns,
+                                                setColumns,
+                                                column,
+                                              )
+                                            }
+                                          >
+                                            <Stack direction="row">
+                                              <Text>away</Text>
+                                              <Hide below="md">
+                                                <FiArrowRight />
+                                              </Hide>
+                                              <Hide above="md">
+                                                <FiArrowDown />
+                                              </Hide>
+                                            </Stack>
+                                          </Button>
+                                        </Stack>
                                       </Stack>
                                     );
                                   }}
@@ -375,7 +477,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                   </Stack>
                 );
               })}
-              <Button
+              {/*<Button
                 height={100}
                 width={100}
                 borderRadius="50%"
@@ -396,7 +498,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                 right={0}
               >
                 <FiPlus />
-              </Button>
+              </Button>*/}
             </DragDropContext>
           </Stack>
         )}

@@ -1,18 +1,18 @@
 export function teamsColumns(players) {
   return [
     {
-      id: 1,
-      name: 'Team 1',
+      id: 0,
+      name: 'Home Team',
       items: [],
     },
     {
-      id: 2,
+      id: 1,
       name: 'Players',
       items: players,
     },
     {
-      id: 3,
-      name: 'Team 2',
+      id: 2,
+      name: 'Away Team',
       items: [],
     },
   ];
