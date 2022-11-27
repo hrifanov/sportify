@@ -19,6 +19,10 @@ const matchSchema = new Schema({
     home: Number,
     guest: Number
   },
+  shots: {
+    home: Number,
+    guest: Number
+  },
   events: [events.schema],
 });
 
