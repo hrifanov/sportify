@@ -25,6 +25,12 @@ export const FETCH_CLUBS = gql`
         }
       }
     }
+    club_by_id(id: "636ecd9840d0be5c9a93e4f2") {
+      players {
+        id
+        name
+      }
+    }
   }
 `;
 

@@ -25,7 +25,7 @@ import { FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
 import { route } from '../../../Routes.js';
 
-export default function ClubDetailTemplate({ club, loading, matches, isCurrUserAdmin }) {
+export default function ClubDetailTemplate({ club, loading, matches, players, isCurrUserAdmin }) {
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
@@ -96,7 +96,7 @@ export default function ClubDetailTemplate({ club, loading, matches, isCurrUserA
               </TabList>
               <TabPanels>
                 <TabPanel>
-                  <StatisticsComp></StatisticsComp>
+                  {players && <StatisticsComp players={players}></StatisticsComp>}
                 </TabPanel>
                 <TabPanel>{matches && <MatchesComp matches={matches}></MatchesComp>}</TabPanel>
               </TabPanels>
@@ -111,7 +111,7 @@ export default function ClubDetailTemplate({ club, loading, matches, isCurrUserA
               py={4}
               display={{ base: 'none', md: 'flex' }}
             >
-              <StatisticsComp></StatisticsComp>
+              {players && <StatisticsComp players={players}></StatisticsComp>}
             </Flex>
             <Flex
               direction="column"

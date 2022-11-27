@@ -25,7 +25,6 @@ export default function MatchesComp({ matches }) {
             },
           }}
         >
-          {console.log(matches)}
           <Table size={{ base: 'sm' }} variant="base" className="maches-table">
             <Tbody>
               {Object.keys(matches).map((i) => (
@@ -52,7 +51,7 @@ export default function MatchesComp({ matches }) {
       </Box>
       <Button
         h="8%"
-        padding={7}
+        padding={5}
         colorScheme="orange"
         w="full"
         onClick={() => navigate(route.createMatch())}

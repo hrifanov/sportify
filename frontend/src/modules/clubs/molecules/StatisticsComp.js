@@ -17,7 +17,6 @@ import {
   PopoverContent,
 } from '@chakra-ui/react';
 
-import { players } from 'src/modules/clubs/players';
 import { BsFilter } from 'react-icons/bs';
 import {
   RoleAttackerIcon,
@@ -38,7 +37,7 @@ const RoleIcon = ({ role }) => {
   return <Element />;
 };
 
-export default function StatisticsComp() {
+export default function StatisticsComp({ players }) {
   return (
     <>
       <Flex
@@ -140,26 +139,27 @@ export default function StatisticsComp() {
               <Th>P</Th>
             </Tr>
           </Thead>
+          {console.log(players)}
           <Tbody color="brand.secondary">
-            {[...players].map((player, i) => (
+            {players.map((player, i) => (
               <Tr key={i}>
                 <Td textAlign="left" textColor="white">
                   {i + 1}.
                 </Td>
                 <Td textColor="white">
-                  <RoleIcon role={player.role} />
+                  <RoleIcon role={'attacker'} />
                 </Td>
                 <Td textAlign="left" textColor="white">
                   {player.name}
                 </Td>
                 <Td textColor="white" fontWeight="bold">
-                  {player.totalPoints}
+                  TP
                 </Td>
-                <Td>{player.matches}</Td>
-                <Td>{player.average}</Td>
-                <Td>{player.goals}</Td>
-                <Td>{player.assist}</Td>
-                <Td>{player.penalty}</Td>
+                <Td>matches</Td>
+                <Td>avarage</Td>
+                <Td>goals</Td>
+                <Td>assist</Td>
+                <Td>penalty</Td>
               </Tr>
             ))}
           </Tbody>

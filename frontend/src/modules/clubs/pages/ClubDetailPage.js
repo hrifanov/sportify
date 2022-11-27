@@ -7,7 +7,8 @@ export default function ClubDetailPage() {
   const { data, loading } = useQuery(FETCH_CLUBS);
   const club = data?.clubs?.[0];
   const matches = data?.matches;
-  //console.log(club);
+  const players = data?.club_by_id.players;
+  //console.log(players);
   //console.log(matches);
   const { user } = useAuthClient();
   // console.log('user: ' + user.email);
@@ -25,6 +26,7 @@ export default function ClubDetailPage() {
       club={club}
       matches={matches}
       loading={loading}
+      players={players}
       isCurrUserAdmin={isCurrUserAdmin}
     />
   );
