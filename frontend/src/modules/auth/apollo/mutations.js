@@ -25,3 +25,11 @@ export const VERIFY_ACCOUNT_MUTATION = gql`
     verifyUser(token: $token)
   }
 `;
+
+export const REFRESH_TOKEN = gql`
+  mutation refreshToken($token: String!) {
+    refreshToken(token: $token) {
+      accessToken
+    }
+  }
+`;

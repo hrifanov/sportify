@@ -12,11 +12,6 @@ import {
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import {
-  addEvent,
-  INTERACTIVE_MATCH_ACTIONS,
-  useInteractiveMatchClient,
-} from 'src/modules/matches/apollo/interactiveMatchClient';
 import { TeamAvatar } from 'src/modules/matches/atoms/TeamAvatar';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { ErrorBanner, Stack } from 'src/shared/design-system';
@@ -27,16 +22,22 @@ import { useMutation } from '@apollo/client';
 import { ADD_EVENT_MUTATION } from '../apollo/mutations.js';
 import { EventEnum, PenaltyEnum } from '../enums.js';
 import { map } from 'lodash';
+import {
+  INTERACTIVE_MATCH_ACTIONS,
+  useInteractiveMatchStore,
+} from 'src/modules/matches/store/interactiveMatchStore';
+import { useEffect } from 'react';
 
 export const ModalPenalty = () => {
-  const { state, uiState, addEvent, finishAction } = useInteractiveMatchClient();
-  const isOpen = uiState.action === INTERACTIVE_MATCH_ACTIONS.PENALTY;
-  const onClose = finishAction;
+  const { computed, ui, addEvent, editEvent, finishAction } = useInteractiveMatchStore();
+  const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.PENALTY;
+  const isEdit = !!ui.props?.event;
+  const actionLabel = `${isEdit ? 'Edit' : 'Add'} a penalty`;
 
   const defaultValues = {
-    player: '',
-    penalty: '',
+    playerId: '',
     length: '',
+    type: '',
   };
 
   const penaltyOptions = map(PenaltyEnum, (value, key) => ({
@@ -54,8 +55,8 @@ export const ModalPenalty = () => {
   ];
 
   const schema = yup.object().shape({
-    player: yup.string().required().label('Player'),
-    kind: yup.string().required().label('Type'),
+    playerId: yup.string().required().label('Player'),
+    type: yup.string().required().label('Type'),
     length: yup.string().required().label('Length'),
   });
 
@@ -64,63 +65,62 @@ export const ModalPenalty = () => {
     resolver: yupResolver(schema),
   });
 
+  useEffect(() => {
+    formMethods.reset();
+    if (!ui.props?.event) return;
+
+    for (const key in ui.props.event.data) {
+      formMethods.setValue(key, ui.props.event.data[key]);
+    }
+  }, [formMethods, ui.props?.event, isOpen]);
+
   if (!isOpen) return;
-  const team = state.teams[uiState.props.teamId];
+  const team = computed.teams[ui.props.teamId];
   const onSubmit = (data) => {
-    addEvent({
-      type: EventEnum.PENALTY,
-      team: uiState.props.teamId,
-      player: data.player,
-      kind: data.kind,
-      length: data.length,
-    });
+    if (isEdit) {
+      editEvent(ui.props.event.id, { data });
+    } else {
+      addEvent({
+        type: EventEnum.PENALTY,
+        data: {
+          teamId: ui.props.teamId,
+          ...data,
+        },
+      });
+    }
     finishAction();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={finishAction} isCentered={true}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader as={Flex} align={'center'} gap={4}>
           <TeamAvatar team={team} size={'md'} />
-          Add a penalty
+          {actionLabel}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={5}>
           <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
               <Stack spacing="3">
-                <PlayerSelect name="player" label="Player" teamId={uiState.props.teamId} />
-                <FormField
-                  id="kind"
-                  name="kind"
-                  label="Penalty type"
-                  input={forwardRef((props, ref) => (
-                    <Select {...props} ref={ref}>
-                      <option value={''}>Select a penalty</option>
-                      {penaltyOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Select>
+                <PlayerSelect name="playerId" label="Player" teamId={ui.props.teamId} />
+                <FormField id="type" name="type" label="Penalty type" input={Select}>
+                  <option value={''}>Select a penalty</option>
+                  {penaltyOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
-                />
-                <FormField
-                  id="length"
-                  name="length"
-                  label="Penalty length"
-                  input={forwardRef((props, ref) => (
-                    <Select {...props} ref={ref}>
-                      <option value={''}>Select a penalty length</option>
-                      {penaltyLengthOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Select>
+                </FormField>
+                <FormField id="length" name="length" label="Penalty length" input={Select}>
+                  <option value={''}>Select a penalty length</option>
+                  {penaltyLengthOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
-                />
+                </FormField>
               </Stack>
 
               <Flex mt={8}>
@@ -130,7 +130,7 @@ export const ModalPenalty = () => {
                   variant="primary"
                   onClick={formMethods.handleSubmit(onSubmit)}
                 >
-                  Add a penalty
+                  {actionLabel}
                 </Button>
               </Flex>
             </form>

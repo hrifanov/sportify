@@ -7,7 +7,7 @@ export const typeDef = gql`
   }
 
   type Mutation {
-    addEvent(matchId: ID!, eventInput: EventInput!): Boolean!
+    addEvent(matchId: ID!, eventInput: EventInput!): ID!
     editEvent(eventId: ID!, eventEditInput: EventEditInput!): Boolean!
     removeEvent(matchId: ID!, eventId: ID!): Boolean!
   }
@@ -17,19 +17,19 @@ export const typeDef = gql`
   type Event {
     id: ID!
     type: String!
-    time: String!
+    time: Int!
     data: EventData!
   }
 
   input EventInput {
     type: String!
-    time: String!
+    time: Int!
     data: EventData!
   }
 
   input EventEditInput {
     type: String
-    time: String
+    time: Int
     data: EventData!
   }
 
