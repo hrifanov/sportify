@@ -16,7 +16,7 @@ import {
   Text,
   Select,
   IconButton,
-  Checkbox,
+  Switch,
   Radio,
   RadioGroup,
 } from '@chakra-ui/react';
@@ -109,6 +109,10 @@ export default function CreateMatchTemplate({ club, loading }) {
 
   const [openPlayers, setOpenPlayers] = useState(false);
 
+  const [errorPopup, setErrorPopup] = useState(false);
+
+  const [showDate, setShowDate] = useState(false);
+
   const handleOpenPlayers = () => {
     setOpenPlayers(true);
   };
@@ -152,7 +156,7 @@ export default function CreateMatchTemplate({ club, loading }) {
   };*/
 
   const handleSelected = (e, index, columns, setColumns) => {
-    if (value === '2') {
+    if (value === '1') {
       const sourceColumn = columns[1];
       const destColumn = columns[0];
       const sourceItems = [...sourceColumn.items];
@@ -226,6 +230,36 @@ export default function CreateMatchTemplate({ club, loading }) {
               onClick={handleClosePlayers}
             />
             <Players />
+          </Box>
+        ) : null}
+        {errorPopup ? (
+          <Box
+            position="absolute"
+            bg="brand.title"
+            zIndex={10}
+            left={0}
+            right={0}
+            top="50%"
+            bottom="50%"
+            height={120}
+            w={300}
+            m="auto"
+            px={5}
+            pt={10}
+            pb={5}
+            borderRadius="base"
+          >
+            <IconButton
+              mt={-10}
+              mr={-5}
+              bg="brand.title"
+              aria-label="Save column name"
+              size="md"
+              icon={<FiXCircle />}
+              float="right"
+              onClick={() => setErrorPopup(false)}
+            />
+            <Text textAlign="center">You need to have at least 2 players in each team</Text>
           </Box>
         ) : null}
         {loading && (
@@ -370,72 +404,87 @@ export default function CreateMatchTemplate({ club, loading }) {
       <Container mb={6} maxW="container.xl">
         <Stack
           direction={['column', 'column', 'row']}
-          spacing={[3, 5, 10]}
+          spacing={[3, 5, 8]}
           justifyContent="center"
-          alignItems={'end'}
+          alignItems={['start', null, 'end']}
         >
-          {/* <Stack maxW={['230px', '280px', '320px']}> */}
-          {/*   <label className="label-nowrap" htmlFor="game-time"> */}
-          {/*     Game time: */}
-          {/*   </label> */}
-          {/*   <Stack direction="row"> */}
-          {/*     <Button {...inc} color="black"> */}
-          {/*       + */}
-          {/*     </Button> */}
-          {/*     <InputGroup id="game-time"> */}
-          {/*       <Input {...input} color="black" /> */}
-          {/*       <InputRightAddon children="min" bg="white" color="brand.secondary" /> */}
-          {/*     </InputGroup> */}
-          {/*     <Button {...dec} color="black"> */}
-          {/*       - */}
-          {/*     </Button> */}
-          {/*   </Stack> */}
-          {/* </Stack> */}
-          {/* <Stack> */}
-          {/*   <label className="label-nowrap" htmlFor="date-of-match"> */}
-          {/*     Date of the match: */}
-          {/*   </label> */}
-          {/*   <Input */}
-          {/*     id="date-of-match" */}
-          {/*     color="black" */}
-          {/*     value={gameDate} */}
-          {/*     size="md" */}
-          {/*     type="date" */}
-          {/*     w={['230px', '280px', '320px']} */}
-          {/*     onChange={(event) => setGameDate(event.target.value)} */}
-          {/*   /> */}
-          {/* </Stack> */}
+          <Stack w="100%" maxWidth={'259px'}>
+            <label className="label-nowrap" htmlFor="game-time">
+              Game time:
+            </label>
+            <Stack direction="row">
+              <Button {...inc} color="black">
+                +
+              </Button>
+              <InputGroup id="game-time">
+                <Input px={2} {...input} color="black" />
+                <InputRightAddon children="min" bg="white" color="brand.secondary" />
+              </InputGroup>
+              <Button {...dec} color="black">
+                -
+              </Button>
+            </Stack>
+          </Stack>
+          <Stack>
+            <label className="label-nowrap" htmlFor="date-of-match">
+              Past match:
+            </label>
+            <Switch py={['0', '0', '6px']} size="lg" onChange={() => setShowDate(!showDate)} />
+          </Stack>
+          {showDate ? (
+            <Stack>
+              <label className="label-nowrap" htmlFor="date-of-match">
+                Date of the match:
+              </label>
+              <Input
+                id="date-of-match"
+                color="black"
+                value={gameDate}
+                size="md"
+                type="date"
+                w={['259px', '259px', '100%']}
+                onChange={(event) => setGameDate(event.target.value)}
+              />
+            </Stack>
+          ) : null}
           <Button
+            w="259px"
             variant="primary"
             onClick={async () => {
-              // transform data for request query
-              const teamPlayers1 = columns[0].items.map((item) => ({
-                user: item.id,
-                role: item.role ? item.role : 'attack',
-              }));
-              const teamPlayers2 = columns[2].items.map((item) => ({
-                user: item.id,
-                role: item.role ? item.role : 'attack',
-              }));
+              const homeTeam = [];
+              homeTeam.push(...Object.values(columns[0].items));
+              const guestTeam = [];
+              guestTeam.push(...Object.values(columns[2].items));
+              if (homeTeam.length < 2 || guestTeam.length < 2) {
+                setErrorPopup(true);
+              } else {
+                const teamPlayers1 = columns[0].items.map((item) => ({
+                  user: item.id,
+                  role: item.role ? item.role : 'attack',
+                }));
+                const teamPlayers2 = columns[2].items.map((item) => ({
+                  user: item.id,
+                  role: item.role ? item.role : 'attack',
+                }));
 
-              const matchInput = {
-                club: club.id,
-                date: gameDate,
-                teams: {
-                  home: {
-                    name: columns[0].name,
-                    teamPlayers: teamPlayers1,
+                const matchInput = {
+                  club: club.id,
+                  date: gameDate,
+                  teams: {
+                    home: {
+                      name: columns[0].name,
+                      teamPlayers: teamPlayers1,
+                    },
+                    guest: {
+                      name: columns[2].name,
+                      teamPlayers: teamPlayers2,
+                    },
                   },
-                  guest: {
-                    name: columns[2].name,
-                    teamPlayers: teamPlayers2,
-                  },
-                },
-              };
-              const { data } = await createMatchRequest({ variables: { matchInput } });
-              interactiveMatchClient.startInteractiveMatch(data.createMatch);
+                };
+                const { data } = await createMatchRequest({ variables: { matchInput } });
+                interactiveMatchClient.startInteractiveMatch(data.createMatch);
+              }
             }}
-            w={60}
           >
             Start match
           </Button>
