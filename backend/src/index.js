@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import fileUpload from 'express-fileupload';
+import path from 'path';
 
 import { PORT } from './config/variables';
 import { getConnection } from './libs/connection';
@@ -15,6 +16,8 @@ import { filesPayloadExists, fileExtensionLimiter, fileSizeLimiter, imageUpload}
   const app = express();
 
   app.disable('x-powered-by');
+
+  app.use('/public', express.static(path.join(__dirname, '../public')))
 
   app.use(cors());
 
