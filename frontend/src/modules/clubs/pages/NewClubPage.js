@@ -1,16 +1,18 @@
 import NewClubTemplate from 'src/modules/clubs/templates/NewClubTemplate';
 import { CREATE_CLUB_MUTATION } from 'src/modules/clubs/apollo/mutations';
 import { useMutation } from '@apollo/client';
-import { Navigate } from 'react-router-dom';
+// import { Navigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function NewClubPage(user) {
+  const navigate = useNavigate();
   user = user?.user;
   const [createClubRequest, createClubRequestState] = useMutation(CREATE_CLUB_MUTATION, {
     onCompleted: (data) => {
-      console.log(data);
-      Navigate(route.clubEdit(data.createClub));
+      console.log('dataa:' + data.createClub);
+      navigate(route.clubEdit(data.createClub));
     },
     onError: (e) => {
       console.log(e);

@@ -11,7 +11,7 @@ export default function ClubEditTemplate(
   { clubRQ, invitePlayerRQ, editClubRQ, removePlayerRQ, makePlayerAdminRQ },
   { ...props },
 ) {
-  console.log('clubRQ.club.id: ' + clubRQ.club.id);
+  console.log('clubRQ.club.id: ' + clubRQ?.club?.id);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />

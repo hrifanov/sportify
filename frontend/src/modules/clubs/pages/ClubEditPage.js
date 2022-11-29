@@ -129,7 +129,7 @@ export default function ClubEditPage() {
       duration: 4000,
       isClosable: true,
     });
-    return <Navigate to={route.clubDetail()} replace />;
+    return <Navigate to={route.clubDetail(clubRQ?.club?.id)} replace />;
   }
 
   return (
