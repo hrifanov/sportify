@@ -24,6 +24,7 @@ const matchSchema = new Schema({
     guest: Number
   },
   events: [events.schema],
+  season: { type: Schema.Types.ObjectId, ref:"Season" }
 });
 
 module.exports = model('Matches', matchSchema);

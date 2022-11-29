@@ -17,10 +17,12 @@ export const matchTypeDef = gql`
     date: String!
     timer: Int!
     club: Club
+    place: String
     teams: MatchTeams
     events: [Event]!
     score: TeamsNumbers!
     shots: TeamsNumbers!
+    season: Season!
   }
 
   input MatchInput {
@@ -30,7 +32,8 @@ export const matchTypeDef = gql`
     teams: InputMatchTeams
     timer: Int
     score: TeamsNumbersInput
-    shots: TeamsNumbersInput
+    shots: TeamsNumbersInput,
+    seasonId: ID!
   }
 
   # MATCH TEAMS
