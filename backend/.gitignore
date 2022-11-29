@@ -13,3 +13,5 @@ yarn-error.log
 
 /tmp/*
 !/tmp/restart.txt
+
+/public/*
