@@ -31,7 +31,6 @@ export const typeDef = gql`
     name: String!
     sport: String!
     locality: String!
-    players: [PlayerInput]
     contactPerson: ID!
     imageURL: String!
   }

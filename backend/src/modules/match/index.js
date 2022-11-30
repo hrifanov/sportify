@@ -22,7 +22,7 @@ const resolvers = {
       return await Club.findById(parent.club);
     },
     async season(parent) {
-      const season = (await Season.findById(parent.season)).toObject();
+      const season = await Season.findById(parent.season);
       return formatSeason(season);
     }
   },

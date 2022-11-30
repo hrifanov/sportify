@@ -5,7 +5,7 @@ import TeamPlayer from '../../models/TeamPlayer';
 import User from '../../models/User';
 
 export const createMatch = async (_, { matchInput }, context) => {
-  //isAuth(context);
+  isAuth(context);
 
   const { club, date, teams, score, timer, shots, seasonId } = matchInput;
   const session = await context.client.startSession();
@@ -31,14 +31,13 @@ export const createMatch = async (_, { matchInput }, context) => {
           teamPlayers: playerIds.slice(teams.home.teamPlayers.length),
         },
       },
-      score,
-      shots,
+      score: score || {home: 0, guest: 0},
+      shots: shots || {home: 0, guest: 0},
       timer,
       season: seasonId
     }).save({ session });
 
     await session.commitTransaction();
-    //await session.abortTransaction();
     return match;
   } catch (err) {
     console.error(err);

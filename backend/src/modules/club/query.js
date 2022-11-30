@@ -16,6 +16,6 @@ export const clubByContactPerson = async (_, { contactPersonId }, context) => {
 
 export const clubByID = async (_, { id }, context) => {
   isAuth(context);
-  const club = await Club.findOne({ _id: id })
+  const club = await Club.findById(id);
   return club;
 };
