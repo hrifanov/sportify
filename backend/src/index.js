@@ -3,21 +3,35 @@ import { ApolloServer } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
+import fileUpload from 'express-fileupload';
+import path from 'path';
 
 import { PORT } from './config/variables';
 import { getConnection } from './libs/connection';
 import { schema } from './modules/executableSchema';
+import { filesPayloadExists, fileExtensionLimiter, fileSizeLimiter, imageUpload} from './rest/fileUpload';
+
 
 (async () => {
   const app = express();
 
   app.disable('x-powered-by');
 
+  app.use('/public', express.static(path.join(__dirname, '../public')))
+
   app.use(cors());
 
   app.use(cookieParser());
 
   app.get('/', (_, res) => res.redirect('/graphql'));
+
+  app.post('/upload', 
+    fileUpload({ createParentPath: true }), 
+    filesPayloadExists,
+    fileExtensionLimiter([".png", ".jpg", ".jpeg", ".gif"]),
+    fileSizeLimiter, 
+    imageUpload
+  );
 
   const client = await getConnection();
 

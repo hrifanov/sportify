@@ -3,13 +3,14 @@ import { gql } from 'apollo-server-express';
 export const typeDef = gql`
   type Query {
     clubs: [Club!]!
-    club_by_owner(owner_id: ID!): Club
-    club_by_id(id: ID!): Club
+    clubByContactPerson(contactPersonId: ID!): Club
+    clubByID(id: ID!): Club
   }
 
   type Mutation {
     createClub(clubInput: ClubInput!): ID!
-    editClub(clubId: ID!, name: String, locality: String): Boolean!
+    editClub(editClubInput: EditClubInput): Boolean!
+    deleteClub(clubId: ID!): Boolean!
     invitePlayer(clubId: ID!, email: String!): Boolean!
     acceptInvite(token: String!): Boolean!
     setClubAdminStatus(clubId: ID!, userId: ID!, isAdmin: Boolean!): Boolean!
@@ -22,15 +23,26 @@ export const typeDef = gql`
     sport: String!
     locality: String!
     players: [Player]
-    owner: User!
+    contactPerson: User!
+    imageURL: String!
   }
 
   input ClubInput {
     name: String!
     sport: String!
     locality: String!
+    contactPerson: ID!
+    imageURL: String!
+  }
+
+  input EditClubInput {
+    id: ID!
+    name: String
+    sport: String
+    locality: String
     players: [PlayerInput]
-    owner: ID!
+    contactPerson: ID
+    imageURL: String
   }
 
   type Player {

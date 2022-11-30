@@ -19,7 +19,12 @@ const matchSchema = new Schema({
     home: Number,
     guest: Number
   },
+  shots: {
+    home: Number,
+    guest: Number
+  },
   events: [events.schema],
+  season: { type: Schema.Types.ObjectId, ref:"Season" }
 });
 
 module.exports = model('Matches', matchSchema);

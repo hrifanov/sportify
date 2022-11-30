@@ -10,7 +10,8 @@ const clubSchema = new Schema({
       isAdmin: Boolean,
     },
   ],
-  owner: { type: Schema.Types.ObjectId, ref: 'User' },
+  contactPerson: { type: Schema.Types.ObjectId, ref: 'User' },
+  imageURL: String
 });
 
 module.exports = model('Clubs', clubSchema);

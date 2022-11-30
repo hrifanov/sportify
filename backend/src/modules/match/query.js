@@ -14,12 +14,8 @@ export const matches = async (_, { clubId }, context) => {
 
 const formatMatch = (match) => {
   return {
-    score: {
-      home: 0,
-      guest: 0
-    },
     id: match._id,
     ...match.toObject(),
-    date: new Date(match.date || "0000-00-00T00:00:00").toISOString(),
+    date: new Date(match.date).toISOString(),
   }
 }
