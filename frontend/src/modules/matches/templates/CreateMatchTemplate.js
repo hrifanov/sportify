@@ -162,7 +162,6 @@ export default function CreateMatchTemplate({ club, loading }) {
   };*/
 
   const handleSelected = (e, index, columns, setColumns) => {
-    console.log(e.target.value);
     if (e.target.value === '0') {
       const sourceColumn = columns[1];
       const destColumn = columns[0];
@@ -170,8 +169,6 @@ export default function CreateMatchTemplate({ club, loading }) {
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(index, 1);
       destItems.splice(index, 0, removed);
-      console.log(index);
-      console.log(removed);
       setColumns({
         ...columns,
         0: {
@@ -187,15 +184,12 @@ export default function CreateMatchTemplate({ club, loading }) {
   };
 
   const handleLeftMove = (e, index, columns, setColumns, column) => {
-    console.log(column.id);
     const sourceColumn = columns[column.id];
     const destColumn = columns[column.id - 1];
     const sourceItems = [...sourceColumn.items];
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(index, 1);
     destItems.splice(index, 0, removed);
-    console.log(index);
-    console.log(removed);
     setColumns({
       ...columns,
       [column.id - 1]: {
@@ -210,15 +204,12 @@ export default function CreateMatchTemplate({ club, loading }) {
   };
 
   const handleRightMove = (e, index, columns, setColumns, column) => {
-    console.log(column.id);
     const sourceColumn = columns[column.id];
     const destColumn = columns[column.id + 1];
     const sourceItems = [...sourceColumn.items];
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(index, 1);
     destItems.splice(index, 0, removed);
-    console.log(index);
-    console.log(removed);
     setColumns({
       ...columns,
       [column.id]: {
@@ -306,7 +297,7 @@ export default function CreateMatchTemplate({ club, loading }) {
               {Object.entries(columns).map(([columnId, column], columnIndex) => {
                 return (
                   <Stack
-                    key={column.id}
+                    key={column.id + 1}
                     direction="column"
                     w="full"
                     h="full"
@@ -320,11 +311,11 @@ export default function CreateMatchTemplate({ club, loading }) {
                     pl={[2, 2, 5]}
                   >
                     <EditableHeading
-                      key={column.id}
+                      key={column.id + 1}
                       onChange={(e) => handleChange(e, columnIndex)}
                       name={column.name}
                     />
-                    <Droppable droppableId={columnId} key={columnId}>
+                    <Droppable droppableId={columnId} key={columnId + 1}>
                       {(provided, snapshot) => {
                         return (
                           <Box
@@ -335,7 +326,6 @@ export default function CreateMatchTemplate({ club, loading }) {
                             position="relative"
                           >
                             {column.items?.map((item, itemIndex) => {
-                              console.log(itemIndex);
                               return (
                                 <Draggable
                                   key={item.id}
@@ -355,7 +345,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                                         px={[2, 3, 3]}
                                         py={3}
                                         _hover={{
-                                          background: 'brand.title',
+                                          background: '#4C64A1',
                                         }}
                                         mb={2}
                                         borderRadius="base"
@@ -402,66 +392,69 @@ export default function CreateMatchTemplate({ club, loading }) {
                                           mt="8px !important"
                                           marginInlineStart="0 !important"
                                         >
-                                          <Button
-                                            bg="brand.secondary"
-                                            variant="filled"
-                                            colorScheme="brand.secondary"
-                                            _hover={{
-                                              bg: 'brand.dark',
-                                              cursor: 'pointer',
-                                            }}
-                                            w="50%"
-                                            size="sm"
-                                            onClick={(e) =>
-                                              handleLeftMove(
-                                                e,
-                                                itemIndex,
-                                                columns,
-                                                setColumns,
-                                                column,
-                                              )
-                                            }
-                                          >
-                                            <Stack direction="row">
-                                              <Hide below="md">
-                                                <FiArrowLeft />
-                                              </Hide>
-                                              <Hide above="md">
-                                                <FiArrowUp />
-                                              </Hide>
-                                              <Text>home</Text>
-                                            </Stack>
-                                          </Button>
-                                          <Button
-                                            bg="brand.secondary"
-                                            variant="filled"
-                                            colorScheme="brand.secondary"
-                                            _hover={{
-                                              bg: 'brand.dark',
-                                              cursor: 'pointer',
-                                            }}
-                                            w="50%"
-                                            size="sm"
-                                            onClick={(e) =>
-                                              handleRightMove(
-                                                e,
-                                                itemIndex,
-                                                columns,
-                                                setColumns,
-                                                column,
-                                              )
-                                            }
-                                          >
-                                            <Stack direction="row">
-                                              <Text>away</Text>
-                                              <Hide below="md">
-                                                <FiArrowRight />
-                                              </Hide>
-                                              <Hide above="md">
-                                                <FiArrowDown />
-                                              </Hide>
-                                            </Stack>
-                                          </Button>
+                                          {column.id !== 0 ? (
+                                            <Button
+                                              bg="brand.secondary"
+                                              variant="filled"
+                                              colorScheme="brand.secondary"
+                                              _hover={{
+                                                bg: 'brand.dark',
+                                                cursor: 'pointer',
+                                              }}
+                                              w="50%"
+                                              size="sm"
+                                              onClick={(e) =>
+                                                handleLeftMove(
+                                                  e,
+                                                  itemIndex,
+                                                  columns,
+                                                  setColumns,
+                                                  column,
+                                                )
+                                              }
+                                            >
+                                              <Stack direction="row">
+                                                <Hide below="md">
+                                                  <FiArrowLeft />
+                                                </Hide>
+                                                <Hide above="md">
+                                                  <FiArrowUp />
+                                                </Hide>
+                                              </Stack>
+                                            </Button>
+                                          ) : null}
+                                          {column.id !== 2 ? (
+                                            <Button
+                                              ml="auto"
+                                              bg="brand.secondary"
+                                              variant="filled"
+                                              colorScheme="brand.secondary"
+                                              _hover={{
+                                                bg: 'brand.dark',
+                                                cursor: 'pointer',
+                                              }}
+                                              w="50%"
+                                              size="sm"
+                                              onClick={(e) =>
+                                                handleRightMove(
+                                                  e,
+                                                  itemIndex,
+                                                  columns,
+                                                  setColumns,
+                                                  column,
+                                                )
+                                              }
+                                            >
+                                              <Stack direction="row">
+                                                <Hide below="md">
+                                                  <FiArrowRight />
+                                                </Hide>
+                                                <Hide above="md">
+                                                  <FiArrowDown />
+                                                </Hide>
+                                              </Stack>
+                                            </Button>
+                                          ) : null}
                                         </Stack>
                                       </Stack>
                                     );
@@ -510,7 +503,7 @@ export default function CreateMatchTemplate({ club, loading }) {
           justifyContent="center"
           alignItems={['start', null, 'end']}
         >
-          <Stack w="100%" maxWidth={'259px'}>
+          {/*<Stack w="100%" maxWidth={'259px'}>
             <label className="label-nowrap" htmlFor="game-time">
               Game time:
             </label>
@@ -526,15 +519,24 @@ export default function CreateMatchTemplate({ club, loading }) {
                 -
               </Button>
             </Stack>
-          </Stack>
-          <Stack>
+            </Stack>*/}
+          <Stack direction="row" alignItems="center">
             <label className="label-nowrap" htmlFor="date-of-match">
               Past match:
             </label>
-            <Switch py={['0', '0', '6px']} size="lg" onChange={() => setShowDate(!showDate)} />
+            <Switch
+              py={['0', '0', '6px']}
+              size="lg"
+              onChange={() => {
+                setShowDate(!showDate);
+                if (showDate) {
+                  setGameDate(new Date().toISOString().split('T')[0]);
+                }
+              }}
+            />
           </Stack>
           {showDate ? (
-            <Stack>
+            <Stack direction="row" alignItems="center">
               <label className="label-nowrap" htmlFor="date-of-match">
                 Date of the match:
               </label>
