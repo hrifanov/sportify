@@ -2,9 +2,7 @@ import jwt, { sign } from 'jsonwebtoken';
 import {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
-  NODE_ENV,
-  FE_HOSTNAME_DEV,
-  FE_HOSTNAME_PROD,
+  FE_HOSTNAME,
   GMAIL_API_KEY,
 } from '../config/variables';
 import { createGmailTransporter, sendMail } from './mail';
@@ -36,16 +34,15 @@ export const sendVerificationToken = (auth, route, mailOptions) => {
       return false;
     }
 
-    const hostname =
-      NODE_ENV === 'development' ? FE_HOSTNAME_DEV : FE_HOSTNAME_PROD;
-    const url = `http://${hostname}/${route}/${emailToken}`;
+    const url = `http://${FE_HOSTNAME}/${route}/${emailToken}`;
 
     const transporter = createGmailTransporter();
-    const html = mailOptions.html.replaceAll('{url}', url);
+    const html = mailOptions.html.split('{url}').join(url);
+
     try {
       sendMail(transporter, {
         ...mailOptions,
-        html: html,
+        html,
       });
     } catch (e) {
       console.error(e);
