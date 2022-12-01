@@ -12,6 +12,7 @@ import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
 import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPage.js';
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
+import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
 
 export const route = {
   signIn: () => '/',
@@ -33,6 +34,7 @@ export const route = {
   },
   dashboard: () => '/dashboard',
   newClub: () => '/new-club',
+  manageSeasons: (id = ':id') => `/club/${id}/seasons`,
 };
 
 const ProtectedRoute = ({ children }) => {
@@ -145,6 +147,14 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <NewClubPage user={user} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.manageSeasons()}
+        element={
+          <ProtectedRoute>
+            <ManageSeasonsPage user={user} />
           </ProtectedRoute>
         }
       />

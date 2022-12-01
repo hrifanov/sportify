@@ -35,3 +35,14 @@ export const CREATE_CLUB_MUTATION = gql`
     createClub(clubInput: { name: $name, sport: $sport, locality: $locality, owner: $playerId })
   }
 `;
+
+export const CREATE_SEASON_MUTATION = gql`
+  mutation createClub($name: String!, $dateStart: String!, $dateEnd: String!) {
+    createSeason(createSeasonInput: { name: $name, dateStart: $dateStart, dateEnd: $dateEnd }) {
+      id
+      name
+      dateStart
+      dateEnd
+    }
+  }
+`;

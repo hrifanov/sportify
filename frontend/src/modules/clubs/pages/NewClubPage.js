@@ -11,7 +11,6 @@ export default function NewClubPage(user) {
   user = user?.user;
   const [createClubRequest, createClubRequestState] = useMutation(CREATE_CLUB_MUTATION, {
     onCompleted: (data) => {
-      console.log('dataa:' + data.createClub);
       navigate(route.clubEdit(data.createClub));
     },
     onError: (e) => {
