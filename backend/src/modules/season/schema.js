@@ -12,16 +12,13 @@ export const typeDef = gql`
     }
 
     type Season{
-        id: ID!,
-        name: String!,
-        dateStart: String!,
-        dateEnd: String!
+        id: ID!
+        name: String!
+        club: Club!
     }
 
     input CreateSeasonInput{
-        name: String!,
-        dateStart: String!,
-        dateEnd: String!
+        name: String!
+        club: ID!
     }
-
 `;

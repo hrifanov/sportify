@@ -12,11 +12,6 @@ import {
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import {
-  addEvent,
-  INTERACTIVE_MATCH_ACTIONS,
-  useInteractiveMatchClient,
-} from 'src/modules/matches/apollo/interactiveMatchClient';
 import { TeamAvatar } from 'src/modules/matches/atoms/TeamAvatar';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { ErrorBanner, Stack } from 'src/shared/design-system';
@@ -26,22 +21,30 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
 import { ADD_EVENT_MUTATION } from '../apollo/mutations.js';
 import { EventEnum } from '../enums.js';
+import {
+  INTERACTIVE_MATCH_ACTIONS,
+  useInteractiveMatchStore,
+} from 'src/modules/matches/store/interactiveMatchStore';
+import { useEffect } from 'react';
+import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
 
 export const ModalGoal = () => {
   const [addEventRequest] = useMutation(ADD_EVENT_MUTATION);
 
-  const { state, uiState, addEvent, finishAction } = useInteractiveMatchClient();
-  const isOpen = uiState.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
-  const onClose = finishAction;
+  const { addEvent, editEvent, computed, ui, finishAction } = useInteractiveMatchStore();
+  const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
+  const isEdit = !!ui.props?.event;
+  const actionLabel = `${isEdit ? 'Edit' : 'Add'} a goal`;
 
   const defaultValues = {
-    attacker: '',
-    assist: '',
-    secondAssist: '',
+    playerId: '',
+    assistId: '',
+    secondAssistId: '',
+    time: '00:00:00',
   };
 
   const schema = yup.object().shape({
-    attacker: yup.string().required().label('Attacker'),
+    playerId: yup.string().required().label('Attacker'),
   });
 
   const formMethods = useForm({
@@ -49,45 +52,60 @@ export const ModalGoal = () => {
     resolver: yupResolver(schema),
   });
 
-  formMethods.watch('assist');
-  const hasAssist = !!formMethods.getValues('assist');
+  useEffect(() => {
+    formMethods.reset();
+    if (!ui.props?.event) return;
+
+    for (const key in ui.props.event.data) {
+      formMethods.setValue(key, ui.props.event.data[key]);
+    }
+  }, [formMethods, ui.props?.event, isOpen]);
+
+  formMethods.watch('assistId');
+  const hasAssist = !!formMethods.getValues('assistId');
 
   if (!isOpen) return;
-  const team = state.teams[uiState.props.teamId];
+  const team = computed.teams[ui.props.teamId];
   const onSubmit = (data) => {
-    addEvent({
-      type: EventEnum.GOAL,
-      team: uiState.props.teamId,
-      player: data.attacker,
-      assist: data.assist,
-      secondAssist: data.secondAssist,
-    });
+    if (isEdit) {
+      editEvent(ui.props.event.id, { data });
+    } else {
+      addEvent({
+        type: EventEnum.GOAL,
+        data: {
+          teamId: ui.props.teamId,
+          ...data,
+        },
+      });
+    }
+
     formMethods.reset();
     finishAction();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={finishAction} isCentered={true}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader as={Flex} align={'center'} gap={4}>
           <TeamAvatar team={team} size={'md'} />
-          Add a goal
+          {actionLabel}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={5}>
           <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
               <Stack spacing="3">
-                <PlayerSelect name="attacker" label="Attacker" teamId={uiState.props.teamId} />
-                <PlayerSelect name="assist" label="First assist" teamId={uiState.props.teamId} />
+                <PlayerSelect name="playerId" label="Attacker" teamId={ui.props.teamId} />
+                <PlayerSelect name="assistId" label="First assist" teamId={ui.props.teamId} />
                 {hasAssist && (
                   <PlayerSelect
-                    name="secondAssist"
+                    name="secondAssistId"
                     label="Second assist"
-                    teamId={uiState.props.teamId}
+                    teamId={ui.props.teamId}
                   />
                 )}
+                <TimeInput name={'time'} />
               </Stack>
 
               <Flex mt={8}>
@@ -97,7 +115,7 @@ export const ModalGoal = () => {
                   variant="primary"
                   onClick={formMethods.handleSubmit(onSubmit)}
                 >
-                  Add a goal
+                  {actionLabel}
                 </Button>
               </Flex>
             </form>

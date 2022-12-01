@@ -35,11 +35,10 @@ import { teamsColumns } from '../teamsColumns';
 import EditableHeading from 'src/shared/design-system/molecules/EditableHeading';
 import { useMutation } from '@apollo/client';
 import { CREATE_MATCH_MUTATION } from '../apollo/mutations';
-import {
-  startInteractiveMatch,
-  useInteractiveMatchClient,
-} from 'src/modules/matches/apollo/interactiveMatchClient';
-import { players } from 'src/modules/clubs/players';
+import { useInteractiveMatchStore } from 'src/modules/matches/store/interactiveMatchStore';
+import { useNavigate } from 'react-router-dom';
+import { route } from 'src/Routes';
+import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -79,14 +78,9 @@ const onDragEnd = (result, columns, setColumns) => {
 };
 
 export default function CreateMatchTemplate({ club, loading }) {
-  const [createMatchRequest, createMatchRequestState] = useMutation(CREATE_MATCH_MUTATION, {
-    onCompleted: () => {},
-    onError: () => {},
-  });
-
+  const navigate = useNavigate();
+  const { startInteractiveMatch } = useInteractiveMatchStore();
   const [columns, setColumns] = useState([]);
-
-  const interactiveMatchClient = useInteractiveMatchClient();
 
   useEffect(() => {
     setColumns(teamsColumns(club?.players));
@@ -286,11 +280,7 @@ export default function CreateMatchTemplate({ club, loading }) {
             <Text textAlign="center">You need to have at least 2 players in each team</Text>
           </Box>
         ) : null}
-        {loading && (
-          <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
-            <Spinner />
-          </Flex>
-        )}
+        <FullPageSpinner loading={loading} />
         {club && (
           <Stack spacing={[2, 3, 5]} direction={['column', null, 'row']} h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
@@ -563,17 +553,24 @@ export default function CreateMatchTemplate({ club, loading }) {
                 setErrorPopup(true);
               } else {
                 const teamPlayers1 = columns[0].items.map((item) => ({
-                  user: item.id,
-                  role: item.role ? item.role : 'attack',
+                  user: {
+                    id: item.id,
+                    name: item.name,
+                  },
+                  role: item.role ?? 'attack',
                 }));
                 const teamPlayers2 = columns[2].items.map((item) => ({
-                  user: item.id,
-                  role: item.role ? item.role : 'attack',
+                  user: {
+                    id: item.id,
+                    name: item.name,
+                  },
+                  role: item.role ?? 'attack',
                 }));
 
                 const matchInput = {
                   club: club.id,
                   date: gameDate,
+                  seasonId: '6388b2123160f796e5e99bec',
                   teams: {
                     home: {
                       name: columns[0].name,
@@ -585,8 +582,9 @@ export default function CreateMatchTemplate({ club, loading }) {
                     },
                   },
                 };
-                const { data } = await createMatchRequest({ variables: { matchInput } });
-                interactiveMatchClient.startInteractiveMatch(data.createMatch);
+
+                startInteractiveMatch(matchInput, { isPast: showDate });
+                navigate(route.matchInteractive());
               }
             }}
           >

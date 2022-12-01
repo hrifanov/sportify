@@ -21,6 +21,9 @@ export default function ClubDetailPage() {
     }
     return undefined;
   });
+
+  console.log({ matches });
+
   return (
     <ClubDetailTemplate
       club={club}

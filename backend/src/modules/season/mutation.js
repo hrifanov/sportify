@@ -5,15 +5,7 @@ import formatSeason from './formatSeason';
 
 export const createSeason = async (_, { createSeasonInput }, context) => {
     isAuth(context);
-    const { name: nameInput, dateStart: dateStartInput, dateEnd: dateEndInput } = createSeasonInput;
-    const dateStart = new Date(dateStartInput);
-    const dateEnd = new Date(dateEndInput);
-    
-    const season = await Season.create({
-        name: nameInput,
-        dateStart,
-        dateEnd
-    });
+    const season = await Season.create(createSeasonInput);
 
     return formatSeason(season);
 }

@@ -20,7 +20,7 @@ export const addEvent = async (_, { matchId, eventInput }, context) => {
     await match.save({ session });
     await session.commitTransaction();
 
-    return true;
+    return id;
   } catch (err) {
     console.error(err);
     await session.abortTransaction();
@@ -61,7 +61,7 @@ export const removeEvent = async (_, { matchId, eventId }, context) => {
     }
 
     await Event.findByIdAndDelete(eventId, { session });
-    await match.update({ $pullAll: { events: [eventId] } }, { session });
+    await match.update({ $pull: { events: eventId } }, { session });
 
     await session.commitTransaction();
 

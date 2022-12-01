@@ -9,7 +9,7 @@ import { createGmailTransporter, sendMail } from './mail';
 
 export const createAccessToken = (user) => {
   return sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
-    expiresIn: '30m',
+    expiresIn: '7d',
   });
 };
 

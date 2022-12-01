@@ -13,12 +13,12 @@ import {
   Image,
   Spacer,
   Show,
-  Link,
 } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import logo from 'src/assets/logo.svg';
 import logoFull from 'src/assets/logo_full.png';
+import { RouterLink } from 'src/shared/navigation';
 
 export default function AppHeader({ inApp = true, title }) {
   const headerBg = inApp ? 'transparent' : 'brand.boxBackground';
@@ -28,7 +28,7 @@ export default function AppHeader({ inApp = true, title }) {
     <Box as="header" pt={5} pb={3} bg={headerBg}>
       <Container maxW="container.xl">
         <Flex align={'center'}>
-          <Link href={'/'}>
+          <RouterLink to={'/'}>
             <Image
               src={inApp ? logo : logoFull}
               alt="Sportify logo"
@@ -36,7 +36,7 @@ export default function AppHeader({ inApp = true, title }) {
               objectFit="cover"
               mr={5}
             />
-          </Link>
+          </RouterLink>
           <Heading mx={['auto', 0]} size={['', 'xl']}>
             {title}
           </Heading>

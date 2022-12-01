@@ -25,6 +25,7 @@ export const typeDef = gql`
     players: [Player]
     contactPerson: User!
     imageURL: String!
+    seasons: [Season]
   }
 
   input ClubInput {

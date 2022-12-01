@@ -54,7 +54,7 @@ export default function MatchesComp({ matches }) {
         padding={5}
         colorScheme="orange"
         w="full"
-        onClick={() => navigate(route.createMatch())}
+        onClick={() => navigate(route.matchCreate())}
       >
         <Text>Start a new match </Text>
         <FiPlayCircle style={{ position: 'absolute', right: '2%' }} size={40} />
