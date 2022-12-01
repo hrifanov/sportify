@@ -1,5 +1,4 @@
 const { model, Schema } = require('mongoose');
-const events = require('./Event');
 
 const team = new Schema({
   name: String,
@@ -23,7 +22,7 @@ const matchSchema = new Schema({
     home: Number,
     guest: Number
   },
-  events: [events.schema],
+  events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
   season: { type: Schema.Types.ObjectId, ref:"Season" }
 });
 

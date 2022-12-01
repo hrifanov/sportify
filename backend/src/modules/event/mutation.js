@@ -61,7 +61,7 @@ export const removeEvent = async (_, { matchId, eventId }, context) => {
     }
 
     await Event.findByIdAndDelete(eventId, { session });
-    await match.update({ $pull: { events: {_id: eventId} } }, { session });
+    await match.update({ $pull: { events: eventId } }, { session });
 
     await session.commitTransaction();
 

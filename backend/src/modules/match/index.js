@@ -4,6 +4,7 @@ import * as queries from './query';
 import * as mutations from './mutation';
 import Club from '../../models/Club';
 import User from '../../models/User';
+import Event from '../../models/Event';
 import Season from '../../models/Season';
 import TeamPlayer from '../../models/TeamPlayer';
 import formatSeason from '../season/formatSeason';
@@ -24,7 +25,10 @@ const resolvers = {
     async season(parent) {
       const season = await Season.findById(parent.season);
       return formatSeason(season);
-    }
+    },
+    async events(parent) {
+      return Event.find({ matchId: parent.id });
+    },
   },
   Team: {
     async teamPlayers(parent) {

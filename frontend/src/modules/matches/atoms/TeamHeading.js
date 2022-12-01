@@ -5,7 +5,7 @@ import { TeamsEnum } from 'src/modules/matches/enums';
 export const TeamHeading = ({ team, teamId }) => {
   return (
     <Flex align={'center'} gap={5} direction={teamId === TeamsEnum.HOME ? 'row' : 'row-reverse'}>
-      <Text fontSize={'4xl'}>{team.name}</Text>
+      <Text fontSize={'2xl'}>{team.name}</Text>
       <TeamAvatar team={team} />
     </Flex>
   );

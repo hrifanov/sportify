@@ -9,26 +9,25 @@ import { AcceptInvitePage } from 'src/modules/clubs/pages/AcceptInvitePage';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
 import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPage.js';
+import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
 
 export const route = {
-  signIn: () => '/',
-  signUp: () => '/auth/signUp',
-  clubDetail: () => '/club',
-  createMatch: () => '/match/create',
-  clubEdit: () => '/club/edit',
-  matches: () => '/matches',
-  matchDetail: (id) => `/matches/${id}`,
-  matchEdit: (id) => `/matches/${id}/edit`,
-  matchCreate: () => '/match/create',
-  matchInteractive: () => '/match/interactive',
-  accountVerification: () => '/verify-account/:token',
-  // acceptInvite: () => '/accept-invite/:token',
   acceptInvite: (token) => {
     if (token) {
       return '/accept-invite/' + token;
     }
     return '/accept-invite/:token';
   },
+  accountVerification: () => '/verify-account/:token',
+  clubDetail: () => '/club',
+  clubEdit: () => '/club/edit',
+  matchCreate: () => '/match/create',
+  matchDetail: (id = ':id') => `/matches/${id}`,
+  matchEdit: (id) => `/matches/${id}/edit`,
+  matchInteractive: () => '/match/interactive',
+  signIn: () => '/',
+  // acceptInvite: () => '/accept-invite/:token',
+  signUp: () => '/auth/signUp',
   // acceptInviteConfirm: () => '/accept-invite/',
 };
 
@@ -96,7 +95,7 @@ export function Routes() {
         }
       />
       <Route
-        path={route.createMatch()}
+        path={route.matchCreate()}
         element={
           <ProtectedRoute>
             <CreateMatchPage />
@@ -108,6 +107,14 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <InteractiveMatchPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.matchDetail()}
+        element={
+          <ProtectedRoute>
+            <MatchDetailPage />
           </ProtectedRoute>
         }
       />

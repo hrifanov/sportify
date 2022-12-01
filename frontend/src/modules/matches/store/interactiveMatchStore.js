@@ -3,15 +3,17 @@ import { EventEnum, TeamsEnum } from 'src/modules/matches/enums';
 import create from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { orderBy, reduce, cloneDeep } from 'lodash';
+import { orderBy, reduce, cloneDeep, omit } from 'lodash';
 import uniqid from 'uniqid';
 import { client } from 'src/utils/apollo';
 import {
   ADD_EVENT_MUTATION,
+  CREATE_MATCH_MUTATION,
   EDIT_EVENT_MUTATION,
   REMOVE_EVENT_MUTATION,
 } from 'src/modules/matches/apollo/mutations';
 import produce from 'immer';
+import { calculateScore, populateEvents } from 'src/utils/match';
 export const INTERACTIVE_MATCH_ACTIONS = {
   GOAL: 'goal',
   PENALTY: 'penalty',
@@ -20,24 +22,15 @@ export const INTERACTIVE_MATCH_ACTIONS = {
   FINISH_MATCH: 'finishMatch',
 };
 
-class Event {
-  _id = null;
-  _synced = false;
-  _deleted = false;
-  id = uniqid();
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-const getInitialState = (match = null) => {
+const getInitialState = (match = null, { isPast = false } = {}) => {
   return {
     match,
-    events: [],
+    isPast: !!match?.id ?? isPast,
+    events: cloneDeep(match?.events || []),
     timer: 0,
     timerInterval: null,
     isPaused: true,
-    shots: {
+    shots: match?.shots ?? {
       [TeamsEnum.HOME]: 0,
       [TeamsEnum.GUEST]: 0,
     },
@@ -51,23 +44,23 @@ const getInitialState = (match = null) => {
 const store = (set, get) => ({
   ...getInitialState(),
   startInteractiveMatch: (match) => {
+    console.log({ match });
     set(getInitialState(match));
   },
   addEvent: (event) => {
     set((state) => {
-      state.events.push(
-        new Event({
-          time: state.timer,
-          ...event,
-        }),
-      );
+      state.events.push({
+        id: uniqid(),
+        time: state.timer,
+        ...event,
+        _synced: false,
+      });
     });
   },
   editEvent: (id, data) => {
     set((state) => {
       const eventIndex = state.events.findIndex((event) => event.id === id);
       if (eventIndex === -1) return;
-      console.log({ event: state.events[eventIndex], data });
       const clonedEvent = cloneDeep(state.events[eventIndex]);
       Object.assign(clonedEvent, {
         ...data,
@@ -149,29 +142,19 @@ const store = (set, get) => ({
       state.shots[teamId] = newShots;
     });
   },
-  calculateScore: (tillEvent = null) => {
-    let events = get().events;
-
-    if (tillEvent) {
-      const tillEventIndex = get().events.findIndex((event) => event.id === tillEvent.id);
-      events = events.slice(0, tillEventIndex + 1);
+  setShots: (teamId, value) => {
+    if (!value) {
+      value = 0;
     }
-
-    return events.reduce(
-      (acc, event) => {
-        if (event.type === EventEnum.GOAL) {
-          acc.total++;
-          acc[event.data.teamId] = acc[event.data.teamId] + 1;
-        }
-        return acc;
-      },
-      {
-        total: 0,
-        [TeamsEnum.HOME]: 0,
-        [TeamsEnum.GUEST]: 0,
-      },
-    );
+    value = parseInt(value);
+    if (value > 999) {
+      return;
+    }
+    set((state) => {
+      state.shots[teamId] = value;
+    });
   },
+  calculateScore: (args) => calculateScore(get().events, args),
   pauseTimer: () => {
     set((state) => {
       state.isPaused = true;
@@ -214,51 +197,59 @@ const store = (set, get) => ({
       ui: getInitialState().ui,
     });
   },
-  finishMatch: () => {
-    get().pauseTimer();
+  finishMatch: async () => {
+    const matchInput = get().computed.rawMatch;
+
+    try {
+      const { data } = await client.mutate({
+        mutation: CREATE_MATCH_MUTATION,
+        variables: { matchInput },
+      });
+
+      set(getInitialState());
+      return data.createMatch;
+    } catch (e) {
+      console.error({ e });
+    }
   },
   computed: {
+    get rawMatch() {
+      const mapTeam = (teamId) => {
+        return {
+          name: get().match.teams[TeamsEnum.HOME].name,
+          teamPlayers: get().match.teams[teamId].teamPlayers.map((teamPlayer) => ({
+            role: teamPlayer.role,
+            user: teamPlayer.user.id,
+          })),
+        };
+      };
+
+      return {
+        date: get().match.date,
+        timer: get().timer,
+        club: get().match.club,
+        teams: {
+          home: mapTeam(TeamsEnum.HOME),
+          guest: mapTeam(TeamsEnum.GUEST),
+        },
+        events: get().computed.validEvents.map((event) => ({
+          type: event.type,
+          time: event.time,
+          data: event.data,
+        })),
+        score: get().calculateScore({ countTotal: false }),
+        shots: get().shots,
+        seasonId: get().match.seasonId ?? '6388b2123160f796e5e99bec',
+      };
+    },
     get teams() {
       return get().match?.teams;
     },
-    get players() {
-      const home = this.teams[TeamsEnum.HOME];
-      const guest = this.teams[TeamsEnum.GUEST];
-      return reduce(
-        [...home.teamPlayers, ...guest.teamPlayers],
-        (acc, player) => {
-          acc[player.id] = {
-            ...player,
-            ...player.user,
-            id: player.id,
-          };
-          return acc;
-        },
-        {},
-      );
+    get validEvents() {
+      return get().events.filter((event) => !event._deleted);
     },
     get events() {
-      const activeEvents = get().events.filter((event) => !event._deleted);
-      const enhancedEvents = activeEvents.map((event) => {
-        if (event.type === EventEnum.GOAL) {
-          return new Event({
-            ...event,
-            player: this.players[event.data.playerId],
-            assistPlayer: this.players[event.data.assistId],
-            secondAssistPlayer: this.players[event.data.secondAssistId],
-            score: get().calculateScore(event),
-          });
-        }
-        if (event.type === EventEnum.PENALTY) {
-          return new Event({
-            ...event,
-            player: this.players[event.data.playerId],
-          });
-        }
-        return event;
-      });
-
-      return orderBy(enhancedEvents, ['time', 'score.total'], ['desc', 'desc']);
+      return populateEvents(get().match, get().computed.validEvents);
     },
     get score() {
       return get().calculateScore();
@@ -275,13 +266,6 @@ export const useInteractiveMatchStore = create(
       return Object.fromEntries(
         Object.entries(state).filter(([key]) => !ommitedKeys.includes(key)),
       );
-    },
-    deserialize: (state) => {
-      const parsedState = JSON.parse(state);
-
-      return produce(parsedState, (draft) => {
-        draft.state.events = parsedState.state.events.map((event) => new Event(event));
-      });
     },
   }),
 );

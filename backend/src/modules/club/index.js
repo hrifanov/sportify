@@ -2,6 +2,7 @@ import { typeDef } from './schema';
 import * as queries from './query';
 import * as mutations from './mutation';
 import User from '../../models/User';
+import Season from '../../models/Season';
 
 export { typeDef, resolvers };
 
@@ -14,7 +15,7 @@ const resolvers = {
   },
   Club: {
     async contactPerson(parent) {
-      return await User.findById(parent.contactPerson);
+      return User.findById(parent.contactPerson);
     },
     players(parent) {
       return parent.players.map(async (player) => {
@@ -28,6 +29,9 @@ const resolvers = {
           isAdmin: player.isAdmin,
         };
       });
+    },
+    async seasons(parent) {
+      return Season.find({ club: parent.id });
     },
   },
 };

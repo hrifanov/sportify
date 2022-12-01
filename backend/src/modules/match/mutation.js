@@ -3,11 +3,13 @@ import { isAuth } from '../../libs/isAuth';
 import Match from '../../models/Match';
 import TeamPlayer from '../../models/TeamPlayer';
 import User from '../../models/User';
+import Event from '../../models/Event';
+import mongoose from 'mongoose';
 
 export const createMatch = async (_, { matchInput }, context) => {
   isAuth(context);
 
-  const { club, date, teams, score, timer, shots, seasonId } = matchInput;
+  const { club, date, teams, score, timer, shots, seasonId, events } = matchInput;
   const session = await context.client.startSession();
 
   try {
@@ -18,7 +20,16 @@ export const createMatch = async (_, { matchInput }, context) => {
       session
     );
 
+    const newMatchId = mongoose.Types.ObjectId()
+    const matchEvents = events.map((event) => ({
+      ...event,
+      matchId: newMatchId,
+    }))
+
+    const insertedEvents = await Event.insertMany(matchEvents, { session });
+
     const match = await new Match({
+      _id: newMatchId,
       club,
       date,
       teams: {
@@ -34,7 +45,8 @@ export const createMatch = async (_, { matchInput }, context) => {
       score: score || {home: 0, guest: 0},
       shots: shots || {home: 0, guest: 0},
       timer,
-      season: seasonId
+      season: seasonId,
+      events: insertedEvents.map((event) => event._id.toString()),
     }).save({ session });
 
     await session.commitTransaction();

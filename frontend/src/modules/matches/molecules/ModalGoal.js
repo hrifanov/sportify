@@ -26,6 +26,7 @@ import {
   useInteractiveMatchStore,
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { useEffect } from 'react';
+import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
 
 export const ModalGoal = () => {
   const [addEventRequest] = useMutation(ADD_EVENT_MUTATION);
@@ -39,6 +40,7 @@ export const ModalGoal = () => {
     playerId: '',
     assistId: '',
     secondAssistId: '',
+    time: '00:00:00',
   };
 
   const schema = yup.object().shape({
@@ -103,6 +105,7 @@ export const ModalGoal = () => {
                     teamId={ui.props.teamId}
                   />
                 )}
+                <TimeInput name={'time'} />
               </Stack>
 
               <Flex mt={8}>

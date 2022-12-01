@@ -7,6 +7,7 @@ import {
   AlertDialogOverlay,
   Box,
   Button,
+  useToast,
 } from '@chakra-ui/react';
 import {
   INTERACTIVE_MATCH_ACTIONS,
@@ -18,14 +19,23 @@ import { useNavigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 
 export const AlertFinishMatch = () => {
+  const toast = useToast();
   const cancelRef = useRef();
   const navigate = useNavigate();
   const { ui, finishMatch, finishAction } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.FINISH_MATCH;
 
-  function onCancel() {
-    finishMatch();
-    navigate('/');
+  async function onFinish() {
+    const data = await finishMatch();
+    if (data) {
+      return navigate(route.matchDetail(data.id));
+    }
+
+    toast({
+      title: 'There was an error finishing the match.',
+      status: 'error',
+      position: 'top-right',
+    });
   }
 
   return (
@@ -45,7 +55,7 @@ export const AlertFinishMatch = () => {
             <Button variant={'outline'} ref={cancelRef} onClick={finishAction}>
               Continue match
             </Button>
-            <Button colorScheme="green" onClick={onCancel} ml={3}>
+            <Button colorScheme="green" onClick={onFinish} ml={3}>
               Finish match
             </Button>
           </AlertDialogFooter>

@@ -34,6 +34,7 @@ export const matchTypeDef = gql`
     score: TeamsNumbersInput
     shots: TeamsNumbersInput,
     seasonId: ID!
+    events: [EventInput]!
   }
 
   # MATCH TEAMS

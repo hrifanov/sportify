@@ -27,9 +27,10 @@ import {
   useInteractiveMatchStore,
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { useEffect } from 'react';
+import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
 
 export const ModalPenalty = () => {
-  const { computed, ui, addEvent, editEvent, finishAction } = useInteractiveMatchStore();
+  const { computed, ui, addEvent, editEvent, finishAction, timer } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.PENALTY;
   const isEdit = !!ui.props?.event;
   const actionLabel = `${isEdit ? 'Edit' : 'Add'} a penalty`;
@@ -38,6 +39,7 @@ export const ModalPenalty = () => {
     playerId: '',
     length: '',
     type: '',
+    time: '00:00:00',
   };
 
   const penaltyOptions = map(PenaltyEnum, (value, key) => ({
@@ -121,6 +123,7 @@ export const ModalPenalty = () => {
                     </option>
                   ))}
                 </FormField>
+                <TimeInput name={'time'} />
               </Stack>
 
               <Flex mt={8}>

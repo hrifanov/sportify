@@ -6,7 +6,7 @@ export const PlayerSelect = ({ name, label, teamId }) => {
   const { computed } = useInteractiveMatchStore();
   const team = computed.teams[teamId];
   const playersOptions = team.teamPlayers.map((player) => ({
-    value: player.id,
+    value: player.user.id,
     label: player.user.name,
   }));
 

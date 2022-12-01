@@ -17,7 +17,11 @@ export const Event = ({ event, icon, title, valueSlot, readonly }) => {
         <Icon as={icon} boxSize={5} />
         <Text fontWeight={'bold'}>{title}</Text>
       </Flex>
-      <Flex align={'center'} gap={5} direction={event.team === 'home' ? 'row' : 'row-reverse'}>
+      <Flex
+        align={'center'}
+        gap={5}
+        direction={event.data.teamId === 'home' ? 'row' : 'row-reverse'}
+      >
         <Circle bg={'white'} boxSize={1.5} />
         {valueSlot}
         <Box boxSize={1.5} />
