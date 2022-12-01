@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import React from 'react';
 
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import {
@@ -14,7 +15,20 @@ import {
   InputRightAddon,
   Text,
   Select,
+  IconButton,
+  Switch,
+  Radio,
+  RadioGroup,
+  Hide,
 } from '@chakra-ui/react';
+import {
+  FiPlus,
+  FiXCircle,
+  FiArrowRight,
+  FiArrowLeft,
+  FiArrowDown,
+  FiArrowUp,
+} from 'react-icons/fi';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
@@ -25,6 +39,7 @@ import {
   startInteractiveMatch,
   useInteractiveMatchClient,
 } from 'src/modules/matches/apollo/interactiveMatchClient';
+import { players } from 'src/modules/clubs/players';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -79,8 +94,6 @@ export default function CreateMatchTemplate({ club, loading }) {
 
   const handleChange = (e, index) => {
     const value = e.target.value;
-    console.log(value);
-    console.log(index);
     setColumns((state) => [
       ...Object.values(state).slice(0, index),
       { ...state[index], name: value },
@@ -98,15 +111,181 @@ export default function CreateMatchTemplate({ club, loading }) {
   const dec = getDecrementButtonProps();
   const input = getInputProps();
 
-  //const [isAttacker, setIsAttacker] = useState('outline');
   const date = new Date().toISOString().split('T')[0];
 
   const [gameDate, setGameDate] = useState(date);
-  console.log(teamsColumns(club?.players));
+
+  const [openPlayers, setOpenPlayers] = useState(false);
+
+  const [errorPopup, setErrorPopup] = useState(false);
+
+  const [showDate, setShowDate] = useState(false);
+
+  const handleOpenPlayers = () => {
+    setOpenPlayers(true);
+  };
+
+  const handleClosePlayers = () => {
+    setOpenPlayers(false);
+  };
+
+  const [value, setValue] = React.useState('1');
+
+  const Players = () =>
+    club?.players.map((item, itemIndex) => {
+      return (
+        <Stack justifyContent="space-between" direction="row" key={item.id} p={1}>
+          <Text>{item.name}</Text>
+          <Stack
+            direction="row"
+            onChange={(e) => handleSelected(e, itemIndex, columns, setColumns)}
+          >
+            <input type="radio" name={item.name} value="0" on />
+            <input type="radio" name={item.name} value="1" defaultChecked />
+            <input type="radio" name={item.name} value="2" />
+          </Stack>
+        </Stack>
+      );
+    });
+
+  /*const [checkedState, setCheckedState] = useState(new Array().fill(false)); //fill array with column items in new Array
+
+  const handleChecked = (e, index) => {
+    if (e.target.checked) {
+      console.log(index);
+    } else {
+      console.log(columns[1]);
+    }
+    const updatedCheckedState = checkedState.map((item, i) => (i === index ? !item : item));
+
+    setCheckedState(updatedCheckedState);
+  };*/
+
+  const handleSelected = (e, index, columns, setColumns) => {
+    if (e.target.value === '0') {
+      const sourceColumn = columns[1];
+      const destColumn = columns[0];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(index, 1);
+      destItems.splice(index, 0, removed);
+      setColumns({
+        ...columns,
+        0: {
+          ...destColumn,
+          items: destItems,
+        },
+        1: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+      });
+    }
+  };
+
+  const handleLeftMove = (e, index, columns, setColumns, column) => {
+    const sourceColumn = columns[column.id];
+    const destColumn = columns[column.id - 1];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(index, 1);
+    destItems.splice(index, 0, removed);
+    setColumns({
+      ...columns,
+      [column.id - 1]: {
+        ...destColumn,
+        items: destItems,
+      },
+      [column.id]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+    });
+  };
+
+  const handleRightMove = (e, index, columns, setColumns, column) => {
+    const sourceColumn = columns[column.id];
+    const destColumn = columns[column.id + 1];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(index, 1);
+    destItems.splice(index, 0, removed);
+    setColumns({
+      ...columns,
+      [column.id]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+      [column.id + 1]: {
+        ...destColumn,
+        items: destItems,
+      },
+    });
+  };
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
-      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]}>
+      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]} position="relative">
+        {openPlayers ? (
+          <Box
+            position="absolute"
+            bg="brand.title"
+            zIndex={10}
+            left={0}
+            right={0}
+            top={0}
+            bottom={0}
+            w={400}
+            m="auto"
+            px={5}
+            pt={10}
+            pb={5}
+            borderRadius="base"
+          >
+            <IconButton
+              mt={-10}
+              mr={-5}
+              bg="brand.title"
+              aria-label="Save column name"
+              size="md"
+              icon={<FiXCircle />}
+              float="right"
+              onClick={handleClosePlayers}
+            />
+            <Players />
+          </Box>
+        ) : null}
+        {errorPopup ? (
+          <Box
+            position="absolute"
+            bg="brand.title"
+            zIndex={10}
+            left={0}
+            right={0}
+            top="50%"
+            bottom="50%"
+            height={120}
+            w={300}
+            m="auto"
+            px={5}
+            pt={10}
+            pb={5}
+            borderRadius="base"
+          >
+            <IconButton
+              mt={-10}
+              mr={-5}
+              bg="brand.title"
+              aria-label="Save column name"
+              size="md"
+              icon={<FiXCircle />}
+              float="right"
+              onClick={() => setErrorPopup(false)}
+            />
+            <Text textAlign="center">You need to have at least 2 players in each team</Text>
+          </Box>
+        ) : null}
         {loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
             <Spinner />
@@ -118,7 +297,7 @@ export default function CreateMatchTemplate({ club, loading }) {
               {Object.entries(columns).map(([columnId, column], columnIndex) => {
                 return (
                   <Stack
-                    key={column.id}
+                    key={column.id + 1}
                     direction="column"
                     w="full"
                     h="full"
@@ -132,11 +311,11 @@ export default function CreateMatchTemplate({ club, loading }) {
                     pl={[2, 2, 5]}
                   >
                     <EditableHeading
-                      key={column.id}
+                      key={column.id + 1}
                       onChange={(e) => handleChange(e, columnIndex)}
                       name={column.name}
                     />
-                    <Droppable droppableId={columnId} key={columnId}>
+                    <Droppable droppableId={columnId} key={columnId + 1}>
                       {(provided, snapshot) => {
                         return (
                           <Box
@@ -144,6 +323,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                             ref={provided.innerRef}
                             bg={snapshot.isDraggingOver ? 'brand.title' : 'brand.boxBackground'}
                             h="full"
+                            position="relative"
                           >
                             {column.items?.map((item, itemIndex) => {
                               return (
@@ -157,6 +337,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                                       <Stack
                                         direction="row"
                                         justifyContent="space-between"
+                                        flexWrap="wrap"
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
@@ -164,33 +345,13 @@ export default function CreateMatchTemplate({ club, loading }) {
                                         px={[2, 3, 3]}
                                         py={3}
                                         _hover={{
-                                          background: 'brand.title',
+                                          background: '#4C64A1',
                                         }}
                                         mb={2}
                                         borderRadius="base"
                                         alignItems="center"
                                       >
                                         <Text>{item.name}</Text>
-                                        {/*<HStack>
-                                          <IconButton
-                                            bg="brand.dark"
-                                            _hover={{ bg: 'brand.secondary' }}
-                                            aria-label="Set player role to attacker"
-                                            size="sm"
-                                            p={1}
-                                            icon={<GiHockey />}
-                                          />
-                                          <IconButton
-                                            variant={isAttacker}
-                                            bg="brand.dark"
-                                            _hover={{ bg: 'brand.secondary' }}
-                                            aria-label="Set player role to goalkeeper"
-                                            size="sm"
-                                            p={1}
-                                            icon={<RoleGoalKeeperIcon />}
-                                            onClick={() => setIsAttacker('outline')}
-                                          />
-                                      </HStack>*/}
                                         <Stack spacing={3}>
                                           <Select
                                             bg="brand.boxBackground"
@@ -201,30 +362,99 @@ export default function CreateMatchTemplate({ club, loading }) {
                                               cursor: 'pointer',
                                             }}
                                             size="sm"
-                                            // TODO: Does not work, need to refactor
-                                            // onChange={(selectedOption) => {
-                                            //   const modifiedColumns = [...columns];
-                                            //   modifiedColumns[columnIndex].items[itemIndex] = {
-                                            //     ...column.items[itemIndex],
-                                            //     role: selectedOption.target.value,
-                                            //   };
-
-                                            //   setColumns(modifiedColumns);
-                                            // }}
+                                            defaultValue="attack"
+                                            onChange={(selectedOption) => {
+                                              const modifiedColumns = [...Object.values(columns)];
+                                              modifiedColumns[columnIndex].items[itemIndex] = {
+                                                ...column.items[itemIndex],
+                                                role: selectedOption.target.value,
+                                              };
+                                              setColumns(modifiedColumns);
+                                            }}
                                           >
                                             <option
-                                              style={{ backgroundColor: '#283555' }}
-                                              value="Attacker"
+                                              style={{ backgroundColor: '#283555', color: 'white' }}
+                                              value="attack"
                                             >
                                               Attacker
                                             </option>
                                             <option
-                                              style={{ backgroundColor: '#283555' }}
-                                              value="Goalkeeper"
+                                              style={{ backgroundColor: '#283555', color: 'white' }}
+                                              value="goalkeeper"
                                             >
                                               Goalkeeper
                                             </option>
                                           </Select>
+                                        </Stack>
+                                        <Stack
+                                          direction="row"
+                                          w="100%"
+                                          mt="8px !important"
+                                          marginInlineStart="0 !important"
+                                        >
+                                          {column.id !== 0 ? (
+                                            <Button
+                                              bg="brand.secondary"
+                                              variant="filled"
+                                              colorScheme="brand.secondary"
+                                              _hover={{
+                                                bg: 'brand.dark',
+                                                cursor: 'pointer',
+                                              }}
+                                              w="50%"
+                                              size="sm"
+                                              onClick={(e) =>
+                                                handleLeftMove(
+                                                  e,
+                                                  itemIndex,
+                                                  columns,
+                                                  setColumns,
+                                                  column,
+                                                )
+                                              }
+                                            >
+                                              <Stack direction="row">
+                                                <Hide below="md">
+                                                  <FiArrowLeft />
+                                                </Hide>
+                                                <Hide above="md">
+                                                  <FiArrowUp />
+                                                </Hide>
+                                              </Stack>
+                                            </Button>
+                                          ) : null}
+                                          {column.id !== 2 ? (
+                                            <Button
+                                              ml="auto"
+                                              bg="brand.secondary"
+                                              variant="filled"
+                                              colorScheme="brand.secondary"
+                                              _hover={{
+                                                bg: 'brand.dark',
+                                                cursor: 'pointer',
+                                              }}
+                                              w="50%"
+                                              size="sm"
+                                              onClick={(e) =>
+                                                handleRightMove(
+                                                  e,
+                                                  itemIndex,
+                                                  columns,
+                                                  setColumns,
+                                                  column,
+                                                )
+                                              }
+                                            >
+                                              <Stack direction="row">
+                                                <Hide below="md">
+                                                  <FiArrowRight />
+                                                </Hide>
+                                                <Hide above="md">
+                                                  <FiArrowDown />
+                                                </Hide>
+                                              </Stack>
+                                            </Button>
+                                          ) : null}
                                         </Stack>
                                       </Stack>
                                     );
@@ -240,6 +470,28 @@ export default function CreateMatchTemplate({ club, loading }) {
                   </Stack>
                 );
               })}
+              {/*<Button
+                height={100}
+                width={100}
+                borderRadius="50%"
+                onClick={handleOpenPlayers}
+                color="brand.dark"
+                fontSize={64}
+                _hover={{
+                  bg: 'brand.dark',
+                  color: 'brand.secondary',
+                }}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                position="absolute"
+                bottom={0}
+                mx="auto"
+                left={0}
+                right={0}
+              >
+                <FiPlus />
+              </Button>*/}
             </DragDropContext>
           </Stack>
         )}
@@ -247,73 +499,96 @@ export default function CreateMatchTemplate({ club, loading }) {
       <Container mb={6} maxW="container.xl">
         <Stack
           direction={['column', 'column', 'row']}
-          spacing={[3, 5, 10]}
+          spacing={[3, 5, 8]}
           justifyContent="center"
-          alignItems={'end'}
+          alignItems={['start', null, 'end']}
         >
-          {/* <Stack maxW={['230px', '280px', '320px']}> */}
-          {/*   <label className="label-nowrap" htmlFor="game-time"> */}
-          {/*     Game time: */}
-          {/*   </label> */}
-          {/*   <Stack direction="row"> */}
-          {/*     <Button {...inc} color="black"> */}
-          {/*       + */}
-          {/*     </Button> */}
-          {/*     <InputGroup id="game-time"> */}
-          {/*       <Input {...input} color="black" /> */}
-          {/*       <InputRightAddon children="min" bg="white" color="brand.secondary" /> */}
-          {/*     </InputGroup> */}
-          {/*     <Button {...dec} color="black"> */}
-          {/*       - */}
-          {/*     </Button> */}
-          {/*   </Stack> */}
-          {/* </Stack> */}
-          {/* <Stack> */}
-          {/*   <label className="label-nowrap" htmlFor="date-of-match"> */}
-          {/*     Date of the match: */}
-          {/*   </label> */}
-          {/*   <Input */}
-          {/*     id="date-of-match" */}
-          {/*     color="black" */}
-          {/*     value={gameDate} */}
-          {/*     size="md" */}
-          {/*     type="date" */}
-          {/*     w={['230px', '280px', '320px']} */}
-          {/*     onChange={(event) => setGameDate(event.target.value)} */}
-          {/*   /> */}
-          {/* </Stack> */}
+          {/*<Stack w="100%" maxWidth={'259px'}>
+            <label className="label-nowrap" htmlFor="game-time">
+              Game time:
+            </label>
+            <Stack direction="row">
+              <Button {...inc} color="black">
+                +
+              </Button>
+              <InputGroup id="game-time">
+                <Input px={2} {...input} color="black" />
+                <InputRightAddon children="min" bg="white" color="brand.secondary" />
+              </InputGroup>
+              <Button {...dec} color="black">
+                -
+              </Button>
+            </Stack>
+            </Stack>*/}
+          <Stack direction="row" alignItems="center">
+            <label className="label-nowrap" htmlFor="date-of-match">
+              Past match:
+            </label>
+            <Switch
+              py={['0', '0', '6px']}
+              size="lg"
+              onChange={() => {
+                setShowDate(!showDate);
+                if (showDate) {
+                  setGameDate(new Date().toISOString().split('T')[0]);
+                }
+              }}
+            />
+          </Stack>
+          {showDate ? (
+            <Stack direction="row" alignItems="center">
+              <label className="label-nowrap" htmlFor="date-of-match">
+                Date of the match:
+              </label>
+              <Input
+                id="date-of-match"
+                color="black"
+                value={gameDate}
+                size="md"
+                type="date"
+                w={['259px', '259px', '100%']}
+                onChange={(event) => setGameDate(event.target.value)}
+              />
+            </Stack>
+          ) : null}
           <Button
+            w="259px"
             variant="primary"
             onClick={async () => {
-              // transform data for request query
-              const teamPlayers1 = columns[0].items.map((item) => ({
-                user: item.id,
-                role: 'attack',
-              }));
-              const teamPlayers2 = columns[2].items.map((item) => ({
-                user: item.id,
-                role: 'attack',
-              }));
+              const homeTeam = [];
+              homeTeam.push(...Object.values(columns[0].items));
+              const guestTeam = [];
+              guestTeam.push(...Object.values(columns[2].items));
+              if (homeTeam.length < 2 || guestTeam.length < 2) {
+                setErrorPopup(true);
+              } else {
+                const teamPlayers1 = columns[0].items.map((item) => ({
+                  user: item.id,
+                  role: item.role ? item.role : 'attack',
+                }));
+                const teamPlayers2 = columns[2].items.map((item) => ({
+                  user: item.id,
+                  role: item.role ? item.role : 'attack',
+                }));
 
-              const matchInput = {
-                club: club.id,
-                date: gameDate,
-                //place: '', // TODO implement place input
-                teams: {
-                  home: {
-                    name: columns[0].name,
-                    teamPlayers: teamPlayers1,
+                const matchInput = {
+                  club: club.id,
+                  date: gameDate,
+                  teams: {
+                    home: {
+                      name: columns[0].name,
+                      teamPlayers: teamPlayers1,
+                    },
+                    guest: {
+                      name: columns[2].name,
+                      teamPlayers: teamPlayers2,
+                    },
                   },
-                  guest: {
-                    name: columns[2].name,
-                    teamPlayers: teamPlayers2,
-                  },
-                },
-              };
-              const { data } = await createMatchRequest({ variables: { matchInput } });
-              interactiveMatchClient.startInteractiveMatch(data.createMatch);
+                };
+                const { data } = await createMatchRequest({ variables: { matchInput } });
+                interactiveMatchClient.startInteractiveMatch(data.createMatch);
+              }
             }}
-            w={60}
           >
             Start match
           </Button>

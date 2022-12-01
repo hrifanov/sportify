@@ -1,5 +1,6 @@
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from 'src/modules/matches/ItemTypes';
+import { Box } from '@chakra-ui/react';
 const style = {
   height: '12rem',
   width: '12rem',
@@ -29,8 +30,8 @@ export const DragArea = () => {
     backgroundColor = 'darkkhaki';
   }
   return (
-    <div ref={drop} style={{ ...style, backgroundColor }} data-testid="DragArea">
+    <Box ref={drop} sx={style} bg={backgroundColor} data-testid="DragArea">
       {isActive ? 'Release to drop' : 'Drag a box here'}
-    </div>
+    </Box>
   );
 };
