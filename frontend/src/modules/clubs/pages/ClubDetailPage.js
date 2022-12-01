@@ -35,5 +35,16 @@ export default function ClubDetailPage() {
     });
     return <Navigate to={route.dashboard()} replace />;
   }
-  return <ClubDetailTemplate club={club} loading={loading} isCurrUserAdmin={isCurrUserAdmin} />;
+  return (
+    <ClubDetailTemplate
+      club={club}
+      matches={matches}
+      loading={loading}
+      players={players}
+      isCurrUserAdmin={isCurrUserAdmin}
+    />
+  );
+
+
+  
 }
