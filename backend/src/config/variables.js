@@ -2,8 +2,7 @@ import dotenv from 'dotenv-flow';
 
 dotenv.config();
 
-export const FE_HOSTNAME_DEV = process.env.FE_HOSTNAME_DEV;
-export const FE_HOSTNAME_PROD = process.env.FE_HOSTNAME_PROD;
+export const FE_HOSTNAME = process.env.FE_HOSTNAME;
 export const NODE_ENV = process.env.NODE_ENV;
 export const PORT = process.env.PORT;
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
