@@ -14,6 +14,23 @@ export const FETCH_CLUBS = gql`
         isAdmin
       }
     }
+    matches(clubId: "636ecd9840d0be5c9a93e4f2") {
+      id
+      teams {
+        home {
+          name
+        }
+        guest {
+          name
+        }
+      }
+    }
+    club_by_id(id: "636ecd9840d0be5c9a93e4f2") {
+      players {
+        id
+        name
+      }
+    }
   }
 `;
 
@@ -26,20 +43,3 @@ export const INVITATION_DETAIL_QUERY = gql`
     }
   }
 `;
-
-export const FETCH_MATCHES = gql`
-  query {
-    matches(clubId: "636ecd9840d0be5c9a93e4f2") {
-      date
-      teams {
-        home {
-          name
-        }
-        guest {
-          name
-        }
-      }
-    }
-  }
-`;
-console.log(FETCH_CLUBS);
