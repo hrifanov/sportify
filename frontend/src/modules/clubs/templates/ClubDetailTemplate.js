@@ -117,10 +117,9 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
               direction="column"
               borderRadius="base"
               w={{ md: '30%' }}
-              h="97%"
               gap={4}
               display={{ base: 'none', md: 'flex' }}
-              bg="brand.boxBackground"
+              bg="brand.dark"
             >
               {matches && <MatchesComp matches={matches}></MatchesComp>}
             </Flex>

@@ -125,7 +125,7 @@ export default function StatisticsComp({ players }) {
           },
         }}
       >
-        <Table size={{ base: 'sm' }} variant="base" className="statistics-table">
+        <Table size={{ base: 'sm' }} variant={['base', 'lg', null]} className="statistics-table">
           <Thead>
             <Tr>
               <Th textAlign="left">ID</Th>

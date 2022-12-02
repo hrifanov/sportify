@@ -8,7 +8,15 @@ export default function MatchesComp({ matches }) {
 
   return (
     <>
-      <Box h="92%" borderRadius="base" pt={4} pb={6} px={5}>
+      <Box
+        h="93%"
+        borderRadius="base"
+        pt={4}
+        pb={6}
+        px={5}
+        overflowY="hidden"
+        backgroundColor="brand.boxBackground"
+      >
         <Text fontWeight="bold" color="brand.title" fontSize="xl">
           Matches
         </Text>
@@ -25,7 +33,7 @@ export default function MatchesComp({ matches }) {
             },
           }}
         >
-          <Table size={{ base: 'sm' }} variant="base" className="maches-table">
+          <Table size={{ base: 'sm' }} variant={['base', 'lg', null]} className="maches-table">
             <Tbody>
               {Object.keys(matches).map((i) => (
                 <>
@@ -50,7 +58,7 @@ export default function MatchesComp({ matches }) {
         </TableContainer>
       </Box>
       <Button
-        h="8%"
+        h="7%"
         padding={5}
         colorScheme="orange"
         w="full"
