@@ -1,7 +1,7 @@
 import { EventEnum, TeamsEnum } from '../modules/matches/enums.js';
 import { orderBy, reduce } from 'lodash';
 
-export function timeToTimer(milliseconds) {
+export function timeToString(milliseconds) {
   const seconds = Math.floor(milliseconds / 1000) % 60;
   const minutes = Math.floor(milliseconds / 1000 / 60);
   const hours = Math.floor(milliseconds / 1000 / 60 / 60);
@@ -9,7 +9,13 @@ export function timeToTimer(milliseconds) {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-export function timerToTime(timer) {}
+export function stringToTime(timer) {
+  const [hours, minutes, seconds] = timer.split(':');
+  const houseInMilliseconds = parseInt(hours) * 60 * 60 * 1000;
+  const minutesInMilliseconds = parseInt(minutes) * 60 * 1000;
+  const secondsInMilliseconds = parseInt(seconds) * 1000;
+  return houseInMilliseconds + minutesInMilliseconds + secondsInMilliseconds;
+}
 
 export const formatScore = (score) => {
   return `${score[TeamsEnum.HOME]}:${score[TeamsEnum.GUEST]}`;
@@ -47,6 +53,8 @@ export const getMatchPlayers = (match) => {
 };
 
 export const calculateScore = (events, { tillEvent = null, countTotal = true } = {}) => {
+  events = orderBy(events, ['time'], ['asc']);
+
   if (tillEvent) {
     const tillEventIndex = events.findIndex((event) => event.id === tillEvent.id);
     events = events.slice(0, tillEventIndex + 1);
@@ -61,7 +69,7 @@ export const calculateScore = (events, { tillEvent = null, countTotal = true } =
     acc.total = 0;
   }
 
-  return events.reduce((acc, event) => {
+  return events.reverse().reduce((acc, event) => {
     if (event.type === EventEnum.GOAL) {
       acc[event.data.teamId] = acc[event.data.teamId] + 1;
       if (countTotal) {
@@ -73,11 +81,8 @@ export const calculateScore = (events, { tillEvent = null, countTotal = true } =
 };
 
 export const populateEvents = (match, events = match.events) => {
-  console.log({ match, events });
   if (!match || !events?.length) return [];
   const players = getMatchPlayers(match);
-
-  console.log({ players });
 
   const populatedEvents = events.map((event) => {
     if (event.type === EventEnum.GOAL) {
@@ -97,8 +102,6 @@ export const populateEvents = (match, events = match.events) => {
     }
     return event;
   });
-
-  console.log({ populatedEvents });
 
   return orderBy(populatedEvents, ['time', 'score.total'], ['desc', 'desc']);
 };

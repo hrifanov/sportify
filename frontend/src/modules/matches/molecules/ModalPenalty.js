@@ -15,11 +15,8 @@ import {
 import { TeamAvatar } from 'src/modules/matches/atoms/TeamAvatar';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { ErrorBanner, Stack } from 'src/shared/design-system';
-import { forwardRef } from 'src/shared/design-system/system';
 import { PlayerSelect } from 'src/modules/matches/atoms/PlayerSelect';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useMutation } from '@apollo/client';
-import { ADD_EVENT_MUTATION } from '../apollo/mutations.js';
 import { EventEnum, PenaltyEnum } from '../enums.js';
 import { map } from 'lodash';
 import {
@@ -28,6 +25,7 @@ import {
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { useEffect } from 'react';
 import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
+import { timeToString } from 'src/utils/match';
 
 export const ModalPenalty = () => {
   const { computed, ui, addEvent, editEvent, finishAction, timer } = useInteractiveMatchStore();
@@ -39,7 +37,7 @@ export const ModalPenalty = () => {
     playerId: '',
     length: '',
     type: '',
-    time: '00:00:00',
+    time: timeToString(0),
   };
 
   const penaltyOptions = map(PenaltyEnum, (value, key) => ({
@@ -69,12 +67,14 @@ export const ModalPenalty = () => {
 
   useEffect(() => {
     formMethods.reset();
+    formMethods.setValue('time', timeToString(timer));
+
     if (!ui.props?.event) return;
 
     for (const key in ui.props.event.data) {
       formMethods.setValue(key, ui.props.event.data[key]);
     }
-  }, [formMethods, ui.props?.event, isOpen]);
+  }, [formMethods, ui.props.event, isOpen, timer]);
 
   if (!isOpen) return;
   const team = computed.teams[ui.props.teamId];
@@ -84,6 +84,7 @@ export const ModalPenalty = () => {
     } else {
       addEvent({
         type: EventEnum.PENALTY,
+        time: data.time,
         data: {
           teamId: ui.props.teamId,
           ...data,

@@ -3,7 +3,7 @@ import { EventEnum, TeamsEnum } from 'src/modules/matches/enums';
 import create from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { orderBy, reduce, cloneDeep, omit } from 'lodash';
+import { orderBy, reduce, cloneDeep, omit, maxBy } from 'lodash';
 import uniqid from 'uniqid';
 import { client } from 'src/utils/apollo';
 import {
@@ -13,7 +13,7 @@ import {
   REMOVE_EVENT_MUTATION,
 } from 'src/modules/matches/apollo/mutations';
 import produce from 'immer';
-import { calculateScore, populateEvents } from 'src/utils/match';
+import { calculateScore, populateEvents, stringToTime } from 'src/utils/match';
 export const INTERACTIVE_MATCH_ACTIONS = {
   GOAL: 'goal',
   PENALTY: 'penalty',
@@ -25,7 +25,7 @@ export const INTERACTIVE_MATCH_ACTIONS = {
 const getInitialState = (match = null, { isPast = false } = {}) => {
   return {
     match,
-    isPast: !!match?.id ?? isPast,
+    isPast: !!match?.id || isPast,
     events: cloneDeep(match?.events || []),
     timer: 0,
     timerInterval: null,
@@ -43,34 +43,47 @@ const getInitialState = (match = null, { isPast = false } = {}) => {
 
 const store = (set, get) => ({
   ...getInitialState(),
-  startInteractiveMatch: (match) => {
-    console.log({ match });
-    set(getInitialState(match));
+  startInteractiveMatch: (match, args = {}) => {
+    set(getInitialState(match, args));
+  },
+  updateMatchTimer: () => {
+    if (get().isPast) {
+      set((state) => {
+        state.timer = maxBy(get().computed.validEvents, 'time')?.time ?? 0;
+      });
+    }
   },
   addEvent: (event) => {
     set((state) => {
       state.events.push({
         id: uniqid(),
-        time: state.timer,
         ...event,
+        time: stringToTime(event.time),
         _synced: false,
       });
     });
+    get().updateMatchTimer();
   },
   editEvent: (id, data) => {
     set((state) => {
       const eventIndex = state.events.findIndex((event) => event.id === id);
       if (eventIndex === -1) return;
-      const clonedEvent = cloneDeep(state.events[eventIndex]);
-      Object.assign(clonedEvent, {
+
+      if (data.time) {
+        data.time = stringToTime(data.time);
+      }
+
+      state.events[eventIndex] = {
+        ...cloneDeep(state.events[eventIndex]),
         ...data,
         _synced: false,
-      });
-      state.events[eventIndex] = clonedEvent;
+      };
     });
+    get().updateMatchTimer();
   },
   deleteEvent: (id) => {
     get().editEvent(id, { _deleted: true });
+    get().updateMatchTimer();
   },
   // syncAddEvent: async (event) => {
   //   const result = await client.mutate({
@@ -154,7 +167,7 @@ const store = (set, get) => ({
       state.shots[teamId] = value;
     });
   },
-  calculateScore: (args) => calculateScore(get().events, args),
+  calculateScore: (args) => calculateScore(get().computed.events, args),
   pauseTimer: () => {
     set((state) => {
       state.isPaused = true;
@@ -180,7 +193,7 @@ const store = (set, get) => ({
 
     get().pauseTimer();
   },
-  cancelMatch: () => {
+  clearStore: () => {
     set(getInitialState());
   },
   uiAction: (action, props = {}) => {
@@ -205,8 +218,6 @@ const store = (set, get) => ({
         mutation: CREATE_MATCH_MUTATION,
         variables: { matchInput },
       });
-
-      set(getInitialState());
       return data.createMatch;
     } catch (e) {
       console.error({ e });
@@ -253,6 +264,15 @@ const store = (set, get) => ({
     },
     get score() {
       return get().calculateScore();
+    },
+    get isEdit() {
+      return get().match.id;
+    },
+    get canBeFinished() {
+      return (
+        get().computed.validEvents?.length > 0 ||
+        (get().shots[TeamsEnum.HOME] > 0 && get().shots[TeamsEnum.GUEST] > 0)
+      );
     },
   },
 });

@@ -31,11 +31,11 @@ export const MatchDetailPage = () => {
   }
 
   return (
-    <MainSection containerProps={{ maxW: 'container.lg' }}>
+    <MainSection containerProps={{ maxW: 'container.lg', pb: '10' }}>
       <FullPageSpinner loading={loading} />
-      {data && (
+      {!loading && data && (
         <>
-          <Flex direction={'column'} height={'100%'} pb={10}>
+          <Flex direction={'column'} height={'100%'}>
             <MatchDetailHeading match={data.match} />
             <Flex
               bg={'brand.boxBackground'}

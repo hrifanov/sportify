@@ -27,11 +27,12 @@ import {
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { useEffect } from 'react';
 import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
+import { timeToString } from 'src/utils/match';
 
 export const ModalGoal = () => {
   const [addEventRequest] = useMutation(ADD_EVENT_MUTATION);
 
-  const { addEvent, editEvent, computed, ui, finishAction } = useInteractiveMatchStore();
+  const { addEvent, editEvent, computed, ui, finishAction, timer } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
   const isEdit = !!ui.props?.event;
   const actionLabel = `${isEdit ? 'Edit' : 'Add'} a goal`;
@@ -40,7 +41,7 @@ export const ModalGoal = () => {
     playerId: '',
     assistId: '',
     secondAssistId: '',
-    time: '00:00:00',
+    time: timeToString(0),
   };
 
   const schema = yup.object().shape({
@@ -54,12 +55,14 @@ export const ModalGoal = () => {
 
   useEffect(() => {
     formMethods.reset();
+    formMethods.setValue('time', timeToString(timer));
+
     if (!ui.props?.event) return;
 
     for (const key in ui.props.event.data) {
       formMethods.setValue(key, ui.props.event.data[key]);
     }
-  }, [formMethods, ui.props?.event, isOpen]);
+  }, [formMethods, ui.props.event, isOpen, timer]);
 
   formMethods.watch('assistId');
   const hasAssist = !!formMethods.getValues('assistId');
@@ -68,10 +71,14 @@ export const ModalGoal = () => {
   const team = computed.teams[ui.props.teamId];
   const onSubmit = (data) => {
     if (isEdit) {
-      editEvent(ui.props.event.id, { data });
+      editEvent(ui.props.event.id, {
+        time: data.time,
+        data: data,
+      });
     } else {
       addEvent({
         type: EventEnum.GOAL,
+        time: data.time,
         data: {
           teamId: ui.props.teamId,
           ...data,
