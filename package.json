@@ -7,7 +7,11 @@
     "prettier": "2.7.1"
   },
   "dependencies": {
+    "@react-buddy/ide-toolbox": "^2.3.1",
+    "@react-buddy/palette-chakra-ui": "^2.3.0",
+    "express-fileupload": "^1.4.0",
     "react-beautiful-dnd": "^13.1.1",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "zustand": "^4.1.4"
   }
 }

@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { route } from 'src/Routes';
 import { useInteractiveMatchStore } from 'src/modules/matches/store/interactiveMatchStore';
+import { MatchStatistics } from 'src/modules/matches/molecules/MatchStatistics';
 
 export const MatchDetailPage = () => {
   const { id } = useParams();
@@ -66,6 +67,7 @@ export const MatchDetailPage = () => {
             {!showStatistics && (
               <MatchDetailEvents events={populateEvents(data.match)} readonly={true} />
             )}
+            {showStatistics && <MatchStatistics data={data.match} />}
             <Box bg={'brand.boxBackground'} py={3} px={14} mt={1} borderRadius={'base'}>
               <Flex>
                 <Button size={'sm'} variant={'outline'} onClick={editMatch}>
