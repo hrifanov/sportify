@@ -5,7 +5,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
+  Text,
   Button,
 } from '@chakra-ui/react';
 import {
@@ -20,12 +20,17 @@ import { route } from 'src/Routes';
 export const AlertCancelMatch = () => {
   const cancelRef = useRef();
   const navigate = useNavigate();
-  const { ui, cancelMatch, finishAction } = useInteractiveMatchStore();
+  const { ui, clearStore, finishAction, match, computed } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.CANCEL_MATCH;
 
-  function onCancel() {
-    cancelMatch();
-    navigate('/');
+  async function onCancel() {
+    if (computed.isEdit) {
+      await navigate(route.matchDetail(match.id));
+    } else {
+      await navigate('/');
+    }
+
+    clearStore();
   }
 
   return (
@@ -38,17 +43,21 @@ export const AlertCancelMatch = () => {
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Do you really want to cancel this match?
+            {computed.isEdit && <Text>Do you really want to cancel changes to this match?</Text>}
+            {!computed.isEdit && <Text>Do you really want to cancel this match?</Text>}
           </AlertDialogHeader>
 
-          <AlertDialogBody>This action is irreversible. All the data will be lost.</AlertDialogBody>
+          <AlertDialogBody>
+            This action is irreversible. All of the unsaved data will be lost.
+          </AlertDialogBody>
 
           <AlertDialogFooter>
             <Button variant={'outline'} ref={cancelRef} onClick={finishAction}>
               Continue match
             </Button>
             <Button colorScheme="red" onClick={onCancel} ml={3}>
-              Cancel match
+              {computed.isEdit && <Text>Cancel changes</Text>}
+              {!computed.isEdit && <Text>Cancel match</Text>}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
