@@ -107,7 +107,8 @@ const createEmptySummary = () => ({
   goalsSaved: 0,
   goalsPassed: 0,
   gamesAttacker: 0,
-  gamesGoalkeeper: 0
+  gamesGoalkeeper: 0,
+  matchesWithoutPassedGoals: 0
 });
 
 
@@ -172,6 +173,9 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
     if(teamRole.role == "goalkeeper"){
       const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
       summary.goalsSaved = shots[opponentSide] - summary.goalsPassed;
+      if(summary.goalsPassed){
+        summary.matchesWithoutPassedGoals = 1
+      }
       summary.gamesGoalkeeper = 1;
     } else summary.gamesAttacker = 1;
     resolve(summary);

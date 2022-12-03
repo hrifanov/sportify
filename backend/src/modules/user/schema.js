@@ -55,6 +55,7 @@ export const typeDef = gql`
     goals: Int!
     goalsSaved: Int!
     goalsPassed: Int!
+    matchesWithoutPassedGoals: Int!
     penalties: Int!
     totalPenaltiesLength: Float!
   }
