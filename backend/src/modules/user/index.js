@@ -1,7 +1,7 @@
 import { typeDef } from './schema';
 import * as queries from './query';
 import * as mutations from './mutation';
-import { getUserStatisticsForMatch } from "./statistics";
+import { getUserStatisticsForMatch, getUserStatisticsForTeam } from "./statistics";
 
 export { typeDef, resolvers };
 
@@ -13,11 +13,11 @@ const resolvers = {
     ...mutations,
   },
   User: {
-    async statisticsClub(user, params, context){
-      
+    async statisticsClub(user, params){
+      return await getUserStatisticsForTeam(user.id, params.clubId, params.seasonId)
     },
-    async statisticsMatch(user, params, context){
-      return await getUserStatisticsForMatch(user, params, context);
+    async statisticsMatch(user, params){
+      return await getUserStatisticsForMatch(user.id, params.matchId);
     }
   }
 };

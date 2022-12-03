@@ -20,8 +20,8 @@ export const typeDef = gql`
     userName: String!
     name: String!
     email: String!
-    statisticsClub(clubId: ID!): String!
-    statisticsMatch(matchId: ID!): String!
+    statisticsClub(clubId: ID!, seasonId: ID!): MatchSummary!
+    statisticsMatch(matchId: ID!): MatchSummary!
   }
 
   input UserInput {
@@ -44,5 +44,18 @@ export const typeDef = gql`
     clubName: String
     email: String
     doesUserExist: Boolean
+  }
+
+  type MatchSummary {
+    assists: Int!
+    avgCanadianPoints: Float!
+    canadianPoints: Int!
+    gamesGoalkeeper: Int!
+    gamesAttacker: Int!
+    goals: Int!
+    goalsSaved: Int!
+    goalsPassed: Int!
+    penalties: Int!
+    totalPenaltiesLength: Float!
   }
 `;
