@@ -40,13 +40,13 @@ const RoleIcon = ({ role }) => {
 export default function StatisticsComp({ players }) {
   return (
     <>
-      <Flex
-        px={5}
-        gap={[2, null, 5]}
-        alignItems={{ md: 'center' }}
-        direction={['column', null, 'row']}
-      >
-        <Text fontWeight="bold" color="brand.title" fontSize="xl">
+      <Flex px={5} gap={[2, null, 5]} alignItems={{ md: 'center' }}>
+        <Text
+          fontWeight="bold"
+          color="brand.title"
+          fontSize="xl"
+          display={{ base: 'none', md: 'flex' }}
+        >
           Statistics
         </Text>
 
@@ -58,11 +58,11 @@ export default function StatisticsComp({ players }) {
               variant="light"
               as={Flex}
               alignItems="center"
-              w="full"
               maxW={{ md: 40 }}
               m={0}
               cursor="pointer"
               gap={2}
+              padding={3}
             >
               <Text textTransform="capitalize">All players</Text>
               <Spacer />
@@ -139,7 +139,6 @@ export default function StatisticsComp({ players }) {
               <Th>P</Th>
             </Tr>
           </Thead>
-          {console.log(players)}
           <Tbody color="brand.secondary">
             {players.map((player, i) => (
               <Tr key={i}>
@@ -153,13 +152,13 @@ export default function StatisticsComp({ players }) {
                   {player.name}
                 </Td>
                 <Td textColor="white" fontWeight="bold">
-                  TP
+                  1
                 </Td>
-                <Td>matches</Td>
-                <Td>avarage</Td>
-                <Td>goals</Td>
-                <Td>assist</Td>
-                <Td>penalty</Td>
+                <Td>1</Td>
+                <Td>1</Td>
+                <Td>1</Td>
+                <Td>1</Td>
+                <Td>1</Td>
               </Tr>
             ))}
           </Tbody>
