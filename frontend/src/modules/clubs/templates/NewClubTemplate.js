@@ -1,7 +1,6 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
 import { Box, Container, Flex, Heading, Icon } from '@chakra-ui/react';
 import { Button, Stack, ErrorBanner } from 'src/shared/design-system';
-import { Button, Stack, Select } from 'src/shared/design-system';
 
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { RouterLink } from 'src/shared/navigation';

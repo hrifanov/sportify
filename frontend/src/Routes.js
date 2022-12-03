@@ -14,8 +14,6 @@ import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPa
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
 import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
-import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
-
 
 export const route = {
   signIn: () => '/',

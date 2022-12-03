@@ -52,7 +52,4 @@ export default function ClubDetailPage() {
       isCurrUserAdmin={isCurrUserAdmin}
     />
   );
-
-
-  
 }
