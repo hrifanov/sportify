@@ -20,6 +20,8 @@ export const typeDef = gql`
     userName: String!
     name: String!
     email: String!
+    statisticsClub(clubId: ID!): String!
+    statisticsMatch(matchId: ID!): String!
   }
 
   input UserInput {
