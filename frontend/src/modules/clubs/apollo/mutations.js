@@ -32,17 +32,29 @@ export const SET_CLUB_ADMIN_STATUS = gql`
 
 export const CREATE_CLUB_MUTATION = gql`
   mutation createClub($name: String!, $sport: String!, $locality: String!, $playerId: ID!) {
-    createClub(clubInput: { name: $name, sport: $sport, locality: $locality, owner: $playerId })
+    createClub(
+      clubInput: { name: $name, sport: $sport, locality: $locality, contactPerson: $playerId }
+    )
   }
 `;
 
 export const CREATE_SEASON_MUTATION = gql`
-  mutation createClub($name: String!, $dateStart: String!, $dateEnd: String!) {
-    createSeason(createSeasonInput: { name: $name, dateStart: $dateStart, dateEnd: $dateEnd }) {
+  mutation createClub($name: String!, $club: ID!) {
+    createSeason(createSeasonInput: { name: $name, club: $club }) {
       id
       name
-      dateStart
-      dateEnd
     }
+  }
+`;
+
+export const DELETE_CLUB_MUTATION = gql`
+  mutation deleteClub($clubId: ID!) {
+    deleteClub(clubId: $clubId)
+  }
+`;
+
+export const DELETE_SEASON_MUTATION = gql`
+  mutation deleteSeason($seasonId: ID!) {
+    deleteSeason(seasonId: $seasonId)
   }
 `;

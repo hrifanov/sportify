@@ -7,6 +7,7 @@ import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import Combobox from 'react-widgets/Combobox';
+import { FileInput } from '../atoms/FileInput';
 
 const schema = yup.object().shape({
   name: yup.string().required().label('Club name'),
@@ -14,6 +15,7 @@ const schema = yup.object().shape({
 });
 
 export default function NewClubTemplate({ createClubRQ }) {
+  // console.log('error: ' + createClubRQ?.error?.message);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="New club" />
@@ -84,18 +86,14 @@ export default function NewClubTemplate({ createClubRQ }) {
                       input-height="36px"
                     />
 
-                    {/* <FormField
-                      id="sport"
-                      name="sport"
-                      label="Sport"
-                      input={Select}
-                      data={['Hockey', 'Floorball']}
-                      placeholder={'Sport'}
+                    <FormField
+                      id="logo"
+                      name="logo"
+                      label="Logo"
+                      input={FileInput}
                       input-height="36px"
-                    >
-                      <option>Hockey</option>
-                    </FormField>
- */}
+                    ></FormField>
+
                     <Button size="lg" type="submit" variant="primary" w={['100%']} mt="4">
                       Create club
                     </Button>

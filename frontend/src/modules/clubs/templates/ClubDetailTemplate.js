@@ -41,7 +41,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
           <Flex gap={6} h="full" direction={['column', null, 'row']}>
             <Flex direction="column" w={{ md: '20%' }} gap={4}>
               <ClubDetailInformation club={club} isCurrUserAdmin={isCurrUserAdmin} />
-              <ClubDetailSeasons clubId={club.id} />
+              {isCurrUserAdmin && <ClubDetailSeasons clubId={club.id} />}
               <RequestsComp></RequestsComp>
             </Flex>
 

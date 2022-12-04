@@ -15,7 +15,7 @@ import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
 import { route } from '../../../Routes.js';
 
-export const ClubDetailInformation = (club, isCurrUserAdmin) => {
+export const ClubDetailInformation = ({ club, isCurrUserAdmin }) => {
   return (
     <Box w="full" bg="brand.boxBackground" borderRadius="base" pt={4} pb={6} px={5}>
       <Flex direction="row" align="center">

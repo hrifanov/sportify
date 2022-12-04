@@ -1,29 +1,43 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Heading, Icon } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Heading,
+  Icon,
+  Spacer,
+  Text,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react';
 import { Button, Stack, ErrorBanner } from 'src/shared/design-system';
 
-import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
 import { FiArrowLeftCircle } from 'react-icons/fi';
-import Combobox from 'react-widgets/Combobox';
+import { ModalCreateSeason } from '../organisms/ModalCreateSeason';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { BsPlusCircle } from 'react-icons/bs';
+import { ModalDeleteSeasonConfirm } from '../atoms/ModalDeleteSeasonConfirm';
 
-const schema = yup.object().shape({
-  name: yup.string().required().label('Club name'),
-  locality: yup.string().required().label('Locality'),
-});
-
-export default function ManageSeasonsTemplate({ createClubRQ }) {
-  console.log('error: ' + createClubRQ?.error?.message);
+export default function ManageSeasonsTemplate({
+  isCurrUserAdmin,
+  club,
+  onSubmit,
+  loading,
+  error,
+  createSeasonRQ,
+  modalNewSeason,
+  handleDeleteSeason,
+}) {
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
-      <AppHeader title="New club" />
-      {createClubRQ?.loading && <p>Loading</p>}
+      <AppHeader title="Seasons" />
+      {loading && <p>Loading</p>}
 
       <Container maxW="container.xl" h="full" minHeight={0} my={5}>
         <Flex gap={6} h="full" direction={'column'} align="center">
-          {/* <Flex direction="column" w={{ md: '50%' }} gap={4}> */}
-          <Flex direction="column" w={['100%', '', '', '50%']} gap={4}>
+          <Flex direction="column" w={['100%', '', '', '80%']} gap={4}>
             <Box
               w="full"
               h="full"
@@ -37,7 +51,7 @@ export default function ManageSeasonsTemplate({ createClubRQ }) {
                 as={RouterLink}
                 mt={1}
                 mb={3}
-                to={route.dashboard()}
+                to={route.clubDetail(club?.id)}
                 color="brand.secondary"
                 alignItems="center"
                 gap={2}
@@ -45,64 +59,53 @@ export default function ManageSeasonsTemplate({ createClubRQ }) {
                 <Icon as={FiArrowLeftCircle} />
                 Back
               </Flex>
-              <Heading size={'lg'} mb={3}>
-                Describe your club:
-              </Heading>
-              {createClubRQ?.error?.message && (
-                <ErrorBanner mb={2} title={createClubRQ?.error?.message} />
-              )}
-              <Form onSubmit={createClubRQ.onSubmit} resolver={yupResolver(schema)}>
-                <>
-                  <Stack spacing="3">
-                    <FormField
-                      id="name"
-                      name="name"
-                      label="Club name"
-                      placeholder="My amazing club"
-                      autoFocus="autofocus"
-                      autoComplete="on"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                    />
-                    <FormField
-                      id="locality"
-                      name="locality"
-                      label="Locality"
-                      placeholder="Concrete spot on John's yard"
-                      autoFocus="autofocus"
-                      autoComplete="on"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                    />
-
-                    <FormField
-                      id="sport"
-                      name="sport"
-                      label="Sport"
-                      input={Combobox}
-                      data={['Hockey', 'Floorball']}
-                      placeholder={'Sport'}
-                      input-height="36px"
-                    />
-
-                    {/* <FormField
-                      id="sport"
-                      name="sport"
-                      label="Sport"
-                      input={Select}
-                      data={['Hockey', 'Floorball']}
-                      placeholder={'Sport'}
-                      input-height="36px"
-                    >
-                      <option>Hockey</option>
-                    </FormField>
- */}
-                    <Button size="lg" type="submit" variant="primary" w={['100%']} mt="4">
-                      Create club
-                    </Button>
-                  </Stack>
-                </>
-              </Form>
+              <Flex direction="column">
+                <Wrap>
+                  {club?.seasons?.map((season) => {
+                    return (
+                      <WrapItem p={3} border="1px" borderRadius={8} minW="200px">
+                        <Flex align="center" w={'100%'}>
+                          <Text>{season.name}</Text>
+                          <Spacer />
+                          <Button
+                            onClick={() => handleDeleteSeason(season.id)}
+                            ml={6}
+                            w="10%"
+                            p={0}
+                            variant="primary"
+                          >
+                            <AiOutlineDelete size={30}></AiOutlineDelete>
+                          </Button>
+                        </Flex>
+                      </WrapItem>
+                    );
+                  })}
+                  {/* <ModalDeleteSeasonConfirm /> */}
+                  <WrapItem p={3} border="1px" borderRadius={8} minW="200px">
+                    <Flex align="center" justify="center" w={'100%'} h={'100%'}>
+                      <Box>New Season</Box>
+                      <Spacer />
+                      <Button
+                        onClick={modalNewSeason.onOpen}
+                        ml={6}
+                        w="10%"
+                        p={0}
+                        variant="secondary"
+                      >
+                        <Box>
+                          <BsPlusCircle size={30}></BsPlusCircle>
+                        </Box>
+                      </Button>
+                    </Flex>
+                  </WrapItem>
+                  <ModalCreateSeason
+                    createSeasonRQ={createSeasonRQ}
+                    isOpen={modalNewSeason?.isOpen}
+                    onOpen={modalNewSeason?.onOpen}
+                    onClose={modalNewSeason?.onClose}
+                  />
+                </Wrap>
+              </Flex>
             </Box>
           </Flex>
         </Flex>

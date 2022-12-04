@@ -6,13 +6,14 @@ import {
   EDIT_CLUB_MUTATION,
   REMOVE_PLAYER_MUTATION,
   SET_CLUB_ADMIN_STATUS,
+  DELETE_CLUB_MUTATION,
 } from 'src/modules/clubs/apollo/mutations';
 import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { route } from 'src/Routes';
-import { Navigate, useParams } from 'react-router-dom';
-import { useToast } from '@chakra-ui/react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useDisclosure, useToast } from '@chakra-ui/react';
 
 export default function ClubEditPage() {
   const toast = useToast();
@@ -75,6 +76,28 @@ export default function ClubEditPage() {
     [editClubRequest, club?.id],
   );
 
+  const navigate = useNavigate();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [deleteClubRequest, deleteClubRequestState] = useMutation(DELETE_CLUB_MUTATION, {
+    onCompleted: () => {
+      console.log('Jsem tu');
+      navigate(route.dashboard());
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+
+  const handleDeleteClub = (confirmDelete) => {
+    if (confirmDelete) {
+      console.log('confirmDelete: ' + confirmDelete);
+      deleteClubRequest({ variables: { clubId: club?.id } });
+    }
+    onClose();
+  };
+
   //** Request for removing a player */
   // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
 
@@ -135,6 +158,12 @@ export default function ClubEditPage() {
   return (
     <ClubEditTemplate
       clubRQ={clubRQ}
+      clubDeleteRQ={{
+        isOpen,
+        onOpen,
+        onClose,
+        handleDeleteClub,
+      }}
       invitePlayerRQ={{
         loading: invitePlayerRequestState.loading,
         error: invitePlayerRequestState.error,

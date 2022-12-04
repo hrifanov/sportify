@@ -162,7 +162,6 @@ export function Routes() {
         element={
           <ProtectedRoute>
             <ManageSeasonsPage user={user} />
-            <NewClubPage />
           </ProtectedRoute>
         }
       />

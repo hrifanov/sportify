@@ -38,9 +38,9 @@ export default function DashboardTemplate({ clubs, loading }) {
               px={4}
               display={{ base: 'none', md: 'flex' }}
             >
-              <Heading size={'lg'}>Clubs nearby</Heading>
+              <Heading size={'lg'}>Find your new club</Heading>
               <Flex align="center" justify="center" h="full">
-                <Box>There is going to be a map with clubs' locations :)</Box>
+                <Box></Box>
               </Flex>
             </Flex>
           </Flex>
