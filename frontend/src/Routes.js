@@ -13,7 +13,6 @@ import { useToast } from '@chakra-ui/react';
 import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPage.js';
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
 import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
-import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
 
 export const route = {
   signIn: () => '/',
@@ -35,13 +34,6 @@ export const route = {
   dashboard: () => '/dashboard',
   newClub: () => '/new-club',
   manageSeasons: (id = ':id') => `/club/${id}/seasons`,
-  accountVerification: () => '/verify-account/:token',
-  matchCreate: () => '/match/create',
-  matchDetail: (id = ':id') => `/matches/${id}`,
-  matchEdit: (id) => `/matches/${id}/edit`,
-  matchInteractive: () => '/match/interactive',
-  signIn: () => '/',
-  signUp: () => '/auth/signUp',
 };
 
 const ProtectedRoute = ({ children }) => {
