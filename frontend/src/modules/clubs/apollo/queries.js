@@ -15,6 +15,11 @@ export const FETCH_CLUBS = gql`
       }
     }
     matches(clubId: "636ecd9840d0be5c9a93e4f2") {
+      date
+      score {
+        home
+        guest
+      }
       id
       teams {
         home {
@@ -25,6 +30,7 @@ export const FETCH_CLUBS = gql`
         }
       }
     }
+
     clubByID(id: "636ecd9840d0be5c9a93e4f2") {
       players {
         id

@@ -22,7 +22,7 @@ export default function ClubDetailPage() {
     return undefined;
   });
 
-  console.log({ matches });
+  //console.log({ matches });
 
   return (
     <ClubDetailTemplate

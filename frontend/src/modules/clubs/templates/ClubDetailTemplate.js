@@ -103,7 +103,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
             </Tabs>
             <Flex
               direction="column"
-              w={{ md: '50%' }}
+              w={{ md: '49%' }}
               minW={0}
               h="full"
               bg="brand.boxBackground"
@@ -116,7 +116,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
             <Flex
               direction="column"
               borderRadius="base"
-              w={{ md: '30%' }}
+              w={{ md: '31%' }}
               h="97%"
               gap={4}
               display={{ base: 'none', md: 'flex' }}
