@@ -2,7 +2,7 @@ import { isAuth } from '../../libs/isAuth';
 import Match from '../../models/Match';
 
 export const match = async (_, { matchId }, context) => {
-  //isAuth(context);
+  isAuth(context);
   const match = await Match.findById(matchId);
   return formatMatch(match);
 };
