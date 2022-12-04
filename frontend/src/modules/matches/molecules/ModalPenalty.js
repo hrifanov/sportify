@@ -45,14 +45,7 @@ export const ModalPenalty = () => {
     label: value,
   }));
 
-  const penaltyLengthOptions = [
-    { value: 30, label: '30 seconds' },
-    { value: 60, label: '1 minute' },
-    { value: 120, label: '2 minutes' },
-    { value: 180, label: '3 minutes' },
-    { value: 300, label: '5 minutes' },
-    { value: 600, label: '10 minutes' },
-  ];
+  const penaltyLengthOptions = ['2', '2+2', '5', '5+5', '5+OT', '10', '10 + OT'];
 
   const schema = yup.object().shape({
     playerId: yup.string().required().label('Player'),
@@ -97,7 +90,7 @@ export const ModalPenalty = () => {
   return (
     <Modal isOpen={isOpen} onClose={finishAction} isCentered={true}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx={2}>
         <ModalHeader as={Flex} align={'center'} gap={4}>
           <TeamAvatar team={team} size={'md'} />
           {actionLabel}
@@ -119,8 +112,8 @@ export const ModalPenalty = () => {
                 <FormField id="length" name="length" label="Penalty length" input={Select}>
                   <option value={''}>Select a penalty length</option>
                   {penaltyLengthOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+                    <option key={option} value={option}>
+                      {option}
                     </option>
                   ))}
                 </FormField>

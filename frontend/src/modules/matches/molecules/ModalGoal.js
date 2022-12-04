@@ -1,26 +1,21 @@
 import {
-  Box,
   Button,
   Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Select,
   Spacer,
 } from '@chakra-ui/react';
 import { TeamAvatar } from 'src/modules/matches/atoms/TeamAvatar';
-import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
-import { ErrorBanner, Stack } from 'src/shared/design-system';
-import { forwardRef } from 'src/shared/design-system/system';
+import { FormField, yup, yupResolver } from 'src/shared/hook-form';
+import { Stack } from 'src/shared/design-system';
 import { PlayerSelect } from 'src/modules/matches/atoms/PlayerSelect';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useMutation } from '@apollo/client';
-import { ADD_EVENT_MUTATION } from '../apollo/mutations.js';
-import { EventEnum } from '../enums.js';
+import { EventEnum, GoalTypeEnum } from '../enums.js';
 import {
   INTERACTIVE_MATCH_ACTIONS,
   useInteractiveMatchStore,
@@ -28,10 +23,9 @@ import {
 import { useEffect } from 'react';
 import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
 import { timeToString } from 'src/utils/match';
+import { map } from 'lodash';
 
 export const ModalGoal = () => {
-  const [addEventRequest] = useMutation(ADD_EVENT_MUTATION);
-
   const { addEvent, editEvent, computed, ui, finishAction, timer } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
   const isEdit = !!ui.props?.event;
@@ -47,6 +41,11 @@ export const ModalGoal = () => {
   const schema = yup.object().shape({
     playerId: yup.string().required().label('Attacker'),
   });
+
+  const goalTypeOptions = map(GoalTypeEnum, (value, key) => ({
+    value: key,
+    label: value,
+  }));
 
   const formMethods = useForm({
     defaultValues,
@@ -93,7 +92,7 @@ export const ModalGoal = () => {
   return (
     <Modal isOpen={isOpen} onClose={finishAction} isCentered={true}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx={2}>
         <ModalHeader as={Flex} align={'center'} gap={4}>
           <TeamAvatar team={team} size={'md'} />
           {actionLabel}
@@ -112,6 +111,14 @@ export const ModalGoal = () => {
                     teamId={ui.props.teamId}
                   />
                 )}
+                <FormField id="type" name="type" label="Goal type" input={Select}>
+                  <option value={''}>Normal goal</option>
+                  {goalTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </FormField>
                 <TimeInput name={'time'} />
               </Stack>
 

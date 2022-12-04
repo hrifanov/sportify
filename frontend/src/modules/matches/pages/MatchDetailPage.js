@@ -26,7 +26,7 @@ export const MatchDetailPage = () => {
   }
 
   function editMatch() {
-    startInteractiveMatch(data.match);
+    startInteractiveMatch({ match: data.match });
     navigate(route.matchInteractive());
   }
 

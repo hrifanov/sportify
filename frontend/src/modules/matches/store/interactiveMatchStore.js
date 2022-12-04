@@ -22,9 +22,10 @@ export const INTERACTIVE_MATCH_ACTIONS = {
   FINISH_MATCH: 'finishMatch',
 };
 
-const getInitialState = (match = null, { isPast = false } = {}) => {
+const getInitialState = ({ match = null, isPast = false, lastFinishedMatchId = null } = {}) => {
   return {
     match,
+    lastFinishedMatchId,
     isPast: !!match?.id || isPast,
     events: cloneDeep(match?.events || []),
     timer: 0,
@@ -43,13 +44,15 @@ const getInitialState = (match = null, { isPast = false } = {}) => {
 
 const store = (set, get) => ({
   ...getInitialState(),
-  startInteractiveMatch: (match, args = {}) => {
-    set(getInitialState(match, args));
+  startInteractiveMatch: (args = {}) => {
+    set(getInitialState(args));
   },
   updateMatchTimer: () => {
-    if (get().isPast) {
+    const highestTime = maxBy(get().computed.validEvents, 'time')?.time ?? 0;
+
+    if (get().isPast || highestTime > get().timer) {
       set((state) => {
-        state.timer = maxBy(get().computed.validEvents, 'time')?.time ?? 0;
+        state.timer = highestTime;
       });
     }
   },
@@ -193,8 +196,8 @@ const store = (set, get) => ({
 
     get().pauseTimer();
   },
-  clearStore: () => {
-    set(getInitialState());
+  clearStore: (state = {}) => {
+    set(getInitialState(state));
   },
   uiAction: (action, props = {}) => {
     get().pauseTimer();
@@ -218,7 +221,8 @@ const store = (set, get) => ({
         mutation: CREATE_MATCH_MUTATION,
         variables: { matchInput },
       });
-      return data.createMatch;
+      get().clearStore({ lastFinishedMatchId: data.createMatch.id });
+      return true;
     } catch (e) {
       console.error({ e });
     }
@@ -227,7 +231,7 @@ const store = (set, get) => ({
     get rawMatch() {
       const mapTeam = (teamId) => {
         return {
-          name: get().match.teams[TeamsEnum.HOME].name,
+          name: get().match.teams[teamId].name,
           teamPlayers: get().match.teams[teamId].teamPlayers.map((teamPlayer) => ({
             role: teamPlayer.role,
             user: teamPlayer.user.id,

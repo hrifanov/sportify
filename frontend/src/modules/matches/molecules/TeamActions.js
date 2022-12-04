@@ -1,4 +1,4 @@
-import { Box, Button, Flex, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { GiCrosshair, GiHockey, GiWhistle } from 'react-icons/gi';
 import { FiMinus, FiPlus } from 'react-icons/fi';
 import { TeamsEnum } from 'src/modules/matches/enums';
@@ -7,40 +7,43 @@ import {
   useInteractiveMatchStore,
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { Input } from 'src/shared/design-system/atoms';
+import { TeamHeading } from 'src/modules/matches/atoms/TeamHeading';
 
 export const TeamActions = ({ teamId, isPast }) => {
-  const { addShot, uiAction, shots, setShots } = useInteractiveMatchStore();
+  const { addShot, uiAction, shots, setShots, match } = useInteractiveMatchStore();
 
   return (
-    <GridItem
-      as={Flex}
-      align={'center'}
-      gap={2}
-      direction={teamId === TeamsEnum.GUEST && 'row-reverse'}
-    >
+    <Flex align={'center'} gap={2} direction={{ md: teamId === TeamsEnum.GUEST && 'row-reverse' }}>
+      <Box display={{ base: 'block', md: 'none' }} mr={'auto'}>
+        <TeamHeading team={match.teams[teamId]} teamId={teamId} />
+      </Box>
       <Flex
         as={Button}
+        size={{ base: 'sm', md: 'md' }}
         variant={'ghost'}
         direction={'column'}
         gap={1}
-        h={'auto'}
+        h={{ base: 'auto', md: 'auto' }}
         onClick={() => uiAction(INTERACTIVE_MATCH_ACTIONS.GOAL, { teamId })}
+        fontSize={{ base: 'sm', md: 'md' }}
       >
-        <Icon as={GiCrosshair} boxSize={8} />
+        <Icon as={GiCrosshair} boxSize={{ base: 6, md: 8 }} />
         Goal
       </Flex>
       <Flex
         as={Button}
+        size={{ base: 'sm', md: 'md' }}
         variant={'ghost'}
         direction={'column'}
         gap={1}
-        h={'auto'}
+        h={{ base: 'auto', md: 'auto' }}
         onClick={() => uiAction(INTERACTIVE_MATCH_ACTIONS.PENALTY, { teamId })}
+        fontSize={{ base: 'sm', md: 'md' }}
       >
-        <Icon as={GiWhistle} boxSize={8} />
+        <Icon as={GiWhistle} boxSize={{ base: 6, md: 8 }} />
         Penalty
       </Flex>
-      <Flex direction={'column'}>
+      <Flex direction={'column'} mr={'auto'}>
         <Flex size={'xs'} gap={1} h={'auto'}>
           <Icon as={GiHockey} boxSize={5} />
           <Text fontSize={'md'}>{shots[teamId]} shots</Text>
@@ -80,6 +83,6 @@ export const TeamActions = ({ teamId, isPast }) => {
           </Flex>
         )}
       </Flex>
-    </GridItem>
+    </Flex>
   );
 };
