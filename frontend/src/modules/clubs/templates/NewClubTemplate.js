@@ -12,6 +12,7 @@ import { FileInput } from '../atoms/FileInput';
 const schema = yup.object().shape({
   name: yup.string().required().label('Club name'),
   locality: yup.string().required().label('Locality'),
+  sport: yup.string().required().label('Sport'),
 });
 
 export default function NewClubTemplate({ createClubRQ }) {

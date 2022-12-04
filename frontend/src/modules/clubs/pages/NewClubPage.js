@@ -21,34 +21,12 @@ export default function NewClubPage(user) {
     },
   });
 
-  // async const uploadImg
-  const sendFiles = async () => {
-    const files = document.getElementById('fileInput').files;
-    const formData = new FormData();
-    Object.keys(files).forEach((key) => {
-      formData.append(files.item(key).name, files.item(key));
-    });
-    const response = await fetch('http://localhost:4000/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const content = await response.json();
-    const h2 = document.querySelector('h2');
-    h2.textContent = `Status: ${content.status}`;
-    const h3 = document.querySelector('h3');
-    h3.textContent = content.message;
-  };
-
-  console.log('be url: ' + config.BE_ROOT);
+  // console.log('be url: ' + config.BE_ROOT);
 
   const uploadLogo = async (file) => {
     console.log(file);
 
     const formData = new FormData();
-    // Object.keys(data).forEach((key) => {
-    //   formData.append(data.item(key).name, data.item(key));
-    // });
-
     formData.append(file.name, file);
 
     const response = await fetch('http://localhost:4000/upload', {
@@ -61,10 +39,11 @@ export default function NewClubPage(user) {
   // console.log('User: ' + user.id);
   const handleCreateClub = useCallback(
     async (variables) => {
-      console.log('variables: ' + JSON.stringify(variables));
-      variables = { ...variables, playerId: user?.id };
-      console.log(await uploadLogo(variables.logo));
-      // console.log(variables);
+      // console.log('variables: ' + JSON.stringify(variables));
+
+      const data = await uploadLogo(variables.logo);
+      // console.log(data.data.serverFiles[0]);
+      variables = { ...variables, playerId: user?.id, imageURL: data?.data?.serverFiles?.[0] };
       createClubRequest({ variables });
     },
     [createClubRequest, user?.id],

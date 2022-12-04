@@ -17,7 +17,7 @@ export default function ClubDetailPage() {
     }
     return null;
   });
-  console.log(club);
+  // console.log(club);
 
   const players = club?.players;
   const matches = club?.matches;

@@ -31,9 +31,21 @@ export const SET_CLUB_ADMIN_STATUS = gql`
 `;
 
 export const CREATE_CLUB_MUTATION = gql`
-  mutation createClub($name: String!, $sport: String!, $locality: String!, $playerId: ID!) {
+  mutation createClub(
+    $name: String!
+    $sport: String!
+    $locality: String!
+    $playerId: ID!
+    $imageURL: String!
+  ) {
     createClub(
-      clubInput: { name: $name, sport: $sport, locality: $locality, contactPerson: $playerId }
+      clubInput: {
+        name: $name
+        sport: $sport
+        locality: $locality
+        contactPerson: $playerId
+        imageURL: $imageURL
+      }
     )
   }
 `;
