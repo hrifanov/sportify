@@ -13,8 +13,23 @@ export const ACCEPT_INVITE_MUTATION = gql`
 `;
 
 export const EDIT_CLUB_MUTATION = gql`
-  mutation editClub($clubId: ID!, $name: String!, $locality: String!) {
-    editClub(clubId: $clubId, name: $name, locality: $locality)
+  mutation (
+    $id: ID!
+    $name: String!
+    $sport: String!
+    $locality: String!
+    $playerId: ID! # $imageURL: String!
+  ) {
+    editClub(
+      editClubInput: {
+        id: $id
+        name: $name
+        sport: $sport
+        locality: $locality
+        contactPerson: $playerId
+        # imageURL: $imageURL
+      }
+    )
   }
 `;
 

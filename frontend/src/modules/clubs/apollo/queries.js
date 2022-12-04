@@ -13,6 +13,12 @@ export const FETCH_CLUBS = gql`
         email
         isAdmin
       }
+      contactPerson {
+        id
+        userName
+        name
+        email
+      }
     }
     matches(clubId: "636ecd9840d0be5c9a93e4f2") {
       date

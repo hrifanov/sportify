@@ -67,10 +67,12 @@ export default function ClubEditPage() {
   });
 
   const handleSubmitEditClub = useCallback(
-    (variables, clubId) => {
-      console.log(variables);
-      clubId = club?.id;
-      variables = { ...variables, clubId };
+    (variables, id) => {
+      // console.log(variables);
+      id = club?.id;
+      const playerId = club.contactPerson.id;
+      console.log(playerId);
+      variables = { ...variables, id, playerId };
       editClubRequest({ variables });
     },
     [editClubRequest, club?.id],

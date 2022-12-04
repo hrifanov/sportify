@@ -59,7 +59,7 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
       {isCompleted && (
         <>
           <Text>Club has been successfully edited!</Text>
-          <Button mt={3} variant={'primary'} onClick={() => setIsCompleted(false)}>
+          <Button mt={3} w="100%" variant={'primary'} onClick={() => setIsCompleted(false)}>
             Reload the form.
           </Button>
         </>
