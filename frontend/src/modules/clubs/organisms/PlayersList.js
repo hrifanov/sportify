@@ -2,12 +2,7 @@ import { PlayerItem } from '../molecules/PlayerItem';
 import { Box, Text } from '@chakra-ui/react';
 
 export function PlayersList({ club, removePlayerRQ, makePlayerAdminRQ }, { ...props }) {
-  // players = players && players.players ? players.players : null;
-  // if (players) {
-  //   players.forEach((player) => {
-  //     console.log(players);
-  //   });
-  // }
+  // console.log('Club.players: ' + JSON.stringify(club.players));
   return (
     <Box>
       {club.players &&

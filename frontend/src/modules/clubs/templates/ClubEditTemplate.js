@@ -1,16 +1,40 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Icon, Spinner, Heading } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Icon,
+  Spinner,
+  Heading,
+  Button,
+  Spacer,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { route } from 'src/Routes';
 import { ClubEditForm } from 'src/modules/clubs/organisms/ClubEditForm';
 import { AddPlayerForm } from '../organisms/AddPlayerForm';
 import { PlayersList } from '../organisms/PlayersList';
+import { useState } from 'react';
+import { ModalDeleteClub } from '../molecules/ModalDeleteClub';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClubEditTemplate(
-  { clubRQ, invitePlayerRQ, editClubRQ, removePlayerRQ, makePlayerAdminRQ },
+  { clubRQ, clubDeleteRQ, invitePlayerRQ, editClubRQ, removePlayerRQ, makePlayerAdminRQ },
   { ...props },
 ) {
+  // console.log('clubRQ.club.id: ' + clubRQ?.club?.id);
+
+  // const [isDeleteButtonVisible, setIsDeleteButtonVisible] = useState(false);
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
@@ -35,7 +59,7 @@ export default function ClubEditTemplate(
                 <Flex
                   as={RouterLink}
                   mt={5}
-                  to={route.clubDetail()}
+                  to={route.clubDetail(clubRQ.club.id)}
                   color="brand.secondary"
                   alignItems="center"
                   gap={2}
@@ -53,6 +77,14 @@ export default function ClubEditTemplate(
                     setIsCompleted={editClubRQ.setIsCompleted}
                   />
                 </Box>
+                <Spacer />
+
+                <ModalDeleteClub
+                  isOpen={clubDeleteRQ?.isOpen}
+                  onOpen={clubDeleteRQ?.onOpen}
+                  handleDeleteClub={clubDeleteRQ?.handleDeleteClub}
+                  onClose={clubDeleteRQ?.onClose}
+                />
               </Box>
             </Flex>
 

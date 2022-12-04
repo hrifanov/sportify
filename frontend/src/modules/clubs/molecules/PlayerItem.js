@@ -25,10 +25,12 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
             boxSize="50px"
             borderRadius="50%"
           />
-          <Text as="b" ml={5} width="150px">
-            {player.name}
-          </Text>
-          <Text>{player.email}</Text>
+          <Flex direction={['column', '', '', 'row']} align={['baseline']}>
+            <Text as="b" ml={5} width="150px">
+              {player.name}
+            </Text>
+            <Text>{player.email}</Text>
+          </Flex>
           <Spacer />
           <Box>
             {hasAccepted && <BsFillPersonFill size={37} />}
@@ -42,6 +44,7 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
               makePlayerAdminRQ={makePlayerAdminRQ}
               playerId={player.id}
               setDisplayPlayer={setDisplayPlayer}
+              minW={100}
             />
           </Box>
         </Flex>

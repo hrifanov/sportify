@@ -33,7 +33,7 @@ export const typeDef = gql`
     sport: String!
     locality: String!
     contactPerson: ID!
-    imageURL: String!
+    imageURL: String
   }
 
   input EditClubInput {
