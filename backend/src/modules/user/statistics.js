@@ -173,7 +173,7 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
     if(teamRole.role == "goalkeeper"){
       const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
       summary.goalsSaved = shots[opponentSide] - summary.goalsPassed;
-      if(summary.goalsPassed){
+      if(summary.goalsPassed == 0){
         summary.matchesWithoutPassedGoals = 1
       }
       summary.gamesGoalkeeper = 1;
