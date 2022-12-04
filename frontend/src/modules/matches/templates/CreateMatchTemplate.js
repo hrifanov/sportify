@@ -583,8 +583,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                   },
                 };
 
-                console.log({ showDate });
-                startInteractiveMatch(matchInput, { isPast: showDate });
+                startInteractiveMatch({ match: matchInput, isPast: showDate });
                 navigate(route.matchInteractive());
               }
             }}

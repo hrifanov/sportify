@@ -1,11 +1,9 @@
 import {
   AlertDialog,
-  AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
   Button,
   Text,
   useToast,
@@ -15,32 +13,21 @@ import {
   useInteractiveMatchStore,
 } from 'src/modules/matches/store/interactiveMatchStore';
 import React, { useRef } from 'react';
-import { MatchEvent } from 'src/modules/matches/atoms/MatchEvent';
-import { useNavigate } from 'react-router-dom';
-import { route } from 'src/Routes';
 
 export const AlertFinishMatch = () => {
   const toast = useToast();
   const cancelRef = useRef();
-  const navigate = useNavigate();
-  const { ui, finishMatch, finishAction, computed, clearStore } = useInteractiveMatchStore();
+  const { ui, finishMatch, finishAction, computed } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.FINISH_MATCH;
 
   async function onFinish() {
-    // await navigate('/');
-    const data = await finishMatch();
-    console.log({ data });
-    if (data) {
-      await navigate(route.matchDetail(data.id));
-      clearStore();
-      return;
+    if (!(await finishMatch())) {
+      toast({
+        title: 'There was an error finishing the match.',
+        status: 'error',
+        position: 'top-right',
+      });
     }
-
-    toast({
-      title: 'There was an error finishing the match.',
-      status: 'error',
-      position: 'top-right',
-    });
   }
 
   return (
@@ -51,7 +38,7 @@ export const AlertFinishMatch = () => {
       isCentered={true}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {computed.canBeFinished && <Text>Do you really want to finish this match?</Text>}
             {!computed.canBeFinished && <Text>This match cannot be finished yet.</Text>}

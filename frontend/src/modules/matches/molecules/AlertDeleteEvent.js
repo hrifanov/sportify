@@ -35,7 +35,7 @@ export const AlertDeleteEvent = () => {
       isCentered={true}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             Do you really want to delete this event?
           </AlertDialogHeader>
