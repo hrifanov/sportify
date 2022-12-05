@@ -40,7 +40,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
   const [seasonFilter, setSeasonFilter] = useState(null);
 
   useEffect(() => {
-    setSeasonFilter(club.seasons[0].id);
+    setSeasonFilter(club?.seasons?.[0]?.id);
   }, [club]);
 
   if (loading) {

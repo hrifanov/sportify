@@ -4,7 +4,7 @@ import {
   REFRESH_TOKEN_SECRET,
   FE_HOSTNAME,
   GMAIL_API_KEY,
-} from '../config/variables';
+} from '../../config/variables';
 import { createGmailTransporter, sendMail } from './mail';
 
 export const createAccessToken = (user) => {

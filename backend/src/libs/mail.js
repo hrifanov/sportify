@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-import { GMAIL_APP_PASSWORD, GMAIL_USER } from '../config/variables';
+import { GMAIL_APP_PASSWORD, GMAIL_USER } from '../../config/variables';
 
 let transporter;
 
