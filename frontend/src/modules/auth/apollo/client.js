@@ -1,6 +1,7 @@
 import { makeVar, useReactiveVar } from '@apollo/client';
 import { makeLocalStorageItem } from 'src/utils/storage';
 import { useNavigate } from 'react-router-dom';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 const LOCAL_STORAGE_AUTH_KEY = 'auth';
 const persistedAuth = makeLocalStorageItem(LOCAL_STORAGE_AUTH_KEY);
@@ -44,11 +45,13 @@ auth.onNextChange(onNextChange);
 export const useAuthClient = () => {
   const navigate = useNavigate();
   const authState = useReactiveVar(auth);
+  const { selectClub } = useClubStore();
   return {
     user: authState.user,
     accessToken: authState.accessToken,
     signOut: () => {
       signOut();
+      selectClub(null);
       navigate('/');
     },
   };

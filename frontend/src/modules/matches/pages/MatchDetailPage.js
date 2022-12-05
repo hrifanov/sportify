@@ -39,7 +39,7 @@ export const MatchDetailPage = () => {
   }
 
   return (
-    <MainSection containerProps={{ maxW: 'container.lg', pb: '10' }}>
+    <MainSection containerProps={{ maxW: 'container.lg' }}>
       {!loading && data && (
         <>
           <Flex direction={'column'} height={'100%'}>

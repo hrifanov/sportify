@@ -56,7 +56,7 @@ export default function AppHeader({ inApp = true, title }) {
               mr={5}
             />
 
-            {activeClub.imageURL && <ClubLogo club={activeClub} size={50} mr={5} />}
+            {activeClub?.imageURL && <ClubLogo club={activeClub} size={50} mr={5} />}
             <Heading mx={['auto', 0]} size={['', 'xl']}>
               {title}
             </Heading>
