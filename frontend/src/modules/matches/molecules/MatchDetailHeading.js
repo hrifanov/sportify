@@ -7,7 +7,8 @@ import { MatchTimer } from 'src/modules/matches/atoms/MatchTimer';
 
 export const MatchDetailHeading = ({ match }) => {
   return (
-    <Box
+    <Flex
+      direction={'column'}
       bg={'brand.boxBackground'}
       py={{ base: 3, md: 6 }}
       px={{ base: 4, md: 14 }}
@@ -21,7 +22,11 @@ export const MatchDetailHeading = ({ match }) => {
           </Flex>
         </Flex>
       )}
-      <Flex justify={{ base: 'space-evenly', md: 'space-between' }} align={'center'}>
+      <Flex
+        justify={{ base: 'space-evenly', md: 'space-between' }}
+        align={'center'}
+        order={{ base: 2, md: 0 }}
+      >
         <Box display={{ base: 'none', md: 'block' }}>
           <TeamHeading team={match.teams.home} teamId={TeamsEnum.HOME} />
         </Box>
@@ -39,6 +44,12 @@ export const MatchDetailHeading = ({ match }) => {
           <MatchTimer />
         </Box>
       </Flex>
-    </Box>
+      {match.id && (
+        <Flex justify={'space-between'} mb={{ base: 2, md: 0 }}>
+          <Box>{match.shots[TeamsEnum.HOME]} shots</Box>
+          <Box>{match.shots[TeamsEnum.GUEST]} shots</Box>
+        </Flex>
+      )}
+    </Flex>
   );
 };

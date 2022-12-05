@@ -14,10 +14,13 @@ import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { route } from 'src/Routes';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useDisclosure, useToast } from '@chakra-ui/react';
+import { uploadLogo } from 'src/utils/match';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function ClubEditPage() {
   const toast = useToast();
   const { data, loading, refetch } = useQuery(FETCH_CLUBS);
+  const { selectClub } = useClubStore();
 
   const { id } = useParams();
   const club = data?.clubs?.find((club) => {
@@ -67,13 +70,26 @@ export default function ClubEditPage() {
   });
 
   const handleSubmitEditClub = useCallback(
-    (variables, id) => {
-      // console.log(variables);
+    async (variables, id) => {
       id = club?.id;
       const playerId = club.contactPerson.id;
-      console.log(playerId);
-      variables = { ...variables, id, playerId };
-      editClubRequest({ variables });
+
+      variables = {
+        ...variables,
+        id,
+        playerId,
+      };
+
+      if (variables.logo) {
+        const logoResponse = await uploadLogo(variables.logo);
+        variables.imageURL = logoResponse?.data?.serverFiles?.[0];
+      }
+
+      await editClubRequest({ variables });
+      selectClub({
+        ...club,
+        ...variables,
+      });
     },
     [editClubRequest, club?.id],
   );

@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { TeamsFragment } from 'src/modules/matches/apollo/fragments';
+import { TeamsFragment, UserStatisticsFragment } from 'src/modules/matches/apollo/fragments';
 
 export const FETCH_CLUBS = gql`
   query {
@@ -18,6 +18,7 @@ export const FETCH_CLUBS = gql`
 
 export const FETCH_MATCH = gql`
   ${TeamsFragment}
+  ${UserStatisticsFragment}
   query fetchMatch($matchId: ID!) {
     match(matchId: $matchId) {
       ...TeamFields
@@ -44,6 +45,15 @@ export const FETCH_MATCH = gql`
       season {
         id
         name
+      }
+      statistics {
+        user {
+          name
+        }
+        teamId
+        statistics {
+          ...UserStatistics
+        }
       }
     }
   }

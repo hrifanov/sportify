@@ -20,9 +20,9 @@ export function PlayerPopoverMenu({
   return (
     <Popover border={0} ml={5}>
       <PopoverTrigger>
-        <Button variant="ghost">
+        <Button variant="ghost" size={'sm'}>
           <BsThreeDots
-            size={37}
+            size={25}
             variant="light"
             as={Button}
             w="full"

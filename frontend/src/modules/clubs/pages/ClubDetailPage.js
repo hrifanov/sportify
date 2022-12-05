@@ -1,24 +1,20 @@
 import ClubDetailTemplate from 'src/modules/clubs/templates/ClubDetailTemplate';
-import { FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
+import { CLUB_BY_ID_QUERY } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { Navigate, useParams } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { useToast } from '@chakra-ui/react';
+import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 
 export default function ClubDetailPage() {
-  const { data, loading } = useQuery(FETCH_CLUBS);
-
-  const { id } = useParams();
   const toast = useToast();
-  const club = data?.clubs?.find((club) => {
-    if (club.id === id && id) {
-      return club;
-    }
-    return null;
+  const { id } = useParams();
+  const { data, loading } = useQuery(CLUB_BY_ID_QUERY, {
+    variables: { id },
   });
-  // console.log(club);
 
+  const club = data?.clubByID;
   const players = club?.players;
   const matches = club?.matches;
 
@@ -31,7 +27,9 @@ export default function ClubDetailPage() {
     return null;
   });
 
-  // console.log({ matches });
+  if (loading) {
+    return <FullPageSpinner />;
+  }
 
   if (!club) {
     toast({

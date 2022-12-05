@@ -3,12 +3,13 @@ import _ from 'lodash';
 import { FiPlayCircle } from 'react-icons/fi';
 import { route } from '../../../Routes.js';
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from 'src/utils/date';
 export default function MatchesComp({ matches }) {
   const groupedMatches = _.groupBy(matches, 'date');
   const navigate = useNavigate();
   return (
     <>
-      <Box h="92%" borderRadius="base" pt={4} pb={6} px={5}>
+      <Box bg="brand.boxBackground" flexGrow={1} borderRadius="base" pt={4} pb={6} px={5}>
         <Text
           fontWeight="bold"
           color="brand.title"
@@ -37,12 +38,12 @@ export default function MatchesComp({ matches }) {
                   <Tr key={date}>
                     <Td></Td>
                     <Td textAlign="center" color="brand.secondary">
-                      {new Date(date).toLocaleDateString('en-CA')}
+                      {formatDate(new Date(+date), 'dd-MM-yyyy')}
                     </Td>
                     <Td></Td>
                   </Tr>
                   {groupedMatches[date].map((match) => (
-                    <Tr>
+                    <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
                       <Td textAlign="left">{match.teams.home.name}</Td>
                       <Td textAlign="center" fontWeight="bold">
                         {match.score.home}:{match.score.guest}

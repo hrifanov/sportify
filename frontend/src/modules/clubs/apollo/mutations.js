@@ -18,7 +18,8 @@ export const EDIT_CLUB_MUTATION = gql`
     $name: String!
     $sport: String!
     $locality: String!
-    $playerId: ID! # $imageURL: String!
+    $playerId: ID!
+    $imageURL: String
   ) {
     editClub(
       editClubInput: {
@@ -27,7 +28,7 @@ export const EDIT_CLUB_MUTATION = gql`
         sport: $sport
         locality: $locality
         contactPerson: $playerId
-        # imageURL: $imageURL
+        imageURL: $imageURL
       }
     )
   }

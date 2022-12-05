@@ -8,6 +8,7 @@ export const matchTypeDef = gql`
 
   type Mutation {
     createMatch(matchInput: MatchInput): Match!
+    editMatch(editMatchInput: EditMatchInput): Boolean!
   }
 
   # MATCH
@@ -23,6 +24,13 @@ export const matchTypeDef = gql`
     score: TeamsNumbers!
     shots: TeamsNumbers!
     season: Season!
+    statistics: [MatchUserStatistics]
+  }
+  
+  type MatchUserStatistics {
+    user: User
+    teamId: String
+    statistics: MatchSummary
   }
 
   input MatchInput {
@@ -35,6 +43,15 @@ export const matchTypeDef = gql`
     shots: TeamsNumbersInput,
     seasonId: ID!
     events: [EventInput]!
+  }
+  
+  input EditMatchInput {
+    matchId: ID!
+    timer: Int!
+    score: TeamsNumbersInput!
+    shots: TeamsNumbersInput!
+    deletedEvents: [EventInput]
+    modifiedEvents: [EventInput]
   }
 
   # MATCH TEAMS

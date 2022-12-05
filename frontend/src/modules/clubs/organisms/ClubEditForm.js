@@ -2,6 +2,7 @@ import { Button, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { Text } from '@chakra-ui/react';
 import { Combobox } from 'react-widgets';
+import { FileInput } from 'src/modules/clubs/atoms/FileInput';
 
 const schema = yup.object().shape({
   name: yup.string().required().label('Club name'),
@@ -13,6 +14,7 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
     name: club && club.name ? club.name : '',
     locality: club && club.locality ? club.locality : '',
     sport: club && club.sport ? club.sport : '',
+    logo: '',
   };
 
   return (
@@ -49,7 +51,14 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
               placeholder={'Sport'}
               input-height="36px"
             />
-            <Button size="lg" type="submit" variant="primary" w={['100%']} mt="4">
+            <FormField
+              id="logo"
+              name="logo"
+              label="Logo"
+              input={FileInput}
+              input-height="36px"
+            ></FormField>
+            <Button size="lg" type="submit" variant="primary" w={['100%']}>
               Update club
             </Button>
           </Stack>

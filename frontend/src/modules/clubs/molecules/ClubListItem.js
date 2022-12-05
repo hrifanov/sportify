@@ -1,11 +1,22 @@
 import { Box, Flex, Text, Image, Spacer } from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
+import { ClubLogo } from 'src/modules/clubs/atoms/ClubLogo';
+import { useNavigate } from 'react-router-dom';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export const ClubListItem = (club) => {
   club = club.club;
+  const navigate = useNavigate();
+  const { selectClub } = useClubStore();
+
+  function onSelect() {
+    selectClub(club);
+    navigate(route.clubDetail(club.id));
+  }
+
   return (
-    <RouterLink to={route.clubDetail(club.id)}>
+    <button onClick={onSelect}>
       <Flex
         direction="row"
         align="center"
@@ -20,14 +31,9 @@ export const ClubListItem = (club) => {
         <Text>{club.name}</Text>
         <Spacer />
         <Box>
-          <Image
-            src="https://bit.ly/dan-abramov"
-            alt="Dan Abramov"
-            boxSize="50px"
-            borderRadius="50%"
-          />
+          <ClubLogo club={club} size={50} />
         </Box>
       </Flex>
-    </RouterLink>
+    </button>
   );
 };

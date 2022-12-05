@@ -3,6 +3,11 @@ export const EventEnum = {
   PENALTY: 'penalty',
 };
 
+export const RoleEnum = {
+  GOALKEEPER: 'goalkeeper',
+  ATTACK: 'attack',
+};
+
 export const TeamsEnum = {
   HOME: 'home',
   GUEST: 'guest',

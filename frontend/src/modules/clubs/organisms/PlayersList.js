@@ -2,9 +2,8 @@ import { PlayerItem } from '../molecules/PlayerItem';
 import { Box, Text } from '@chakra-ui/react';
 
 export function PlayersList({ club, removePlayerRQ, makePlayerAdminRQ }, { ...props }) {
-  // console.log('Club.players: ' + JSON.stringify(club.players));
   return (
-    <Box>
+    <Box overflowY={'scroll'} overflowX={'hidden'}>
       {club.players &&
         club.players.map((player) => {
           return (

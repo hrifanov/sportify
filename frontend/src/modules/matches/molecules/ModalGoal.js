@@ -26,7 +26,7 @@ import { timeToString } from 'src/utils/match';
 import { map } from 'lodash';
 
 export const ModalGoal = () => {
-  const { addEvent, editEvent, computed, ui, finishAction, timer } = useInteractiveMatchStore();
+  const { addGoal, editEvent, computed, ui, finishAction, timer } = useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
   const isEdit = !!ui.props?.event;
   const actionLabel = `${isEdit ? 'Edit' : 'Add'} a goal`;
@@ -75,8 +75,7 @@ export const ModalGoal = () => {
         data: data,
       });
     } else {
-      addEvent({
-        type: EventEnum.GOAL,
+      addGoal({
         time: data.time,
         data: {
           teamId: ui.props.teamId,

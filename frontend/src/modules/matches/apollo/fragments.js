@@ -26,3 +26,20 @@ export const TeamsFragment = gql`
     }
   }
 `;
+
+export const UserStatisticsFragment = gql`
+  fragment UserStatistics on MatchSummary {
+    assists
+    avgCanadianPoints
+    canadianPoints
+    gamesGoalkeeper
+    gamesAttacker
+    goals
+    goalsSaved
+    goalsPassed
+    matchesWithoutPassedGoals
+    penalties
+    totalPenaltiesLength
+    roles
+  }
+`;

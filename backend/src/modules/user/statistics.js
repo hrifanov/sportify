@@ -6,7 +6,7 @@ import { throwCustomError } from '../../libs/error';
 
 /**
  * GraphQL resolver for fetching player statistics in single match.
- * 
+ *
  * @param {Number} userId
  * @param {Number} matchId
  * @returns Summary of all actions in a match for given player.
@@ -20,8 +20,9 @@ export const getUserStatisticsForMatch = async (userId, matchId) => {
       code: 'user-not-in-match',
     });
   const events = await Event.find({ matchId: matchId });
-  
+
   let summary = addCanadianPoints(await getPlayerEventSummary(userId, events, playerTeamRole, match.shots));
+  summary.roles = [playerTeamRole.role];
 
   return summary;
 };
@@ -29,20 +30,23 @@ export const getUserStatisticsForMatch = async (userId, matchId) => {
 
 /**
  * GraphQL resolver for fetching player statistics within whole season in one team.
- * 
- * @param {Number} userId 
- * @param {Number} clubId 
- * @param {Number} seasonId 
+ *
+ * @param {Number} userId
+ * @param {Number} clubId
+ * @param {Number} seasonId
  * @returns Summary of all actions within whole season in one team.
  */
 export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
   const matches = await Match.find({club: clubId, season: seasonId});
   let summary = createEmptySummary();
 
+  const rolesSet = new Set();
   for(const match of matches){
     if(!match.events || match.events.length == 0) continue;
     const matchRole = await getPlayerRole(userId, match);
     if(!matchRole) continue;
+
+    rolesSet.add(matchRole.role);
 
     const eventDocs = await Event.find({_id: { $in: match.events }})
     const matchSummary = await getPlayerEventSummary(userId, eventDocs, matchRole, match.shots);
@@ -50,20 +54,23 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
     summary = addSumaries(summary, matchSummary);
   }
   summary = addCanadianPoints(summary);
+  summary.roles = Array.from(rolesSet);
+
+  console.log({summary});
   return summary;
 }
 
 
 /**
  * If player is in the match then returns its role and team side.
- * 
- * @param {ObjectId} userId 
- * @param {Match} match 
+ *
+ * @param {ObjectId} userId
+ * @param {Match} match
  * @returns Object with keys "role" and "teamSide", or null if player is not in the match.
  */
 const getPlayerRole = async (userId, match) => {
   // Check home players
-  const homePlayerIds = []; 
+  const homePlayerIds = [];
   for (const player of match.teams.home.teamPlayers) {
     homePlayerIds.push(player.id.toString('hex'));
   }
@@ -96,7 +103,7 @@ const getPlayerRole = async (userId, match) => {
 
 /**
  * Returns new empty summary record with zeros.
- * 
+ *
  * @returns Object with keys "goals", "assists", "penalties", "totalPenaltiesLength", "goalsSaved", "goalsPassed".
  */
 const createEmptySummary = () => ({
@@ -114,8 +121,8 @@ const createEmptySummary = () => ({
 
 /**
  * Creates new summary object out of two summaries by their sum.
- * @param {Object} sum1 
- * @param {Object} sum2 
+ * @param {Object} sum1
+ * @param {Object} sum2
  * @returns New summary object.
  */
 const addSumaries = (sum1, sum2) => {
@@ -129,12 +136,12 @@ const addSumaries = (sum1, sum2) => {
 
 /**
  * Counts canadian points and their average and creates new summary object containg those two additional attributes.
- * @param {Object} summary 
+ * @param {Object} summary
  * @returns New summary object.
  */
 const addCanadianPoints = (summary) => ({
   canadianPoints: summary.goals + summary.assists,
-  avgCanadianPoints: !summary.gamesAttacker 
+  avgCanadianPoints: !summary.gamesAttacker
     ? 0
     : (summary.goals + summary.assists)/summary.gamesAttacker,
   ...summary
@@ -143,7 +150,7 @@ const addCanadianPoints = (summary) => ({
 
 /**
  * Analyzies given events and returns sums of events that are associated with player.
- * 
+ *
  * @param {ObjectId} userId ID of user.
  * @param {Event[]} events Array of events that need to be summarized.
  * @param {Object} teamRole Object with keys "role" and "teamSide".
@@ -155,14 +162,14 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
     const summary = createEmptySummary();
     for (const event of events) {
       switch(event.type){
-        case "goal": 
+        case "goal":
           const goalResult = processGoalEvent(userId, event, teamRole);
           summary.goals += goalResult.goals;
           summary.assists += goalResult.assists;
           summary.goalsPassed += goalResult.goalsPassed;
           break;
         case "penalty":
-          const penaltyResult = processPenaltyEvent(userId, event); 
+          const penaltyResult = processPenaltyEvent(userId, event);
           summary.penalties += penaltyResult.penalty;
           summary.totalPenaltiesLength += penaltyResult.length;
           break;
@@ -185,10 +192,10 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
 
 /**
  * Returns object containg data about goal if the goal is associated with player.
- * 
- * @param {ObjectId} userId 
- * @param {Event} event 
- * @param {Object} teamRole 
+ *
+ * @param {ObjectId} userId
+ * @param {Event} event
+ * @param {Object} teamRole
  * @returns Object with number of goals, assists and not saved shots.
  */
 const processGoalEvent = (userId, event, teamRole) => {
@@ -207,12 +214,12 @@ const processGoalEvent = (userId, event, teamRole) => {
 
 
 /**
- * Returns object that contains 1 penalty record and length of that penalty 
+ * Returns object that contains 1 penalty record and length of that penalty
  * if given event is associated with player in params.
- * 
- * @param {ObjectId} userId 
- * @param {Event} event 
- * @returns 
+ *
+ * @param {ObjectId} userId
+ * @param {Event} event
+ * @returns
  */
 const processPenaltyEvent = (userId, event) => {
   const result = {
