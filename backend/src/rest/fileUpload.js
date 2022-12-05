@@ -101,7 +101,7 @@ const storeImage = (file) => {
 
     file.mv(filePath, (err) => {
       if(err) reject(res.status(500).json({status: "error", message: err.message}));
-
+      fs.chmodSync(filePath, 0o777);
       const extension = path.extname(filePath);
       const dateString = (new Date()).toISOString()
                             .replaceAll("-","")

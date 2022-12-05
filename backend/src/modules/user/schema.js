@@ -52,11 +52,14 @@ export const typeDef = gql`
     canadianPoints: Int!
     gamesGoalkeeper: Int!
     gamesAttacker: Int!
+    gamesTotal: Int!
     goals: Int!
     goalsSaved: Int!
     goalsPassed: Int!
     matchesWithoutPassedGoals: Int!
     penalties: Int!
     totalPenaltiesLength: Float!
+    roles: [String]
+    winsTotal: Int!
   }
 `;
