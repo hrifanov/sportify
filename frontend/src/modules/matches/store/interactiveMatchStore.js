@@ -3,13 +3,14 @@ import { EventEnum, TeamsEnum } from 'src/modules/matches/enums';
 import create from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { orderBy, reduce, cloneDeep, omit, maxBy } from 'lodash';
+import { orderBy, reduce, cloneDeep, omit, maxBy, map } from 'lodash';
 import uniqid from 'uniqid';
 import { client } from 'src/utils/apollo';
 import {
   ADD_EVENT_MUTATION,
   CREATE_MATCH_MUTATION,
   EDIT_EVENT_MUTATION,
+  EDIT_MATCH_MUTATION,
   REMOVE_EVENT_MUTATION,
 } from 'src/modules/matches/apollo/mutations';
 import produce from 'immer';
@@ -22,12 +23,26 @@ export const INTERACTIVE_MATCH_ACTIONS = {
   FINISH_MATCH: 'finishMatch',
 };
 
+const eventToRaw = (event) => {
+  const rawEvent = {
+    type: event.type,
+    time: event.time,
+    data: event.data,
+  };
+
+  if (event.id && !event.id.includes('local')) {
+    rawEvent.id = event.id;
+  }
+
+  return rawEvent;
+};
+
 const getInitialState = ({ match = null, isPast = false, lastFinishedMatchId = null } = {}) => {
   return {
     match,
     lastFinishedMatchId,
     isPast: !!match?.id || isPast,
-    events: cloneDeep(match?.events || []),
+    events: cloneDeep(match?.events ?? []),
     timer: 0,
     timerInterval: null,
     isPaused: true,
@@ -59,12 +74,21 @@ const store = (set, get) => ({
   addEvent: (event) => {
     set((state) => {
       state.events.push({
-        id: uniqid(),
+        id: uniqid('local-'),
         ...event,
         time: stringToTime(event.time),
         _synced: false,
       });
     });
+    get().updateMatchTimer();
+  },
+  addGoal: (event) => {
+    get().addEvent({
+      type: EventEnum.GOAL,
+      time: event.time,
+      data: event.data,
+    });
+    get().addShot(event.data.teamId);
     get().updateMatchTimer();
   },
   editEvent: (id, data) => {
@@ -85,71 +109,14 @@ const store = (set, get) => ({
     get().updateMatchTimer();
   },
   deleteEvent: (id) => {
+    const event = get().events.find((event) => event.id === id);
+    if (event.type === EventEnum.GOAL) {
+      get().addShot(event.data.teamId, -1);
+    }
     get().editEvent(id, { _deleted: true });
     get().updateMatchTimer();
   },
-  // syncAddEvent: async (event) => {
-  //   const result = await client.mutate({
-  //     mutation: ADD_EVENT_MUTATION,
-  //     variables: {
-  //       matchId: get().match.id,
-  //       eventInput: {
-  //         type: event.type,
-  //         time: event.time,
-  //         data: event.data,
-  //       },
-  //     },
-  //   });
-  //   set((state) => {
-  //     const storedEvent = state.events.find((e) => e.id === event.id);
-  //     storedEvent._id = result.data.addEvent;
-  //     storedEvent._synced = true;
-  //   });
-  // },
-  // syncEditEvent: async (event) => {
-  //   await client.mutate({
-  //     mutation: EDIT_EVENT_MUTATION,
-  //     variables: {
-  //       eventId: event._id,
-  //       eventEditInput: {
-  //         type: event.type,
-  //         time: event.time,
-  //         data: event.data,
-  //       },
-  //     },
-  //   });
-  // },
-  // syncDeleteEvent: async (event) => {
-  //   await client.mutate({
-  //     mutation: REMOVE_EVENT_MUTATION,
-  //     variables: {
-  //       eventId: event._id,
-  //       matchId: get().match.id,
-  //     },
-  //   });
-  //   return set((state) => {
-  //     state.events = state.events.filter((e) => e.id !== event.id);
-  //   });
-  // },
-  // syncEvents: async () => {
-  //   for (const event of get().events.filter((event) => !event._synced)) {
-  //     try {
-  //       if (event._deleted) {
-  //         return await get().syncDeleteEvent(event);
-  //       }
-  //
-  //       const isEdit = !!event._id;
-  //       if (isEdit) {
-  //         return await get().syncEditEvent(event);
-  //       }
-  //
-  //       return await get().syncAddEvent(event);
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   }
-  // },
-  addShot: (teamId, value) => {
+  addShot: (teamId, value = 1) => {
     set((state) => {
       let newShots = state.shots[teamId] + value;
       if (newShots < 0) {
@@ -214,14 +181,51 @@ const store = (set, get) => ({
     });
   },
   finishMatch: async () => {
-    const matchInput = get().computed.rawMatch;
+    if (get().computed.isEdit) {
+      return await get().saveMatchEdit();
+    }
 
+    return await get().saveNewMatch();
+  },
+  saveNewMatch: async () => {
+    const matchInput = get().computed.rawMatch;
     try {
       const { data } = await client.mutate({
         mutation: CREATE_MATCH_MUTATION,
         variables: { matchInput },
       });
       get().clearStore({ lastFinishedMatchId: data.createMatch.id });
+      return true;
+    } catch (e) {
+      console.error({ e });
+    }
+  },
+  saveMatchEdit: async () => {
+    const deletedEvents = get()
+      .events.filter((event) => event._deleted && event.id)
+      .map(eventToRaw);
+    const modifiedEvents = get()
+      .computed.validEvents.filter((event) => event._synced === false)
+      .map(eventToRaw);
+    const rawMatch = get().computed.rawMatch;
+
+    const editMatchInput = {
+      matchId: get().match.id,
+      timer: rawMatch.timer,
+      score: rawMatch.score,
+      shots: rawMatch.shots,
+      deletedEvents,
+      modifiedEvents,
+    };
+
+    console.log({ editMatchInput });
+
+    try {
+      const { data } = await client.mutate({
+        mutation: EDIT_MATCH_MUTATION,
+        variables: { editMatchInput },
+      });
+      get().clearStore({ lastFinishedMatchId: get().match.id });
       return true;
     } catch (e) {
       console.error({ e });
@@ -247,13 +251,12 @@ const store = (set, get) => ({
           home: mapTeam(TeamsEnum.HOME),
           guest: mapTeam(TeamsEnum.GUEST),
         },
-        events: get().computed.validEvents.map((event) => ({
-          type: event.type,
-          time: event.time,
-          data: event.data,
-        })),
+        events: get().computed.validEvents.map(eventToRaw),
         score: get().calculateScore({ countTotal: false }),
-        shots: get().shots,
+        shots: {
+          [TeamsEnum.HOME]: get().shots[TeamsEnum.HOME],
+          [TeamsEnum.GUEST]: get().shots[TeamsEnum.GUEST],
+        },
         seasonId: get().match.seasonId ?? '6388b2123160f796e5e99bec',
       };
     },

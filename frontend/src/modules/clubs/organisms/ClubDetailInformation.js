@@ -14,6 +14,8 @@ import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
 import { route } from '../../../Routes.js';
+import { beAsset } from 'src/utils/assets';
+import { ClubLogo } from 'src/modules/clubs/atoms/ClubLogo';
 
 export const ClubDetailInformation = ({ club, isCurrUserAdmin }) => {
   return (
@@ -28,7 +30,7 @@ export const ClubDetailInformation = ({ club, isCurrUserAdmin }) => {
         </Text>
       </Flex>
       <Flex alignItems="center" gap={4} mt={2}>
-        <Image src={require('src/assets/club.png')} w="100px" h="100px" />
+        <ClubLogo club={club} />
         <Box>
           <Text textTransform="uppercase" fontWeight="bold">
             {club.name}

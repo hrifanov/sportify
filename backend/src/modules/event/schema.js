@@ -1,5 +1,4 @@
 import { gql } from 'apollo-server-express';
-import { EventDataScalar } from './eventDataScalar';
 
 export const typeDef = gql`
   type Query {
@@ -22,6 +21,7 @@ export const typeDef = gql`
   }
 
   input EventInput {
+    id: ID
     type: String!
     time: Int!
     data: EventData!

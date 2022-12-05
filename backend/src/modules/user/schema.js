@@ -41,7 +41,7 @@ export const typeDef = gql`
   }
 
   type InvitationInfo {
-    clubName: String
+    club: Club
     email: String
     doesUserExist: Boolean
   }
@@ -58,5 +58,6 @@ export const typeDef = gql`
     matchesWithoutPassedGoals: Int!
     penalties: Int!
     totalPenaltiesLength: Float!
+    roles: [String]
   }
 `;

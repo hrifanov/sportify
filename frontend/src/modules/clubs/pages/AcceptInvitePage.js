@@ -24,7 +24,7 @@ export function AcceptInvitePage() {
 
   const { user } = useAuthClient();
 
-  const { email, clubName, doesUserExist } = GetTokenInfo(token);
+  const { email, club, doesUserExist } = GetTokenInfo(token);
 
   const tokenFromLS = getTokenLS('inviteToken');
 
@@ -124,7 +124,7 @@ export function AcceptInvitePage() {
               You were invited to a new club.
             </Heading>
             <Heading as="h3" mb={3}>
-              "{clubName}"
+              "{club.name}"
             </Heading>
             <Box>
               <Flex mt="20px">
@@ -143,7 +143,7 @@ export function AcceptInvitePage() {
                   onClick={() => {
                     putTokenLS('inviteToken', '');
                     setInvitationIsFinished(true);
-                    navigate(route.clubDetail());
+                    navigate(route.clubDetail(club.id));
                   }}
                 >
                   Decline

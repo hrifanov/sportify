@@ -5,6 +5,9 @@ import TeamPlayer from '../../models/TeamPlayer';
 import User from '../../models/User';
 import Event from '../../models/Event';
 import mongoose from 'mongoose';
+import map from 'lodash.map';
+import filter from 'lodash.filter';
+import reject from 'lodash.reject';
 
 export const createMatch = async (_, { matchInput }, context) => {
   isAuth(context);
@@ -17,16 +20,16 @@ export const createMatch = async (_, { matchInput }, context) => {
 
     const playerIds = await createTeamPlayers(
       [...teams.home.teamPlayers, ...teams.guest.teamPlayers],
-      session
+      session,
     );
 
-    const newMatchId = mongoose.Types.ObjectId()
+    const newMatchId = mongoose.Types.ObjectId();
     const matchEvents = events.map((event) => ({
       ...event,
       matchId: newMatchId,
-    }))
+    }));
 
-    const insertedEvents = await Event.insertMany(matchEvents, { session });
+    await Event.insertMany(matchEvents, { session });
 
     const match = await new Match({
       _id: newMatchId,
@@ -42,11 +45,10 @@ export const createMatch = async (_, { matchInput }, context) => {
           teamPlayers: playerIds.slice(teams.home.teamPlayers.length),
         },
       },
-      score: score || {home: 0, guest: 0},
-      shots: shots || {home: 0, guest: 0},
+      score: score || { home: 0, guest: 0 },
+      shots: shots || { home: 0, guest: 0 },
       timer,
       season: seasonId,
-      events: insertedEvents.map((event) => event._id.toString()),
     }).save({ session });
 
     await session.commitTransaction();
@@ -55,6 +57,55 @@ export const createMatch = async (_, { matchInput }, context) => {
     console.error(err);
     await session.abortTransaction();
     throwCustomError('Unable to create new match', { code: 'match-error' });
+  } finally {
+    session.endSession();
+  }
+};
+
+export const editMatch = async (_, { editMatchInput }, context) => {
+  isAuth(context);
+
+  const session = await context.client.startSession();
+
+  try {
+    session.startTransaction();
+
+    const modifiedEvents = filter(editMatchInput.modifiedEvents, 'id');
+    const newEvents = reject(editMatchInput.modifiedEvents, 'id');
+
+    // Insert new events
+    if (newEvents.length) {
+      const newMatchEvents = newEvents.map((event) => ({
+        ...event,
+        matchId: editMatchInput.matchId,
+      }));
+      await Event.insertMany(newMatchEvents, { session });
+    }
+
+    //  Update modified events
+    for (const event of modifiedEvents) {
+      await Event.findByIdAndUpdate(event.id, event);
+    }
+
+    // Delete deleted events
+    if (editMatchInput.deletedEvents.length) {
+      const deletedEventsIds = map(editMatchInput.deletedEvents, 'id');
+      await Event.deleteMany({ _id: { $in: deletedEventsIds } }, { session });
+    }
+
+    // Update match
+    await Match.findByIdAndUpdate(editMatchInput.matchId, {
+      timer: editMatchInput.timer,
+      score: editMatchInput.score,
+      shots: editMatchInput.shots,
+    }, { session });
+
+    await session.commitTransaction();
+    return true;
+  } catch (err) {
+    console.error(err);
+    await session.abortTransaction();
+    throwCustomError('Unable to edit match', { code: 'match-error' });
   } finally {
     session.endSession();
   }

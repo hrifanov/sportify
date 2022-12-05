@@ -15,6 +15,12 @@ export const typeDef = gql`
         id: ID!
         name: String!
         club: Club!
+        statistics: [SeasonStatistics]
+    }
+    
+    type SeasonStatistics {
+        user: User
+        statistics: MatchSummary
     }
 
     input CreateSeasonInput{

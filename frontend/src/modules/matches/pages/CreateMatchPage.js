@@ -1,9 +1,13 @@
 import CreateMatchTemplate from 'src/modules/matches/templates/CreateMatchTemplate';
-import { FETCH_CLUBS } from 'src/modules/matches/apollo/queries';
+import { CLUB_BY_ID_QUERY } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function CreateMatchPage() {
-  const { data, loading } = useQuery(FETCH_CLUBS);
+  const { activeClub } = useClubStore();
+  const { data, loading } = useQuery(CLUB_BY_ID_QUERY, {
+    variables: { id: activeClub.id },
+  });
 
-  return <CreateMatchTemplate club={data?.clubs?.[0]} loading={loading} />;
+  return <CreateMatchTemplate club={data?.clubByID} loading={loading} />;
 }

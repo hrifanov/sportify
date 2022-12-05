@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
 import { config } from 'src/config';
+import { uploadLogo } from 'src/utils/match';
 
 export default function NewClubPage(user) {
   const navigate = useNavigate();
@@ -22,19 +23,6 @@ export default function NewClubPage(user) {
   });
 
   // console.log('be url: ' + config.BE_ROOT);
-
-  const uploadLogo = async (file) => {
-    console.log(file);
-
-    const formData = new FormData();
-    formData.append(file.name, file);
-
-    const response = await fetch('http://localhost:4000/upload', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      body: formData, // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  };
 
   // console.log('User: ' + user.id);
   const handleCreateClub = useCallback(

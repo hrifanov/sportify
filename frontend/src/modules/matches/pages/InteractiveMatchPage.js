@@ -37,7 +37,7 @@ export const InteractiveMatchPage = () => {
 
   return (
     <MainSection containerProps={{ maxW: 'container.lg' }}>
-      <Flex direction={'column'} minHeight={'100%'} height={{ md: '100%' }} pb={10}>
+      <Flex direction={'column'} minHeight={'100%'} height={{ md: '100%' }}>
         <MatchDetailHeading match={computed.rawMatch} />
         <Box
           bg={'brand.boxBackground'}
