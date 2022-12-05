@@ -13,7 +13,7 @@ export const users = async (_, _params, context) => {
 };
 
 export const user = async (_, { userName }, context) => {
-  //isAuth(context);
+  isAuth(context);
 
   return User.findOne({ userName });
 };
