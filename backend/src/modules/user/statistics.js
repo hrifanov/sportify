@@ -2,6 +2,7 @@ import Match from '../../models/Match';
 import TeamPlayer from '../../models/TeamPlayer';
 import Event from '../../models/Event';
 import { throwCustomError } from '../../libs/error';
+import { season } from '../season/query';
 
 
 /**
@@ -21,7 +22,7 @@ export const getUserStatisticsForMatch = async (userId, matchId) => {
     });
   const events = await Event.find({ matchId: matchId });
 
-  let summary = addCanadianPoints(await getPlayerEventSummary(userId, events, playerTeamRole, match.shots));
+  let summary = addCanadianPoints(await getPlayerEventSummary(userId, events, playerTeamRole, match.shots, match.score));
   summary.roles = [playerTeamRole.role];
 
   return summary;
@@ -47,16 +48,13 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
     if(!matchRole) continue;
 
     rolesSet.add(matchRole.role);
-
-    const eventDocs = await Event.find({_id: { $in: match.events }})
-    const matchSummary = await getPlayerEventSummary(userId, eventDocs, matchRole, match.shots);
-
+    
+    const eventDocs = await Event.find({matchId: match.id});
+    const matchSummary = await getPlayerEventSummary(userId, eventDocs, matchRole, match.shots, match.score);
     summary = addSumaries(summary, matchSummary);
   }
   summary = addCanadianPoints(summary);
   summary.roles = Array.from(rolesSet);
-
-  console.log({summary});
   return summary;
 }
 
@@ -115,6 +113,8 @@ const createEmptySummary = () => ({
   goalsPassed: 0,
   gamesAttacker: 0,
   gamesGoalkeeper: 0,
+  gamesTotal: 0,
+  winsTotal: 0,
   matchesWithoutPassedGoals: 0
 });
 
@@ -157,7 +157,7 @@ const addCanadianPoints = (summary) => ({
  * @param {Object} shots Object with numbers of shots under keys "home" and "guest".
  * @returns Promise - Object containing number of goals, assists, penalties and their lengths, and for goalkeeper saved and passed shots.
  */
-const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
+const getPlayerEventSummary = async (userId, events, teamRole, shots, score) => {
   return new Promise((resolve) => {
     const summary = createEmptySummary();
     for (const event of events) {
@@ -177,14 +177,18 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots) => {
           continue;
       }
     }
+    const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
     if(teamRole.role == "goalkeeper"){
-      const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
       summary.goalsSaved = shots[opponentSide] - summary.goalsPassed;
       if(summary.goalsPassed == 0){
         summary.matchesWithoutPassedGoals = 1
       }
       summary.gamesGoalkeeper = 1;
     } else summary.gamesAttacker = 1;
+    if(score[teamRole.teamSide] > score[opponentSide]){
+      summary.winsTotal = 1;
+    }
+    summary.gamesTotal = 1;
     resolve(summary);
   });
 };

@@ -52,6 +52,7 @@ export const typeDef = gql`
     canadianPoints: Int!
     gamesGoalkeeper: Int!
     gamesAttacker: Int!
+    gamesTotal: Int!
     goals: Int!
     goalsSaved: Int!
     goalsPassed: Int!
@@ -59,5 +60,6 @@ export const typeDef = gql`
     penalties: Int!
     totalPenaltiesLength: Float!
     roles: [String]
+    winsTotal: Int!
   }
 `;
