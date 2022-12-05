@@ -20,6 +20,7 @@ import {
   Radio,
   RadioGroup,
   Hide,
+  HStack,
 } from '@chakra-ui/react';
 import {
   FiPlus,
@@ -108,12 +109,10 @@ export default function CreateMatchTemplate({ club, loading }) {
   const date = new Date().toISOString().split('T')[0];
 
   const [gameDate, setGameDate] = useState(date);
-
   const [openPlayers, setOpenPlayers] = useState(false);
-
   const [errorPopup, setErrorPopup] = useState(false);
-
   const [showDate, setShowDate] = useState(false);
+  const [seasonId, setSeasonId] = useState(null);
 
   const handleOpenPlayers = () => {
     setOpenPlayers(true);
@@ -134,7 +133,7 @@ export default function CreateMatchTemplate({ club, loading }) {
             direction="row"
             onChange={(e) => handleSelected(e, itemIndex, columns, setColumns)}
           >
-            <input type="radio" name={item.name} value="0" on />
+            <input type="radio" name={item.name} value="0" />
             <input type="radio" name={item.name} value="1" defaultChecked />
             <input type="radio" name={item.name} value="2" />
           </Stack>
@@ -217,6 +216,10 @@ export default function CreateMatchTemplate({ club, loading }) {
     });
   };
 
+  if (loading) {
+    return <FullPageSpinner />;
+  }
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
@@ -280,7 +283,6 @@ export default function CreateMatchTemplate({ club, loading }) {
             <Text textAlign="center">You need to have at least 2 players in each team</Text>
           </Box>
         ) : null}
-        <FullPageSpinner loading={loading} />
         {club && (
           <Stack spacing={[2, 3, 5]} direction={['column', null, 'row']} h="full">
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
@@ -487,60 +489,45 @@ export default function CreateMatchTemplate({ club, loading }) {
         )}
       </Container>
       <Container mb={6} maxW="container.xl">
-        <Stack
-          direction={['column', 'column', 'row']}
-          spacing={[3, 5, 8]}
-          justifyContent="center"
-          alignItems={['start', null, 'end']}
-        >
-          {/*<Stack w="100%" maxWidth={'259px'}>
-            <label className="label-nowrap" htmlFor="game-time">
-              Game time:
-            </label>
-            <Stack direction="row">
-              <Button {...inc} color="black">
-                +
-              </Button>
-              <InputGroup id="game-time">
-                <Input px={2} {...input} color="black" />
-                <InputRightAddon children="min" bg="white" color="brand.secondary" />
-              </InputGroup>
-              <Button {...dec} color="black">
-                -
-              </Button>
-            </Stack>
-            </Stack>*/}
-          <Stack direction="row" alignItems="center">
-            <label className="label-nowrap" htmlFor="date-of-match">
-              Past match:
-            </label>
-            <Switch
-              py={['0', '0', '6px']}
-              size="lg"
-              onChange={() => {
-                setShowDate(!showDate);
-                if (showDate) {
-                  setGameDate(new Date().toISOString().split('T')[0]);
-                }
-              }}
-            />
-          </Stack>
-          {showDate ? (
+        <HStack align={'center'} justify={'space-between'} spacing={4}>
+          <HStack align={'center'} gap={10}>
+            <Select w={'52'} onChange={(e) => setSeasonId(e.target.value)}>
+              {club.seasons.map((season) => {
+                return <option value={season.id}>{season.name}</option>;
+              })}
+            </Select>
             <Stack direction="row" alignItems="center">
               <label className="label-nowrap" htmlFor="date-of-match">
-                Date of the match:
+                Past match:
               </label>
-              <Input
-                id="date-of-match"
-                color="black"
-                value={gameDate}
-                size="md"
-                type="date"
-                w={['259px', '259px', '100%']}
-                onChange={(event) => setGameDate(event.target.value)}
+              <Switch
+                py={['0', '0', '6px']}
+                size="lg"
+                onChange={() => {
+                  setShowDate(!showDate);
+                  if (showDate) {
+                    setGameDate(new Date().toISOString().split('T')[0]);
+                  }
+                }}
               />
             </Stack>
-          ) : null}
+            {showDate ? (
+              <Stack direction="row" alignItems="center">
+                <label className="label-nowrap" htmlFor="date-of-match">
+                  Date of the match:
+                </label>
+                <Input
+                  id="date-of-match"
+                  color="black"
+                  value={gameDate}
+                  size="md"
+                  type="date"
+                  w={['259px', '259px', '100%']}
+                  onChange={(event) => setGameDate(event.target.value)}
+                />
+              </Stack>
+            ) : null}
+          </HStack>
           <Button
             w="259px"
             variant="primary"
@@ -570,7 +557,7 @@ export default function CreateMatchTemplate({ club, loading }) {
                 const matchInput = {
                   club: club.id,
                   date: gameDate,
-                  seasonId: '6388b2123160f796e5e99bec',
+                  seasonId: seasonId ?? club.seasons[0].id,
                   teams: {
                     home: {
                       name: columns[0].name,
@@ -583,15 +570,14 @@ export default function CreateMatchTemplate({ club, loading }) {
                   },
                 };
 
-                console.log({ showDate });
-                startInteractiveMatch(matchInput, { isPast: showDate });
+                startInteractiveMatch({ match: matchInput, isPast: showDate });
                 navigate(route.matchInteractive());
               }
             }}
           >
             Start match
           </Button>
-        </Stack>
+        </HStack>
       </Container>
     </Flex>
   );

@@ -24,10 +24,10 @@ export const invitationDetail = async (_, { token }) => {
   try {
     const { clubId, email } = verifyToken(token, GMAIL_API_KEY);
 
-    const { name } = await Club.findOne({ id: clubId }).select('name');
+    const club = await Club.findOne({ id: clubId }).select('name');
     const user = await User.findOne({ email });
 
-    return { clubName: name, email, doesUserExist: !!user };
+    return { club, email, doesUserExist: !!user };
   } catch (err) {
     console.error(err);
     throwCustomError('Provided token is not valid', { code: 'invalid-token' });

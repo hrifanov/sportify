@@ -6,22 +6,33 @@ import {
   EDIT_CLUB_MUTATION,
   REMOVE_PLAYER_MUTATION,
   SET_CLUB_ADMIN_STATUS,
+  DELETE_CLUB_MUTATION,
 } from 'src/modules/clubs/apollo/mutations';
 import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { route } from 'src/Routes';
-import { Navigate } from 'react-router-dom';
-import { useToast } from '@chakra-ui/react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useDisclosure, useToast } from '@chakra-ui/react';
+import { uploadLogo } from 'src/utils/match';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function ClubEditPage() {
   const toast = useToast();
   const { data, loading, refetch } = useQuery(FETCH_CLUBS);
-  const club = data?.clubs?.[0];
+  const { selectClub } = useClubStore();
+
+  const { id } = useParams();
+  const club = data?.clubs?.find((club) => {
+    if (club.id === id && id) {
+      return club;
+    }
+    return null;
+  });
+
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();
-  // console.log('user: ' + user.email);
 
   //** Request for inviting a player */
   const [isInvitePlayerCompleted, setIsInvitePlayerCompleted] = useState(false);
@@ -58,16 +69,52 @@ export default function ClubEditPage() {
     },
   });
 
-  console.log('club?.id: ' + club?.id);
-
   const handleSubmitEditClub = useCallback(
-    (variables, clubId) => {
-      clubId = club?.id;
-      variables = { ...variables, clubId };
-      editClubRequest({ variables });
+    async (variables, id) => {
+      id = club?.id;
+      const playerId = club.contactPerson.id;
+
+      variables = {
+        ...variables,
+        id,
+        playerId,
+      };
+
+      if (variables.logo) {
+        const logoResponse = await uploadLogo(variables.logo);
+        variables.imageURL = logoResponse?.data?.serverFiles?.[0];
+      }
+
+      await editClubRequest({ variables });
+      selectClub({
+        ...club,
+        ...variables,
+      });
     },
     [editClubRequest, club?.id],
   );
+
+  const navigate = useNavigate();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [deleteClubRequest, deleteClubRequestState] = useMutation(DELETE_CLUB_MUTATION, {
+    onCompleted: () => {
+      console.log('Jsem tu');
+      navigate(route.dashboard());
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+
+  const handleDeleteClub = (confirmDelete) => {
+    if (confirmDelete) {
+      console.log('confirmDelete: ' + confirmDelete);
+      deleteClubRequest({ variables: { clubId: club?.id } });
+    }
+    onClose();
+  };
 
   //** Request for removing a player */
   // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
@@ -89,7 +136,7 @@ export default function ClubEditPage() {
     [removePlayerRequest],
   );
 
-  //** Request for makink a player a admin */
+  //** Request for making a player a admin */
   // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
 
   const [makePlayerAdminRequest, makePlayerAdminRequestState] = useMutation(SET_CLUB_ADMIN_STATUS, {
@@ -110,8 +157,6 @@ export default function ClubEditPage() {
 
   const isCurrUserAdmin = club?.players?.find((player) => {
     if (player?.email === user.email) {
-      // console.log(player.email);
-      // console.log(player.isAdmin);
       return player.isAdmin;
     }
     return null;
@@ -125,12 +170,18 @@ export default function ClubEditPage() {
       duration: 4000,
       isClosable: true,
     });
-    return <Navigate to={route.clubDetail()} replace />;
+    return <Navigate to={route.clubDetail(clubRQ?.club?.id)} replace />;
   }
 
   return (
     <ClubEditTemplate
       clubRQ={clubRQ}
+      clubDeleteRQ={{
+        isOpen,
+        onOpen,
+        onClose,
+        handleDeleteClub,
+      }}
       invitePlayerRQ={{
         loading: invitePlayerRequestState.loading,
         error: invitePlayerRequestState.error,
@@ -150,8 +201,6 @@ export default function ClubEditPage() {
         onSubmit: handleSubmitRemovePlayer,
         loading: removePlayerRequestState.loading,
         error: removePlayerRequestState.error,
-        // isCompleted: isEditClubRequestCompleted,
-        // setIsCompleted: setIsEditClubRequestCompleted,
       }}
       makePlayerAdminRQ={{
         onSubmit: handleSubmitmakePlayerAdmin,

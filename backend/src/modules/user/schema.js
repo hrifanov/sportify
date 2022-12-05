@@ -41,7 +41,7 @@ export const typeDef = gql`
   }
 
   type InvitationInfo {
-    clubName: String
+    club: Club
     email: String
     doesUserExist: Boolean
   }

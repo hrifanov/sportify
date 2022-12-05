@@ -1,6 +1,8 @@
-import { Button, Stack, Select } from 'src/shared/design-system';
+import { Button, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { Text } from '@chakra-ui/react';
+import { Combobox } from 'react-widgets';
+import { FileInput } from 'src/modules/clubs/atoms/FileInput';
 
 const schema = yup.object().shape({
   name: yup.string().required().label('Club name'),
@@ -11,11 +13,9 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
   const initialValues = {
     name: club && club.name ? club.name : '',
     locality: club && club.locality ? club.locality : '',
-    sport: 'Hockey',
-    // clubId: '636ecd9840d0be5c9a93e4f2',
-    //TODO rest of the form
+    sport: club && club.sport ? club.sport : '',
+    logo: '',
   };
-  // console.log(onSubmit);
 
   return (
     <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
@@ -46,16 +46,19 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
               id="sport"
               name="sport"
               label="Sport"
-              input={Select}
-              autoFocus="autofocus"
-              autoComplete="on"
-              autoCorrect="off"
-              autoCapitalize="off"
-              width="100%"
-            >
-              <option value="hockey">Hockey</option>
-            </FormField>
-            <Button size="lg" type="submit" variant="primary" w={['100%']} mt="4">
+              input={Combobox}
+              data={['Hockey', 'Floorball']}
+              placeholder={'Sport'}
+              input-height="36px"
+            />
+            <FormField
+              id="logo"
+              name="logo"
+              label="Logo"
+              input={FileInput}
+              input-height="36px"
+            ></FormField>
+            <Button size="lg" type="submit" variant="primary" w={['100%']}>
               Update club
             </Button>
           </Stack>
@@ -65,7 +68,7 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
       {isCompleted && (
         <>
           <Text>Club has been successfully edited!</Text>
-          <Button mt={3} variant={'primary'} onClick={() => setIsCompleted(false)}>
+          <Button mt={3} w="100%" variant={'primary'} onClick={() => setIsCompleted(false)}>
             Reload the form.
           </Button>
         </>

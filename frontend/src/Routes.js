@@ -2,6 +2,8 @@ import { Route, Routes as RouterRoutes, Navigate } from 'react-router-dom';
 import { NotFoundPage } from 'src/shared/navigation/pages/NotFoundPage';
 import { SignInPage, SignUpPage } from 'src/modules/auth';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
+import DashboardPage from './modules/clubs/pages/DashboardPage';
+import NewClubPage from './modules/clubs/pages/NewClubPage';
 import CreateMatchPage from './modules/matches/pages/CreateMatchPage';
 import ClubEditPage from './modules/clubs/pages/ClubEditPage';
 import { AccountVerificationPage } from 'src/modules/auth/pages/AccountVerificationPage';
@@ -10,25 +12,28 @@ import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { useToast } from '@chakra-ui/react';
 import { InteractiveMatchPage } from './modules/matches/pages/InteractiveMatchPage.js';
 import { MatchDetailPage } from './modules/matches/pages/MatchDetailPage.js';
+import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
 
 export const route = {
+  signIn: () => '/',
+  signUp: () => '/auth/signUp',
+  clubDetail: (id = ':id') => `/club/${id}`,
+  clubEdit: (id = ':id') => `/club/${id}/edit`,
+  matches: () => '/matches',
+  matchCreate: () => '/match/create',
+  matchDetail: (id = ':id') => `/matches/${id}`,
+  matchEdit: (id) => `/matches/${id}/edit`,
+  matchInteractive: () => '/match/interactive',
+  accountVerification: () => '/verify-account/:token',
   acceptInvite: (token) => {
     if (token) {
       return '/accept-invite/' + token;
     }
     return '/accept-invite/:token';
   },
-  accountVerification: () => '/verify-account/:token',
-  clubDetail: () => '/club',
-  clubEdit: () => '/club/edit',
-  matchCreate: () => '/match/create',
-  matchDetail: (id = ':id') => `/matches/${id}`,
-  matchEdit: (id) => `/matches/${id}/edit`,
-  matchInteractive: () => '/match/interactive',
-  signIn: () => '/',
-  // acceptInvite: () => '/accept-invite/:token',
-  signUp: () => '/auth/signUp',
-  // acceptInviteConfirm: () => '/accept-invite/',
+  dashboard: () => '/dashboard',
+  newClub: () => '/new-club',
+  manageSeasons: (id = ':id') => `/club/${id}/seasons`,
 };
 
 const ProtectedRoute = ({ children }) => {
@@ -53,13 +58,14 @@ const AuthRoute = ({ children }) => {
   const { user } = useAuthClient();
 
   if (user) {
-    return <Navigate to={route.clubDetail()} replace />;
+    return <Navigate to={route.dashboard()} replace />;
   }
 
   return children;
 };
 
 export function Routes() {
+  const { user } = useAuthClient();
   return (
     <RouterRoutes>
       <Route
@@ -127,14 +133,30 @@ export function Routes() {
         }
       />
       <Route path={route.acceptInvite()} element={<AcceptInvitePage />} />
-      {/* <Route
-        path={route.acceptInviteConfirm()}
+      <Route
+        path={route.dashboard()}
         element={
           <ProtectedRoute>
-            <AcceptInviteConfirmPage />
+            <DashboardPage />
           </ProtectedRoute>
         }
-      /> */}
+      />
+      <Route
+        path={route.newClub()}
+        element={
+          <ProtectedRoute>
+            <NewClubPage user={user} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={route.manageSeasons()}
+        element={
+          <ProtectedRoute>
+            <ManageSeasonsPage user={user} />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFoundPage />} />
     </RouterRoutes>
   );

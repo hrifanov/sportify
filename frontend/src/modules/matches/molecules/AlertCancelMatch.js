@@ -13,7 +13,6 @@ import {
   useInteractiveMatchStore,
 } from 'src/modules/matches/store/interactiveMatchStore';
 import { useRef } from 'react';
-import { MatchEvent } from 'src/modules/matches/atoms/MatchEvent';
 import { useNavigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 

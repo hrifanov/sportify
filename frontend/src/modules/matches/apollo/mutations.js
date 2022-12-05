@@ -7,6 +7,11 @@ export const CREATE_MATCH_MUTATION = gql`
     }
   }
 `;
+export const EDIT_MATCH_MUTATION = gql`
+  mutation editMatch($editMatchInput: EditMatchInput) {
+    editMatch(editMatchInput: $editMatchInput)
+  }
+`;
 
 export const ADD_EVENT_MUTATION = gql`
   mutation addEvent($matchId: ID!, $eventInput: EventInput!) {

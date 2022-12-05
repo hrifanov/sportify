@@ -18,11 +18,11 @@ export function PlayerPopoverMenu({
   makePlayerAdminRQ,
 }) {
   return (
-    <Popover border={0}>
+    <Popover border={0} ml={5}>
       <PopoverTrigger>
-        <Button variant="ghost">
+        <Button variant="ghost" size={'sm'}>
           <BsThreeDots
-            size={37}
+            size={25}
             variant="light"
             as={Button}
             w="full"
@@ -32,7 +32,7 @@ export function PlayerPopoverMenu({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent maxW={{ md: 40 }} bg="#3E4A66" border="0px">
+      <PopoverContent maxW={['40']} bg="#3E4A66" border="0px">
         <PopoverBody as={Flex} gap={2} direction="column" border="0px">
           <Button
             variant="ghost"

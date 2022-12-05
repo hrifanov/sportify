@@ -13,28 +13,31 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
         <Flex
           direction="row"
           alignItems="center"
-          p={3}
+          px={3}
+          py={2}
           border="1px"
           mt={3}
           borderRadius={8}
           w="full"
         >
           <Image
-            src="https://bit.ly/dan-abramov"
+            src={`https://i.pravatar.cc/100?u=${player.id}`}
             alt="Dan Abramov"
-            boxSize="50px"
+            boxSize="30px"
             borderRadius="50%"
           />
-          <Text as="b" ml={5} width="150px">
-            {player.name}
-          </Text>
-          <Text>{player.email}</Text>
+          <Flex direction={['column', '', '', 'row']} align={['baseline']}>
+            <Text ml={5} width="150px">
+              {player.name}
+            </Text>
+            <Text>{player.email}</Text>
+          </Flex>
           <Spacer />
           <Box>
-            {hasAccepted && <BsFillPersonFill size={37} />}
-            {!hasAccepted && <BsQuestionLg size={37} />}
+            {hasAccepted && <BsFillPersonFill size={20} />}
+            {!hasAccepted && <BsQuestionLg size={20} />}
           </Box>
-          <Box ml={4} position="relative">
+          <Box ml={2} position="relative">
             <PlayerPopoverMenu
               clubId={clubId}
               removePlayerRQ={removePlayerRQ}
@@ -42,6 +45,7 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
               makePlayerAdminRQ={makePlayerAdminRQ}
               playerId={player.id}
               setDisplayPlayer={setDisplayPlayer}
+              minW={100}
             />
           </Box>
         </Flex>

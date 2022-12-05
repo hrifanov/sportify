@@ -6,7 +6,8 @@ export const MatchDetailEvents = ({ events, readonly = false }) => {
     <Box
       bg={'brand.boxBackground'}
       py={6}
-      px={14}
+      px={{ base: 2, md: 14 }}
+      pl={{ base: 4 }}
       mt={1}
       h={'full'}
       borderRadius={'base'}

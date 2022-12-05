@@ -1,5 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 
+import 'react-widgets/styles.css';
+
 export const theme = extendTheme({
   colors: {
     brand: {
@@ -8,6 +10,7 @@ export const theme = extendTheme({
       title: '#969AB9',
       dark: '#1F2833',
       boxBackground: '#283555',
+      font: 'white',
     },
     test: {
       50: 'red',

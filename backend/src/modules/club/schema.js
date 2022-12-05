@@ -24,8 +24,9 @@ export const typeDef = gql`
     locality: String!
     players: [Player]
     contactPerson: User!
-    imageURL: String!
+    imageURL: String
     seasons: [Season]
+    matches: [Match]
   }
 
   input ClubInput {
@@ -33,7 +34,7 @@ export const typeDef = gql`
     sport: String!
     locality: String!
     contactPerson: ID!
-    imageURL: String!
+    imageURL: String
   }
 
   input EditClubInput {

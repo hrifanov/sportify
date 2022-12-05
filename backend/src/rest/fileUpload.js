@@ -71,14 +71,13 @@ export const fileExtensionLimiter = (allowedExtensions) => {
  * @param {Express.Response} res 
  */
 export const imageUpload = async (req, res) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const files = req.files;
     const imagePaths = []
-    Object.keys(files).forEach(async (key) => {
+    for(const key of Object.keys(files)){
       const imageFilePath = await storeImage(files[key]);
       imagePaths.push(imageFilePath);
-    });
-
+    }
     resolve(res.json({
       status: "success",
       message: `${Object.keys(files).length} image${files.length > 1 ? "s" : ""} was successfuly uploaded.`,

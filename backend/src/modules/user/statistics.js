@@ -48,7 +48,7 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
     if(!matchRole) continue;
 
     rolesSet.add(matchRole.role);
-
+    
     const eventDocs = await Event.find({matchId: match.id});
     const matchSummary = await getPlayerEventSummary(userId, eventDocs, matchRole, match.shots, match.score);
     summary = addSumaries(summary, matchSummary);
