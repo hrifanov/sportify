@@ -1,8 +1,26 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Heading, Spinner } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Heading,
+  Grid,
+  Spinner,
+  Stack,
+  Select,
+  Input,
+  Button,
+} from '@chakra-ui/react';
 import { MyClubsPanel } from '../organisms/MyClubsPanel';
+import AllClubs from '../organisms/AllClubs';
+import { GiBrandyBottle } from 'react-icons/gi';
+import { parseAndCheckHttpResponse } from '@apollo/client';
+import { Country, State, City } from 'country-state-city';
+import { useEffect, useState } from 'react';
 
 export default function DashboardTemplate({ clubs, loading }) {
+  const sports = [...new Set(clubs?.map((club) => club.sport))];
+  const cities = [...new Set(clubs?.map((club) => club.locality))];
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Dashboard" />
@@ -37,12 +55,43 @@ export default function DashboardTemplate({ clubs, loading }) {
               borderRadius="base"
               py={4}
               px={4}
-              display={{ base: 'none', md: 'flex' }}
+              display="flex"
             >
-              <Heading size={'lg'}>Find your new club</Heading>
-              <Flex align="center" justify="center" h="full">
-                <Box></Box>
+              <Heading size={'lg'} mb={4}>
+                Find your new club
+              </Heading>
+              <Flex
+                align={'center'}
+                gap={4}
+                width="100%"
+                mb={2}
+                flexWrap={['wrap', 'nowrap', 'nowrap']}
+              >
+                <Select width={['100%', 400, 400]} placeholder="All sports">
+                  {sports.map((sport, i) => (
+                    <option key={i} variant="popup" size="sm">
+                      {sport}
+                    </option>
+                  ))}
+                </Select>
+                <Select width={['100%', 400, 400]} placeholder="All localities">
+                  {cities.map((city, i) => (
+                    <option key={i} variant="popup" size="sm">
+                      {city}
+                    </option>
+                  ))}
+                </Select>
+                <Input width="100%" placeholder="Club name" />
+                <Button colorScheme="orange" width={['100%', 200, 200]}>
+                  Filter
+                </Button>
               </Flex>
+              <Grid
+                templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(3, 1fr)']}
+                gap={['0', '4', '4']}
+              >
+                <AllClubs clubs={clubs} />
+              </Grid>
             </Flex>
           </Flex>
         )}
