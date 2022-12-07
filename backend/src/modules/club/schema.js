@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export const typeDef = gql`
   type Query {
-    clubs: [Club!]!
+    clubs(filter: Filter): [Club!]!
     clubByContactPerson(contactPersonId: ID!): Club
     clubByID(id: ID!): Club
   }
@@ -58,5 +58,11 @@ export const typeDef = gql`
   input PlayerInput {
     user: ID!
     isAdmin: Boolean!
+  }
+
+  input Filter {
+    param: String!
+    value: String!
+    exact: Boolean
   }
 `;
