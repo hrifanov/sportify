@@ -17,10 +17,11 @@ import { GiBrandyBottle } from 'react-icons/gi';
 import { parseAndCheckHttpResponse } from '@apollo/client';
 import { Country, State, City } from 'country-state-city';
 import { useEffect, useState } from 'react';
+import { JoinClubsFilter } from '../molecules/JoinClubsFilter';
 
 export default function DashboardTemplate({ clubs, loading }) {
-  const sports = [...new Set(clubs?.map((club) => club.sport))];
-  const cities = [...new Set(clubs?.map((club) => club.locality))];
+  const [sportFilter, setSportFilter] = useState(null);
+  const [localityFilter, setLocalityFilter] = useState(null);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Dashboard" />
@@ -67,20 +68,11 @@ export default function DashboardTemplate({ clubs, loading }) {
                 mb={2}
                 flexWrap={['wrap', 'nowrap', 'nowrap']}
               >
-                <Select width={['100%', 400, 400]} placeholder="All sports">
-                  {sports.map((sport, i) => (
-                    <option key={i} variant="popup" size="sm">
-                      {sport}
-                    </option>
-                  ))}
-                </Select>
-                <Select width={['100%', 400, 400]} placeholder="All localities">
-                  {cities.map((city, i) => (
-                    <option key={i} variant="popup" size="sm">
-                      {city}
-                    </option>
-                  ))}
-                </Select>
+                <JoinClubsFilter
+                  clubs={clubs}
+                  setLocalityFilter={setLocalityFilter}
+                  setSportFilter={setSportFilter}
+                />
                 <Input width="100%" placeholder="Club name" />
                 <Button colorScheme="orange" width={['100%', 200, 200]}>
                   Filter
@@ -90,7 +82,14 @@ export default function DashboardTemplate({ clubs, loading }) {
                 templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(3, 1fr)']}
                 gap={['0', '4', '4']}
               >
-                <AllClubs clubs={clubs} />
+                {(() => {
+                  if (sportFilter) {
+                    const filteredClubs = clubs.filter((club) => club.sport.includes(sportFilter));
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else {
+                    return <AllClubs clubs={clubs} />;
+                  }
+                })()}
               </Grid>
             </Flex>
           </Flex>
