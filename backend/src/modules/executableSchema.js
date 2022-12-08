@@ -9,14 +9,16 @@ import {
 } from './match/index';
 import { typeDef as Event, resolvers as eventResolvers } from './event/index';
 import { typeDef as Season, resolvers as seasonResolvers } from './season/index';
+import { typeDef as Application, resolvers as applicationResolvers } from './application';
 
 export const schema = makeExecutableSchema({
-  typeDefs: [User, Club, Match, TeamPlayer, Event, Season],
+  typeDefs: [User, Club, Match, TeamPlayer, Event, Season, Application],
   resolvers: merge(
     userResolvers,
     clubResolvers,
     matchResolvers,
     eventResolvers,
-    seasonResolvers
+    seasonResolvers,
+    applicationResolvers
   ),
 });
