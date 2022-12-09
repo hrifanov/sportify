@@ -20,8 +20,9 @@ import { useEffect, useState } from 'react';
 import { JoinClubsFilter } from '../molecules/JoinClubsFilter';
 
 export default function DashboardTemplate({ clubs, loading }) {
-  const [sportFilter, setSportFilter] = useState(null);
-  const [localityFilter, setLocalityFilter] = useState(null);
+  const [sportFilter, setSportFilter] = useState();
+  const [localityFilter, setLocalityFilter] = useState();
+  const [nameFilter, setNameFilter] = useState();
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Dashboard" />
@@ -61,30 +62,27 @@ export default function DashboardTemplate({ clubs, loading }) {
               <Heading size={'lg'} mb={4}>
                 Find your new club
               </Heading>
-              <Flex
-                align={'center'}
-                gap={4}
-                width="100%"
-                mb={2}
-                flexWrap={['wrap', 'nowrap', 'nowrap']}
-              >
-                <JoinClubsFilter
-                  clubs={clubs}
-                  setLocalityFilter={setLocalityFilter}
-                  setSportFilter={setSportFilter}
-                />
-                <Input width="100%" placeholder="Club name" />
-                <Button colorScheme="orange" width={['100%', 200, 200]}>
-                  Filter
-                </Button>
-              </Flex>
+              <JoinClubsFilter
+                clubs={clubs}
+                setLocalityFilter={setLocalityFilter}
+                setSportFilter={setSportFilter}
+                setNameFilter={setNameFilter}
+              />
               <Grid
                 templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(3, 1fr)']}
                 gap={['0', '4', '4']}
               >
                 {(() => {
-                  if (sportFilter) {
-                    const filteredClubs = clubs.filter((club) => club.sport.includes(sportFilter));
+                  if (sportFilter || nameFilter || localityFilter) {
+                    console.log(sportFilter);
+                    console.log(nameFilter);
+                    console.log(localityFilter);
+                    const filteredClubs = clubs.filter(
+                      (club) =>
+                        club.sport.includes(sportFilter) &&
+                        club.locality.includes(localityFilter) &&
+                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
+                    );
                     return <AllClubs clubs={filteredClubs} />;
                   } else {
                     return <AllClubs clubs={clubs} />;

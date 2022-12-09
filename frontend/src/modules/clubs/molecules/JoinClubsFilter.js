@@ -1,10 +1,10 @@
-import { Flex, Select, Spacer, Text } from '@chakra-ui/react';
+import { Flex, Select, Spacer, Text, Input } from '@chakra-ui/react';
 
-export const JoinClubsFilter = ({ clubs, setSportFilter, setLocalityFilter }) => {
+export const JoinClubsFilter = ({ clubs, setSportFilter, setLocalityFilter, setNameFilter }) => {
   const sports = [...new Set(clubs?.map((club) => club.sport))];
   const cities = [...new Set(clubs?.map((club) => club.locality))];
   return (
-    <Flex width="100%">
+    <Flex width="100%" align={'center'} gap={4} mb={2} flexWrap={['wrap', 'nowrap', 'nowrap']}>
       <Select
         width={['100%', 400, 400]}
         placeholder="All sports"
@@ -27,6 +27,7 @@ export const JoinClubsFilter = ({ clubs, setSportFilter, setLocalityFilter }) =>
           </option>
         ))}
       </Select>
+      <Input width="100%" placeholder="Club name" onChange={(e) => setNameFilter(e.target.value)} />
     </Flex>
   );
 };
