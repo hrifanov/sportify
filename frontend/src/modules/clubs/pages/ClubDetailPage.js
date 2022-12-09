@@ -1,11 +1,13 @@
 import ClubDetailTemplate from 'src/modules/clubs/templates/ClubDetailTemplate';
-import { CLUB_BY_ID_QUERY } from 'src/modules/clubs/apollo/queries';
-import { useQuery } from '@apollo/client';
+import { CLUB_APPLICATIONS_QUERY, CLUB_BY_ID_QUERY } from 'src/modules/clubs/apollo/queries';
+import { useQuery, useMutation } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { Navigate, useParams } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { useToast } from '@chakra-ui/react';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
+import { EDIT_APLICATION_MUTATION, EDIT_CLUB_MUTATION } from '../apollo/mutations';
+import { useCallback } from 'react';
 
 export default function ClubDetailPage() {
   const toast = useToast();
@@ -14,9 +16,43 @@ export default function ClubDetailPage() {
     variables: { id },
   });
 
+  const clubApplicationsQuery = useQuery(CLUB_APPLICATIONS_QUERY, {
+    variables: { clubId: id },
+  });
+
+  const [editApplicationRequest, editApplicationRequestState, refetch] = useMutation(
+    EDIT_APLICATION_MUTATION,
+    {
+      onCompleted: () => {
+        // setIsEditClubRequestCompleted(true);
+      },
+      onError: (e) => {
+        console.log(e);
+      },
+    },
+  );
+
+  const handleApplication = useCallback(
+    (applicationId, newState) => {
+      console.log('newState: ' + JSON.stringify(newState));
+      const variables = { applicationId, newState: newState };
+      editApplicationRequest({ variables });
+      refetch();
+    },
+    [editApplicationRequest, refetch],
+  );
+
+  // console.log(
+  //   'clubApplicationsQuery.data.applications[0]: ' +
+  //     JSON.stringify(clubApplicationsQuery?.data?.applications),
+  // );
+
   const club = data?.clubByID;
   const players = club?.players;
   const matches = club?.matches;
+  const applications = clubApplicationsQuery?.data?.applications;
+
+  // console.log('club: ' + JSON.stringify(club));
 
   const { user } = useAuthClient();
 
@@ -46,6 +82,8 @@ export default function ClubDetailPage() {
     <ClubDetailTemplate
       club={club}
       matches={matches}
+      applications={applications}
+      handleApplication={handleApplication}
       loading={loading}
       players={players}
       isCurrUserAdmin={isCurrUserAdmin}

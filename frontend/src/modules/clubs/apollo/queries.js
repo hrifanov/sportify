@@ -108,3 +108,23 @@ export const CLUB_BY_ID_QUERY = gql`
     }
   }
 `;
+
+export const CLUB_APPLICATIONS_QUERY = gql`
+  query applications($clubId: ID!) {
+    applications(clubId: $clubId) {
+      id
+      user {
+        id
+        userName
+        name
+        email
+      }
+      club {
+        id
+        name
+      }
+      state
+      dateApplied
+    }
+  }
+`;
