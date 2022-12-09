@@ -1,5 +1,5 @@
 import ClubEditTemplate from 'src/modules/clubs/templates/ClubEditTemplate';
-import { FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
+import { CLUB_BY_ID_QUERY, FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
 import {
   INVITE_PLAYER_MUTATION,
@@ -19,17 +19,23 @@ import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function ClubEditPage() {
   const toast = useToast();
-  const { data, loading, refetch } = useQuery(FETCH_CLUBS);
+  // const { data, loading, refetch } = useQuery(FETCH_CLUBS);
   const { selectClub } = useClubStore();
 
   const { id } = useParams();
-  const club = data?.clubs?.find((club) => {
-    if (club.id === id && id) {
-      return club;
-    }
-    return null;
-  });
 
+  const { data, loading, refetch } = useQuery(CLUB_BY_ID_QUERY, { variables: { id: id } });
+
+  const club = data?.clubByID;
+
+  // const club = data?.clubs?.find((club) => {
+  //   if (club.id === id && id) {
+  //     return club;
+  //   }
+  //   return null;
+  // });
+
+  console.log('data: ' + JSON.stringify(data));
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();

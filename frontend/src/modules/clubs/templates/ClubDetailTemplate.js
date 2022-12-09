@@ -1,31 +1,7 @@
-import AppHeader from 'src/shared/core/organisms/AppHeader';
-import {
-  Box,
-  Container,
-  Flex,
-  Image,
-  Table,
-  TableContainer,
-  Td,
-  Text,
-  Tr,
-  Icon,
-  Tbody,
-  Spinner,
-  Tabs,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tab,
-  Spacer,
-  Select,
-} from '@chakra-ui/react';
-import { RouterLink } from 'src/shared/navigation';
+import { Flex, Text, Tabs, TabList, TabPanel, TabPanels, Tab, Spacer } from '@chakra-ui/react';
 import Statistics from 'src/modules/matches/molecules/Statistics';
 import MatchesComp from '../molecules/MatchesComp';
-import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
-import { route } from '../../../Routes.js';
 import { ClubDetailInformation } from '../organisms/ClubDetailInformation';
 import { ClubDetailSeasons } from '../organisms/ClubDetailSeasons';
 import { MainSection } from 'src/shared/core/atoms/MainSection';

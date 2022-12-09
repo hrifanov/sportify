@@ -6,7 +6,7 @@ import { Navigate, useParams } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { useToast } from '@chakra-ui/react';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
-import { EDIT_APLICATION_MUTATION, EDIT_CLUB_MUTATION } from '../apollo/mutations';
+import { EDIT_APLICATION_MUTATION } from '../apollo/mutations';
 import { useCallback } from 'react';
 
 export default function ClubDetailPage() {
@@ -20,12 +20,10 @@ export default function ClubDetailPage() {
     variables: { clubId: id },
   });
 
-  const [editApplicationRequest, editApplicationRequestState, refetch] = useMutation(
+  const [editApplicationRequest, editApplicationRequestState] = useMutation(
     EDIT_APLICATION_MUTATION,
     {
-      onCompleted: () => {
-        // setIsEditClubRequestCompleted(true);
-      },
+      onCompleted: () => {},
       onError: (e) => {
         console.log(e);
       },
@@ -34,26 +32,23 @@ export default function ClubDetailPage() {
 
   const handleApplication = useCallback(
     (applicationId, newState) => {
-      console.log('newState: ' + JSON.stringify(newState));
       const variables = { applicationId, newState: newState };
       editApplicationRequest({ variables });
-      refetch();
+      toast({
+        title: `Application has been ${newState === 'accepted' ? 'accepted. ' : 'declined.'}`,
+        status: 'success',
+        position: 'top-right',
+        duration: 5000,
+        isClosable: true,
+      });
     },
-    [editApplicationRequest, refetch],
+    [editApplicationRequest, toast],
   );
-
-  // console.log(
-  //   'clubApplicationsQuery.data.applications[0]: ' +
-  //     JSON.stringify(clubApplicationsQuery?.data?.applications),
-  // );
 
   const club = data?.clubByID;
   const players = club?.players;
   const matches = club?.matches;
   const applications = clubApplicationsQuery?.data?.applications;
-
-  // console.log('club: ' + JSON.stringify(club));
-
   const { user } = useAuthClient();
 
   const isCurrUserAdmin = club?.players?.find((player) => {

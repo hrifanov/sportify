@@ -128,3 +128,20 @@ export const CLUB_APPLICATIONS_QUERY = gql`
     }
   }
 `;
+
+export const USER_QUERY = gql`
+  query user($userName: String!) {
+    user(userName: $userName) {
+      id
+      userName
+      name
+      clubs {
+        id
+        name
+        sport
+        locality
+        imageURL
+      }
+    }
+  }
+`;
