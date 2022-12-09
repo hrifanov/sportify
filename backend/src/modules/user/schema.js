@@ -22,6 +22,7 @@ export const typeDef = gql`
     email: String!
     statisticsClub(clubId: ID!, seasonId: ID!): MatchSummary!
     statisticsMatch(matchId: ID!): MatchSummary!
+    clubs: [Club]
   }
 
   input UserInput {
