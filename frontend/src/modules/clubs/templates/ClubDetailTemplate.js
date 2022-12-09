@@ -1,31 +1,7 @@
-import AppHeader from 'src/shared/core/organisms/AppHeader';
-import {
-  Box,
-  Container,
-  Flex,
-  Image,
-  Table,
-  TableContainer,
-  Td,
-  Text,
-  Tr,
-  Icon,
-  Tbody,
-  Spinner,
-  Tabs,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tab,
-  Spacer,
-  Select,
-} from '@chakra-ui/react';
-import { RouterLink } from 'src/shared/navigation';
+import { Flex, Text, Tabs, TabList, TabPanel, TabPanels, Tab, Spacer } from '@chakra-ui/react';
 import Statistics from 'src/modules/matches/molecules/Statistics';
 import MatchesComp from '../molecules/MatchesComp';
-import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
 import RequestsComp from '../molecules/RequestsComp';
-import { route } from '../../../Routes.js';
 import { ClubDetailInformation } from '../organisms/ClubDetailInformation';
 import { ClubDetailSeasons } from '../organisms/ClubDetailSeasons';
 import { MainSection } from 'src/shared/core/atoms/MainSection';
@@ -35,7 +11,17 @@ import { useEffect, useState } from 'react';
 import { find } from 'lodash';
 import { StatisticsFilter } from 'src/modules/clubs/molecules/StatisticsFilter';
 
-export default function ClubDetailTemplate({ club, loading, matches, players, isCurrUserAdmin }) {
+export default function ClubDetailTemplate({
+  club,
+  applications,
+  handleApplication,
+  loading,
+  matches,
+  players,
+  isCurrUserAdmin,
+}) {
+  // console.log('handleApplication: ' + handleApplication);
+  // console.log('applications: ' + JSON.stringify(applications));
   const [roleFilter, setRoleFilter] = useState(RoleEnum.ATTACK);
   const [seasonFilter, setSeasonFilter] = useState(null);
 
@@ -47,7 +33,7 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
     return <FullPageSpinner />;
   }
 
-  const statistics = find(club.seasons, { id: seasonFilter })?.statistics;
+  const statistics = find(club?.seasons, { id: seasonFilter })?.statistics;
 
   return (
     <MainSection>
@@ -55,8 +41,13 @@ export default function ClubDetailTemplate({ club, loading, matches, players, is
         <Flex gap={6} h="full" direction={['column', null, 'row']}>
           <Flex direction="column" w={{ md: '20%' }} gap={4}>
             <ClubDetailInformation club={club} isCurrUserAdmin={isCurrUserAdmin} />
-            {isCurrUserAdmin && <ClubDetailSeasons clubId={club.id} />}
-            <RequestsComp></RequestsComp>
+            {isCurrUserAdmin && <ClubDetailSeasons clubId={club?.id} />}
+            {isCurrUserAdmin && applications && applications[0] && (
+              <RequestsComp
+                applications={applications}
+                handleApplication={handleApplication}
+              ></RequestsComp>
+            )}
           </Flex>
 
           <Tabs display={{ md: 'none' }} isFitted>

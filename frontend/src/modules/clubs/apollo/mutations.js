@@ -86,3 +86,25 @@ export const DELETE_SEASON_MUTATION = gql`
     deleteSeason(seasonId: $seasonId)
   }
 `;
+
+export const EDIT_APLICATION_MUTATION = gql`
+  mutation editApplication($applicationId: ID!, $newState: ApplicationState!) {
+    editApplication(editApplicationInput: { applicationId: $applicationId, newState: $newState }) {
+      id
+      user {
+        id
+        userName
+        name
+        email
+      }
+      club {
+        id
+        name
+        sport
+        locality
+      }
+      state
+      dateApplied
+    }
+  }
+`;

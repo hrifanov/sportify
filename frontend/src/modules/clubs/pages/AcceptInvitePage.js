@@ -124,7 +124,7 @@ export function AcceptInvitePage() {
               You were invited to a new club.
             </Heading>
             <Heading as="h3" mb={3}>
-              "{club.name}"
+              "{club?.name}"
             </Heading>
             <Box>
               <Flex mt="20px">

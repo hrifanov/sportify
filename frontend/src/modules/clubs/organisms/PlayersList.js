@@ -3,7 +3,7 @@ import { Box, Text } from '@chakra-ui/react';
 
 export function PlayersList({ club, removePlayerRQ, makePlayerAdminRQ }, { ...props }) {
   return (
-    <Box overflowY={'scroll'} overflowX={'hidden'}>
+    <Box overflowY={'scroll'} overflowX={'hidden'} minH="150px" h={'full'}>
       {club.players &&
         club.players.map((player) => {
           return (
