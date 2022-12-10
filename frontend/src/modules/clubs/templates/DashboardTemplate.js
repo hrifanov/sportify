@@ -19,10 +19,10 @@ import { Country, State, City } from 'country-state-city';
 import { useEffect, useState } from 'react';
 import { JoinClubsFilter } from '../molecules/JoinClubsFilter';
 
-export default function DashboardTemplate({ clubs, loading }) {
-  const [sportFilter, setSportFilter] = useState();
-  const [localityFilter, setLocalityFilter] = useState();
-  const [nameFilter, setNameFilter] = useState();
+export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
+  const [sportFilter, setSportFilter] = useState(null);
+  const [localityFilter, setLocalityFilter] = useState(null);
+  const [nameFilter, setNameFilter] = useState(null);
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Dashboard" />
@@ -73,10 +73,7 @@ export default function DashboardTemplate({ clubs, loading }) {
                 gap={['0', '4', '4']}
               >
                 {(() => {
-                  if (sportFilter || nameFilter || localityFilter) {
-                    console.log(sportFilter);
-                    console.log(nameFilter);
-                    console.log(localityFilter);
+                  if (sportFilter && nameFilter && localityFilter) {
                     const filteredClubs = clubs.filter(
                       (club) =>
                         club.sport.includes(sportFilter) &&
@@ -84,8 +81,41 @@ export default function DashboardTemplate({ clubs, loading }) {
                         club.name.toLowerCase().includes(nameFilter.toLowerCase()),
                     );
                     return <AllClubs clubs={filteredClubs} />;
+                  } else if (nameFilter && sportFilter) {
+                    const filteredClubs = clubs.filter(
+                      (club) =>
+                        club.sport.includes(sportFilter) &&
+                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
+                    );
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (localityFilter && nameFilter) {
+                    const filteredClubs = clubs.filter(
+                      (club) =>
+                        club.locality.includes(localityFilter) &&
+                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
+                    );
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (sportFilter && localityFilter) {
+                    const filteredClubs = clubs.filter(
+                      (club) =>
+                        club.sport.includes(sportFilter) && club.locality.includes(localityFilter),
+                    );
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (sportFilter) {
+                    const filteredClubs = clubs.filter((club) => club.sport.includes(sportFilter));
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (nameFilter) {
+                    const filteredClubs = clubs.filter((club) =>
+                      club.name.toLowerCase().includes(nameFilter.toLowerCase()),
+                    );
+                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (localityFilter) {
+                    const filteredClubs = clubs.filter((club) =>
+                      club.name.toLowerCase().includes(localityFilter.toLowerCase()),
+                    );
+                    return <AllClubs clubs={filteredClubs} />;
                   } else {
-                    return <AllClubs clubs={clubs} />;
+                    return <AllClubs clubs={clubs} user={user} />;
                   }
                 })()}
               </Grid>

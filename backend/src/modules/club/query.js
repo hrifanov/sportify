@@ -15,7 +15,7 @@ export const clubs = async (_, { filter }, context) => {
         if(exact){
           return club[param] == value;
         }
-        return club[param].toString().toLowerCase().includes(value.toLowerCase());
+        return !club[param].toString().toLowerCase().includes(value.toLowerCase());
       })
     }
     throwCustomError("Invalid filter parameter.", { code: "invalid-filter" });
