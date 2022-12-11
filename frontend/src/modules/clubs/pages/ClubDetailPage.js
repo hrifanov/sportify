@@ -8,8 +8,11 @@ import { useToast } from '@chakra-ui/react';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { EDIT_APLICATION_MUTATION } from '../apollo/mutations';
 import { useCallback } from 'react';
+import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function ClubDetailPage() {
+  const { selectClub } = useClubStore();
+
   const toast = useToast();
   const { id } = useParams();
   const { data, loading } = useQuery(CLUB_BY_ID_QUERY, {
@@ -72,6 +75,8 @@ export default function ClubDetailPage() {
     });
     return <Navigate to={route.dashboard()} replace />;
   }
+
+  selectClub(club);
 
   return (
     <ClubDetailTemplate

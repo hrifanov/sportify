@@ -23,6 +23,7 @@ export default function DashboardTemplate({ clubs, loading }) {
                 pt={4}
                 pb={6}
                 px={5}
+                overflowY={'auto'}
               >
                 <MyClubsPanel clubs={clubs} />
               </Box>
