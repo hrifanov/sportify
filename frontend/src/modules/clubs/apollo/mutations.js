@@ -52,7 +52,7 @@ export const CREATE_CLUB_MUTATION = gql`
     $sport: String!
     $locality: String!
     $playerId: ID!
-    $imageURL: String!
+    $imageURL: String
   ) {
     createClub(
       clubInput: {

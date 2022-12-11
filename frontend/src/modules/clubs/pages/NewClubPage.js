@@ -27,11 +27,12 @@ export default function NewClubPage(user) {
   // console.log('User: ' + user.id);
   const handleCreateClub = useCallback(
     async (variables) => {
-      // console.log('variables: ' + JSON.stringify(variables));
+      variables = { ...variables, playerId: user?.id };
 
-      const data = await uploadLogo(variables.logo);
-      // console.log(data.data.serverFiles[0]);
-      variables = { ...variables, playerId: user?.id, imageURL: data?.data?.serverFiles?.[0] };
+      if (variables.logo) {
+        const data = await uploadLogo(variables.logo);
+        variables.imageURL = data?.data?.serverFiles?.[0];
+      }
       createClubRequest({ variables });
     },
     [createClubRequest, user?.id],
