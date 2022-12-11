@@ -46,6 +46,7 @@ const getInitialState = ({ match = null, isPast = false, lastFinishedMatchId = n
     timer: 0,
     timerInterval: null,
     isPaused: true,
+    enums: {},
     shots: match?.shots ?? {
       [TeamsEnum.HOME]: 0,
       [TeamsEnum.GUEST]: 0,
@@ -61,6 +62,11 @@ const store = (set, get) => ({
   ...getInitialState(),
   startInteractiveMatch: (args = {}) => {
     set(getInitialState(args));
+  },
+  setEnums: (enums) => {
+    set((state) => {
+      state.enums = enums;
+    });
   },
   updateMatchTimer: () => {
     const highestTime = maxBy(get().computed.validEvents, 'time')?.time ?? 0;

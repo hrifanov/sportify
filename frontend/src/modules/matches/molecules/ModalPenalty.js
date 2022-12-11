@@ -17,7 +17,7 @@ import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { ErrorBanner, Stack } from 'src/shared/design-system';
 import { PlayerSelect } from 'src/modules/matches/atoms/PlayerSelect';
 import { useForm, FormProvider } from 'react-hook-form';
-import { EventEnum, PenaltyEnum } from '../enums.js';
+import { EventEnum } from '../enums.js';
 import { map } from 'lodash';
 import {
   INTERACTIVE_MATCH_ACTIONS,
@@ -28,7 +28,8 @@ import { TimeInput } from 'src/modules/matches/atoms/TimeInput';
 import { timeToString } from 'src/utils/match';
 
 export const ModalPenalty = () => {
-  const { computed, ui, addEvent, editEvent, finishAction, timer } = useInteractiveMatchStore();
+  const { computed, ui, addEvent, editEvent, finishAction, timer, enums } =
+    useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.PENALTY;
   const isEdit = !!ui.props?.event;
   const actionLabel = `${isEdit ? 'Edit' : 'Add'} a penalty`;
@@ -40,12 +41,14 @@ export const ModalPenalty = () => {
     time: timeToString(0),
   };
 
-  const penaltyOptions = map(PenaltyEnum, (value, key) => ({
+  const penaltyOptions = map(enums?.penaltyTypes ?? [], ({ value, key }) => ({
     value: key,
     label: value,
   }));
-
-  const penaltyLengthOptions = ['2', '2+2', '5', '5+5', '5+OT', '10', '10 + OT'];
+  const penaltyLengthOptions = map(enums?.penaltyLengths ?? [], ({ key }) => ({
+    value: key,
+    label: key,
+  }));
 
   const schema = yup.object().shape({
     playerId: yup.string().required().label('Player'),
@@ -112,8 +115,8 @@ export const ModalPenalty = () => {
                 <FormField id="length" name="length" label="Penalty length" input={Select}>
                   <option value={''}>Select a penalty length</option>
                   {penaltyLengthOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </FormField>

@@ -30,3 +30,9 @@ export const REMOVE_EVENT_MUTATION = gql`
     removeEvent(matchId: $matchId, eventId: $eventId)
   }
 `;
+
+export const REMOVE_MATCH_MUTATION = gql`
+  mutation removeMatch($matchId: ID!) {
+    removeMatch(matchId: $matchId)
+  }
+`;

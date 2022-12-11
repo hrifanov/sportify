@@ -34,6 +34,7 @@ export const UserStatisticsFragment = gql`
     canadianPoints
     gamesGoalkeeper
     gamesAttacker
+    gamesTotal
     goals
     goalsSaved
     goalsPassed
@@ -41,5 +42,6 @@ export const UserStatisticsFragment = gql`
     penalties
     totalPenaltiesLength
     roles
+    winsTotal
   }
 `;

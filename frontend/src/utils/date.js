@@ -17,10 +17,11 @@ export function formatTime(date) {
   return formatDate(date, 'HH:mm');
 }
 
+export const pad = (n) => n.toString().padStart(2, '0');
+
 export function formatTimer(milliseconds) {
   const seconds = Math.floor(milliseconds / 1000) % 60;
   const minutes = Math.floor(milliseconds / 1000 / 60);
   const hours = Math.floor(milliseconds / 1000 / 60 / 60);
-  const pad = (n) => n.toString().padStart(2, '0');
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }

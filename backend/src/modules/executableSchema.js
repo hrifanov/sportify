@@ -10,15 +10,17 @@ import {
 import { typeDef as Event, resolvers as eventResolvers } from './event/index';
 import { typeDef as Season, resolvers as seasonResolvers } from './season/index';
 import { typeDef as Application, resolvers as applicationResolvers } from './application';
+import { typeDef as Enum, resolvers as enumResolvers } from './enum';
 
 export const schema = makeExecutableSchema({
-  typeDefs: [User, Club, Match, TeamPlayer, Event, Season, Application],
+  typeDefs: [User, Club, Match, TeamPlayer, Event, Season, Application, Enum],
   resolvers: merge(
     userResolvers,
     clubResolvers,
     matchResolvers,
     eventResolvers,
     seasonResolvers,
-    applicationResolvers
+    applicationResolvers,
+    enumResolvers,
   ),
 });

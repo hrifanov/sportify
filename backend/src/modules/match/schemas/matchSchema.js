@@ -9,6 +9,7 @@ export const matchTypeDef = gql`
   type Mutation {
     createMatch(matchInput: MatchInput): Match!
     editMatch(editMatchInput: EditMatchInput): Boolean!
+    removeMatch(matchId: ID): Boolean!
   }
 
   # MATCH

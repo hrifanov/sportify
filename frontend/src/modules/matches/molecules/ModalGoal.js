@@ -15,7 +15,6 @@ import { FormField, yup, yupResolver } from 'src/shared/hook-form';
 import { Stack } from 'src/shared/design-system';
 import { PlayerSelect } from 'src/modules/matches/atoms/PlayerSelect';
 import { useForm, FormProvider } from 'react-hook-form';
-import { EventEnum, GoalTypeEnum } from '../enums.js';
 import {
   INTERACTIVE_MATCH_ACTIONS,
   useInteractiveMatchStore,
@@ -42,6 +41,7 @@ export const ModalGoal = () => {
     playerId: yup.string().required().label('Attacker'),
   });
 
+  const GoalTypeEnum = [];
   const goalTypeOptions = map(GoalTypeEnum, (value, key) => ({
     value: key,
     label: value,
@@ -63,8 +63,11 @@ export const ModalGoal = () => {
     }
   }, [formMethods, ui.props.event, isOpen, timer]);
 
+  formMethods.watch('playerId');
   formMethods.watch('assistId');
-  const hasAssist = !!formMethods.getValues('assistId');
+  const selectedPlayerId = formMethods.getValues('playerId');
+  const selectedAssistId = formMethods.getValues('assistId');
+  const hasAssist = !!selectedAssistId;
 
   if (!isOpen) return;
   const team = computed.teams[ui.props.teamId];
@@ -102,12 +105,18 @@ export const ModalGoal = () => {
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
               <Stack spacing="3">
                 <PlayerSelect name="playerId" label="Attacker" teamId={ui.props.teamId} />
-                <PlayerSelect name="assistId" label="First assist" teamId={ui.props.teamId} />
+                <PlayerSelect
+                  name="assistId"
+                  label="First assist"
+                  teamId={ui.props.teamId}
+                  ignored={[selectedPlayerId]}
+                />
                 {hasAssist && (
                   <PlayerSelect
                     name="secondAssistId"
                     label="Second assist"
                     teamId={ui.props.teamId}
+                    ignored={[selectedPlayerId, selectedAssistId]}
                   />
                 )}
                 <FormField id="type" name="type" label="Goal type" input={Select}>
