@@ -5,6 +5,7 @@ import { EnhancedApolloProvider } from 'src/utils/apollo';
 import { Routes } from 'src/Routes';
 import { theme } from 'src/theme';
 import 'src/style/style.css';
+import { ConfirmAlert } from 'src/shared/core/molecules/ConfirmAlert';
 
 export function App() {
   return (
@@ -13,6 +14,7 @@ export function App() {
         <EnhancedApolloProvider>
           <ScrollToTop />
           <Routes />
+          <ConfirmAlert />
         </EnhancedApolloProvider>
       </BrowserRouter>
     </ChakraProvider>

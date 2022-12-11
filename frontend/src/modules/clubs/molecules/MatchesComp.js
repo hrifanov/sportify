@@ -1,5 +1,5 @@
 import { Table, TableContainer, Td, Text, Tr, Tbody, Spacer, Button, Box } from '@chakra-ui/react';
-import _ from 'lodash';
+import _, { orderBy } from 'lodash';
 import { FiPlayCircle } from 'react-icons/fi';
 import { route } from '../../../Routes.js';
 import { useNavigate } from 'react-router-dom';
@@ -33,26 +33,28 @@ export default function MatchesComp({ matches }) {
         >
           <Table size={{ base: 'sm' }} variant="base" className="maches-table">
             <Tbody>
-              {Object.keys(groupedMatches).map((date) => (
-                <>
-                  <Tr key={date}>
-                    <Td></Td>
-                    <Td textAlign="center" color="brand.secondary">
-                      {formatDate(new Date(+date), 'dd-MM-yyyy')}
-                    </Td>
-                    <Td></Td>
-                  </Tr>
-                  {groupedMatches[date].map((match) => (
-                    <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
-                      <Td textAlign="left">{match.teams.home.name}</Td>
-                      <Td textAlign="center" fontWeight="bold">
-                        {match.score.home}:{match.score.guest}
+              {Object.keys(groupedMatches)
+                .reverse()
+                .map((date) => (
+                  <>
+                    <Tr key={date}>
+                      <Td></Td>
+                      <Td textAlign="center" color="brand.secondary">
+                        {formatDate(new Date(+date), 'dd-MM-yyyy')}
                       </Td>
-                      <Td textAlign="right">{match.teams.guest.name}</Td>
+                      <Td></Td>
                     </Tr>
-                  ))}
-                </>
-              ))}
+                    {orderBy(groupedMatches[date], 'date').map((match) => (
+                      <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
+                        <Td textAlign="left">{match.teams.home.name}</Td>
+                        <Td textAlign="center" fontWeight="bold">
+                          {match.score.home}:{match.score.guest}
+                        </Td>
+                        <Td textAlign="right">{match.teams.guest.name}</Td>
+                      </Tr>
+                    ))}
+                  </>
+                ))}
             </Tbody>
           </Table>
         </TableContainer>

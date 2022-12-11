@@ -18,7 +18,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 
-import { filter, groupBy } from 'lodash';
+import { filter, groupBy, orderBy } from 'lodash';
 import { RoleEnum, TeamsEnum } from 'src/modules/matches/enums';
 import { AiOutlineHome } from 'react-icons/ai';
 import { BsArrow90DegDown } from 'react-icons/bs';
@@ -28,10 +28,25 @@ export default function Statistics({
   cumulative = false,
   statistics,
   match,
-  role = RoleEnum.ATTACK,
+  role = RoleEnum.ALL,
   ...props
 }) {
+  if (!statistics)
+    return (
+      <Box px={5} py={4}>
+        <Text>No statistics available</Text>
+      </Box>
+    );
+
   const layoutByRole = {
+    [RoleEnum.ALL]: {
+      ...(cumulative
+        ? {
+            M: 'gamesTotal',
+            W: 'winsTotal',
+          }
+        : {}),
+    },
     [RoleEnum.ATTACK]: {
       ...(cumulative
         ? {
@@ -56,20 +71,20 @@ export default function Statistics({
   };
 
   const pointsKeyByRole = {
-    [RoleEnum.ATTACK]: 'canadianPoints',
-    [RoleEnum.GOALKEEPER]: 'goalsSaved',
+    [RoleEnum.ALL]: 'statistics.winsTotal',
+    [RoleEnum.ATTACK]: 'statistics.canadianPoints',
+    [RoleEnum.GOALKEEPER]: 'statistics.goalsSaved',
   };
 
   const currentLayout = layoutByRole[role];
 
-  const filteredStatistics = role
+  const isRoleAll = role === RoleEnum.ALL;
+
+  const filteredStatistics = !isRoleAll
     ? filter(statistics, (player) => player.statistics.roles.includes(role))
     : statistics;
 
-  const statisticsGroupedByPoints = groupBy(
-    filteredStatistics,
-    `statistics.${pointsKeyByRole[role]}`,
-  );
+  const statisticsGroupedByPoints = groupBy(filteredStatistics, pointsKeyByRole[role]);
   const reversedPointKeys = Object.keys(statisticsGroupedByPoints).reverse();
 
   return (
@@ -97,14 +112,27 @@ export default function Statistics({
           </Tr>
         </Thead>
         <Tbody color="rgba(255,255,255,0.85)">
+          {reversedPointKeys.length === 0 && (
+            <Tr>
+              <Td colSpan={Object.keys(currentLayout).length + 4}>
+                <Text py={5}>No statistics available</Text>
+              </Td>
+            </Tr>
+          )}
           {reversedPointKeys.map((pointKey, position) => {
-            return statisticsGroupedByPoints[pointKey].map((player) => (
+            return orderBy(
+              statisticsGroupedByPoints[pointKey],
+              ['statistics.gamesTotal'],
+              ['desc'],
+            ).map((player) => (
               <Tr key={player.user.id}>
+                <Td textColor="white">{position + 1}.</Td>
                 <Td textColor="white">
-                  {position + 1}.
-                </Td>
-                <Td textColor="white">
-                  <RoleIcon role={role} />
+                  {!isRoleAll ? (
+                    <RoleIcon role={role} />
+                  ) : (
+                    player.statistics.roles.map((playerRole) => <RoleIcon role={playerRole} />)
+                  )}
                 </Td>
                 {!cumulative && (
                   <Td textColor="white">

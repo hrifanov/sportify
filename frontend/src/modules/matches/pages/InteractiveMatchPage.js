@@ -18,13 +18,31 @@ import { MatchDetailHeading } from 'src/modules/matches/molecules/MatchDetailHea
 import { MatchDetailEvents } from 'src/modules/matches/molecules/MatchDetailEvents';
 import { route } from 'src/Routes';
 import { MatchTimer } from 'src/modules/matches/atoms/MatchTimer';
+import { useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { FETCH_ENUMS } from 'src/modules/matches/apollo/queries';
 
 export const InteractiveMatchPage = () => {
   window.store = useInteractiveMatchStore();
   const toast = useToast();
+  const { data: enumsData } = useQuery(FETCH_ENUMS);
 
-  const { isPast, match, isPaused, timer, computed, toggleTimer, uiAction, lastFinishedMatchId } =
-    useInteractiveMatchStore();
+  const {
+    isPast,
+    match,
+    isPaused,
+    timer,
+    computed,
+    toggleTimer,
+    uiAction,
+    lastFinishedMatchId,
+    setEnums,
+  } = useInteractiveMatchStore();
+
+  useEffect(() => {
+    if (!enumsData?.enums) return;
+    setEnums(enumsData.enums);
+  }, [enumsData, setEnums]);
 
   if (!match) {
     if (lastFinishedMatchId) {

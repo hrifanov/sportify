@@ -58,3 +58,13 @@ export const FETCH_MATCH = gql`
     }
   }
 `;
+
+export const FETCH_ENUMS = gql`
+  query {
+    enums {
+      goalTypes
+      penaltyTypes
+      penaltyLengths
+    }
+  }
+`;

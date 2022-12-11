@@ -111,6 +111,19 @@ export const editMatch = async (_, { editMatchInput }, context) => {
   }
 };
 
+export const removeMatch = async (_, { matchId }, context) => {
+  isAuth(context);
+
+  try {
+    await Event.deleteMany({ matchId });
+    await Match.findByIdAndDelete(matchId);
+    return true;
+  } catch (err) {
+    console.error(err);
+    throwCustomError('Unable to delete match', { code: 'match-delete-error' });
+  }
+}
+
 const createTeamPlayers = async (teamPlayers, session) => {
   const userIds = teamPlayers.map((player) => player.user);
   const users = await User.find({ _id: { $in: userIds } }).select('userName');

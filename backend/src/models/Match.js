@@ -22,7 +22,6 @@ const matchSchema = new Schema({
     home: Number,
     guest: Number
   },
-  events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
   season: { type: Schema.Types.ObjectId, ref:"Season" }
 });
 

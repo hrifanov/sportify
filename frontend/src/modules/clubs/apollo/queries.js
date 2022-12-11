@@ -76,7 +76,6 @@ export const CLUB_BY_ID_QUERY = gql`
         name
         email
       }
-      # imageURL tohle musí mít všechny kluby, nebo být nullable
       seasons {
         id
         name

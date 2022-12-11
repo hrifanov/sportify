@@ -20,9 +20,7 @@ export default function ClubDetailTemplate({
   players,
   isCurrUserAdmin,
 }) {
-  // console.log('handleApplication: ' + handleApplication);
-  // console.log('applications: ' + JSON.stringify(applications));
-  const [roleFilter, setRoleFilter] = useState(RoleEnum.ATTACK);
+  const [roleFilter, setRoleFilter] = useState(RoleEnum.ALL);
   const [seasonFilter, setSeasonFilter] = useState(null);
 
   useEffect(() => {

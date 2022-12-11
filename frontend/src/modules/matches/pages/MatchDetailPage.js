@@ -1,11 +1,11 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { FETCH_MATCH } from 'src/modules/matches/apollo/queries';
 import { MatchDetailHeading } from 'src/modules/matches/molecules/MatchDetailHeading';
 import { MainSection } from 'src/shared/core/atoms/MainSection';
 import { MatchDetailEvents } from 'src/modules/matches/molecules/MatchDetailEvents';
 import { populateEvents } from 'src/utils/match';
-import { Box, Button, Flex, Spacer, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, Spacer, Text, useToast, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { route } from 'src/Routes';
@@ -13,13 +13,18 @@ import { useInteractiveMatchStore } from 'src/modules/matches/store/interactiveM
 import { useClubStore } from 'src/modules/clubs/store/clubStore';
 import Statistics from 'src/modules/matches/molecules/Statistics';
 import { RoleEnum } from 'src/modules/matches/enums';
+import { useConfirmAlertStore } from 'src/shared/core/confirmAlertStore';
+import { REMOVE_MATCH_MUTATION } from 'src/modules/matches/apollo/mutations';
 
 export const MatchDetailPage = () => {
   const { id } = useParams();
+  const toast = useToast();
   const navigate = useNavigate();
   const { loading, data } = useQuery(FETCH_MATCH, {
     variables: { matchId: id },
   });
+  const [removeMatchRequest] = useMutation(REMOVE_MATCH_MUTATION);
+  const { openConfirm } = useConfirmAlertStore();
   const [showStatistics, setShowStatistics] = useState(true);
 
   const { startInteractiveMatch } = useInteractiveMatchStore();
@@ -33,6 +38,23 @@ export const MatchDetailPage = () => {
     return <Navigate to={route.clubDetail(activeClub.id)} />;
   }
 
+  async function deleteMatch() {
+    const deleted = await removeMatchRequest({
+      variables: {
+        matchId: id,
+      },
+    });
+    if (deleted) {
+      toast({
+        title: 'Match deleted',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      navigate(route.clubDetail(activeClub.id));
+    }
+  }
   function editMatch() {
     startInteractiveMatch({ match: data.match });
     navigate(route.matchInteractive());
@@ -110,6 +132,20 @@ export const MatchDetailPage = () => {
             )}
             <Box bg={'brand.boxBackground'} py={3} px={14} mt={1} borderRadius={'base'}>
               <Flex>
+                <Button
+                  size={'sm'}
+                  colorScheme={'red'}
+                  onClick={() =>
+                    openConfirm({
+                      title: 'Do you really want to delete this match?',
+                      variant: 'danger',
+                      callback: deleteMatch,
+                    })
+                  }
+                  mr={3}
+                >
+                  Delete match
+                </Button>
                 <Button size={'sm'} variant={'outline'} onClick={editMatch}>
                   Edit match
                 </Button>
