@@ -43,10 +43,10 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
 
   const rolesSet = new Set();
   for(const match of matches){
-    if(!match.events || match.events.length == 0) continue;
+    const events = await Event.find({ matchId: match.id });
+    if(!events || events.length == 0) continue;
     const matchRole = await getPlayerRole(userId, match);
     if(!matchRole) continue;
-
     rolesSet.add(matchRole.role);
     
     const eventDocs = await Event.find({matchId: match.id});
@@ -232,7 +232,23 @@ const processPenaltyEvent = (userId, event) => {
   }
   if(event.data.playerId == userId){
     result.penalty = 1;
-    result.length = Number.parseFloat(event.data.length);
+    result.length = getPenaltyLength(event.data.length);
   }
   return result;
+}
+
+/**
+ * Penalties can be in two forms either as single number or sum of two numbers.
+ * This function handles both cases and returns single number for given length string.
+ * 
+ * @param {string} lengthString 
+ * @returns length of a penalty in minutes
+ */
+const getPenaltyLength = (lengthString) => {
+  const parts = lengthString.split("+");
+  let summedLength = 0;
+  for(const len of parts){
+    summedLength += Number.parseFloat(len);
+  }
+  return summedLength;
 }
