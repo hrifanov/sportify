@@ -15,29 +15,11 @@ import { filesPayloadExists, fileExtensionLimiter, fileSizeLimiter, imageUpload}
 (async () => {
   const app = express();
 
+  app.use(cors());
+
   app.disable('x-powered-by');
 
   app.use('/public', express.static(path.join(__dirname, '../public')))
-
-  const whitelist = [
-    'http://localhost:3000',
-    'http://localhost:4000',
-    'https://frontend-team01-vse.handson.pro',
-    'https://dev-frontend-team01-vse.handson.pro',
-    'https://dev-backend-team01-vse.handson.pro',
-  ]
-  const corsOptions = {
-    origin: function (origin, callback) {
-      console.log({origin});
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  }
-
-  app.use(cors(corsOptions));
 
   app.use(cookieParser());
 
