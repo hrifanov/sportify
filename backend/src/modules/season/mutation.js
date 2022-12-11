@@ -13,6 +13,6 @@ export const createSeason = async (_, { createSeasonInput }, context) => {
 export const deleteSeason = async (_, { seasonId }, context) => {
     isAuth(context);
     // TODO: better security check
-    const result = await Season.deleteOne({ _id: seasonId });
+    await Season.deleteOne({ _id: seasonId });
     return true;
 }

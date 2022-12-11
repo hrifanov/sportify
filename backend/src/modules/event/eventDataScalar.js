@@ -1,5 +1,4 @@
 import { GraphQLScalarType } from "graphql";
-import { Kind } from "graphql/language";
 
 export const EventDataScalar = new GraphQLScalarType({
     name: "EventData",

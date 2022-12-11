@@ -9,7 +9,7 @@ import Match from '../../models/Match';
 
 export const createClub = async (_, { clubInput }, context) => {
   isAuth(context);
-  const { name, sport, locality, contactPerson, imageURL } = clubInput;
+  const { name, contactPerson } = clubInput;
 
   const existingClub = await Club.findOne({ name });
   if (existingClub) {

@@ -2,7 +2,6 @@ import Match from '../../models/Match';
 import TeamPlayer from '../../models/TeamPlayer';
 import Event from '../../models/Event';
 import { throwCustomError } from '../../libs/error';
-import { season } from '../season/query';
 
 
 /**
@@ -162,19 +161,22 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots, score) => 
     const summary = createEmptySummary();
     for (const event of events) {
       switch(event.type){
-        case "goal":
+        case "goal": {
           const goalResult = processGoalEvent(userId, event, teamRole);
           summary.goals += goalResult.goals;
           summary.assists += goalResult.assists;
           summary.goalsPassed += goalResult.goalsPassed;
           break;
-        case "penalty":
+        }
+        case "penalty": {
           const penaltyResult = processPenaltyEvent(userId, event);
           summary.penalties += penaltyResult.penalty;
           summary.totalPenaltiesLength += penaltyResult.length;
           break;
-        default:
+        }
+        default: {
           continue;
+        }
       }
     }
     const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
