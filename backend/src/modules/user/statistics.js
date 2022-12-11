@@ -250,7 +250,9 @@ const getPenaltyLength = (lengthString) => {
   const parts = lengthString.split("+");
   let summedLength = 0;
   for(const len of parts){
-    summedLength += Number.parseFloat(len);
+    const num = Number.parseFloat(len);
+    if(isNaN(num)) continue;
+    summedLength += num;
   }
   return summedLength;
 }
