@@ -71,20 +71,17 @@ export const fileExtensionLimiter = (allowedExtensions) => {
  * @param {Express.Response} res 
  */
 export const imageUpload = async (req, res) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve) => {
     const files = req.files;
-    const imagePaths = []
-    for(const key of Object.keys(files)){
-      const imageFilePath = await storeImage(files[key]);
-      imagePaths.push(imageFilePath);
-    }
-    resolve(res.json({
-      status: "success",
-      message: `${Object.keys(files).length} image${files.length > 1 ? "s" : ""} was successfuly uploaded.`,
-      data: {
-        serverFiles: imagePaths
-      }
-    }));
+    storeImages(files).then((imagePaths) => {
+      resolve(res.json({
+        status: "success",
+        message: `${Object.keys(files).length} image${files.length > 1 ? "s" : ""} was successfuly uploaded.`,
+        data: {
+          serverFiles: imagePaths
+        }
+      }));
+    }).catch(err => res.status(500).json({status: "error", message: err.message}))
   });
 }
 
@@ -92,14 +89,14 @@ export const imageUpload = async (req, res) => {
  * Async function that stores uploaded image into the public directory.
  * 
  * @param {fileUpload.UploadedFile} file 
- * @returns {string} Path to the file onto server
+ * @returns {Promise<String>} Path to the file onto server
  */
 const storeImage = (file) => {
   return new Promise((resolve, reject) => {
     const filePath = path.join(__dirname, '../../public/uploadedImages', file.name);
 
     file.mv(filePath, (err) => {
-      if(err) reject(res.status(500).json({status: "error", message: err.message}));
+      if(err) reject(err.message);
       fs.chmodSync(filePath, 0o777);
       const extension = path.extname(filePath);
       const dateString = (new Date()).toISOString()
@@ -113,4 +110,18 @@ const storeImage = (file) => {
       resolve(newPath);
     });
   });
+}
+
+/**
+ * 
+ * @param {array} files 
+ * @returns {Promise<string>}
+ */
+const storeImages = async (files) => {
+  const imagePaths = [];
+  for(const key of Object.keys(files)){
+    const imageFilePath = await storeImage(files[key]);
+    imagePaths.push(imageFilePath);
+  }
+  return imagePaths;
 }

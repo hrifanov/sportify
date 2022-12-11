@@ -2,7 +2,6 @@ import Match from '../../models/Match';
 import TeamPlayer from '../../models/TeamPlayer';
 import Event from '../../models/Event';
 import { throwCustomError } from '../../libs/error';
-import { season } from '../season/query';
 
 
 /**
@@ -43,10 +42,10 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
 
   const rolesSet = new Set();
   for(const match of matches){
-    if(!match.events || match.events.length == 0) continue;
+    const events = await Event.find({ matchId: match.id });
+    if(!events || events.length == 0) continue;
     const matchRole = await getPlayerRole(userId, match);
     if(!matchRole) continue;
-
     rolesSet.add(matchRole.role);
     
     const eventDocs = await Event.find({matchId: match.id});
@@ -162,19 +161,22 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots, score) => 
     const summary = createEmptySummary();
     for (const event of events) {
       switch(event.type){
-        case "goal":
+        case "goal": {
           const goalResult = processGoalEvent(userId, event, teamRole);
           summary.goals += goalResult.goals;
           summary.assists += goalResult.assists;
           summary.goalsPassed += goalResult.goalsPassed;
           break;
-        case "penalty":
+        }
+        case "penalty": {
           const penaltyResult = processPenaltyEvent(userId, event);
           summary.penalties += penaltyResult.penalty;
           summary.totalPenaltiesLength += penaltyResult.length;
           break;
-        default:
+        }
+        default: {
           continue;
+        }
       }
     }
     const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
@@ -232,7 +234,25 @@ const processPenaltyEvent = (userId, event) => {
   }
   if(event.data.playerId == userId){
     result.penalty = 1;
-    result.length = Number.parseFloat(event.data.length);
+    result.length = getPenaltyLength(event.data.length);
   }
   return result;
+}
+
+/**
+ * Penalties can be in two forms either as single number or sum of two numbers.
+ * This function handles both cases and returns single number for given length string.
+ * 
+ * @param {string} lengthString 
+ * @returns length of a penalty in minutes
+ */
+const getPenaltyLength = (lengthString) => {
+  const parts = lengthString.split("+");
+  let summedLength = 0;
+  for(const len of parts){
+    const num = Number.parseFloat(len);
+    if(isNaN(num)) continue;
+    summedLength += num;
+  }
+  return summedLength;
 }

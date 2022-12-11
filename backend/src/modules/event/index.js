@@ -1,7 +1,6 @@
 import { typeDef } from './schema';
 import * as queries from './query';
 import * as mutations from './mutation';
-import TeamPlayer from '../../models/TeamPlayer';
 
 export { typeDef, resolvers };
 
