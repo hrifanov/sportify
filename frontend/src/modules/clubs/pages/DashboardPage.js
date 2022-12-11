@@ -1,5 +1,5 @@
 import DashboardTemplate from 'src/modules/clubs/templates/DashboardTemplate';
-import { FETCH_CLUBS, USER_QUERY } from 'src/modules/clubs/apollo/queries';
+import { USER_QUERY } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
 
 export default function ClubDetailPage({ user }) {

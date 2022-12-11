@@ -15,7 +15,7 @@ export const ManageSeasonsPage = ({ user }) => {
     },
   });
 
-  const { data, loading, refetch } = useQuery(CLUB_BY_ID_QUERY, { variables: { id: id } });
+  const { data, refetch } = useQuery(CLUB_BY_ID_QUERY, { variables: { id: id } });
 
   const club = data?.clubByID;
 
@@ -33,7 +33,7 @@ export const ManageSeasonsPage = ({ user }) => {
     () => {},
   );
 
-  const [deleteSeasonRequest, deleteSeasonRequestState] = useMutation(DELETE_SEASON_MUTATION, {
+  const [deleteSeasonRequest] = useMutation(DELETE_SEASON_MUTATION, {
     onCompleted: () => {
       refetch();
     },
