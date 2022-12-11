@@ -50,8 +50,22 @@ export const editApplication = async(_, { editApplicationInput }, context) => {
     throwCustomError("Application for membership doesn't exist.", { code: "no-application" });
   }
   isClubAdmin(application.club, context.payload.userId);
-  application.state = newState;
-  await application.save();
+  const session = await context.client.startSession();
+  try{
+    if(newState == "accepted"){
+      await addPlayerToClub(application.club, application.user, session);
+    }
+    application.state = newState;
+    await application.save({ session });
+  }catch(err){
+    console.error(err);
+    await session.abortTransaction();
+    const code = err.extensions ? err.extensions.code : undefined;
+    throwCustomError(err.message, { code });
+  } finally{
+    session.endSession();
+  }
+  
   return application;
 }
 
@@ -64,16 +78,9 @@ export const approveApplication = async(_, { applicationToken }, context) => {
   }
   const session = await context.client.startSession();
   try{
-    const club = await Club.findById(application.club, null, { session });
     application.state = "accepted";
     application.save({ session });
-    for(const player of club.players){
-      if(player.user == application.user){
-        throwCustomError("User is already in the club", { code: "user-alredy-in-club" });
-      }
-    }
-    club.players.push({ isAdmin: false, user: application.user });
-    club.save({ session });
+    await addPlayerToClub(application.club, application.user, session);
   }catch(err){
     console.error(err);
     await session.abortTransaction();
@@ -93,4 +100,16 @@ const sendMembershipApplicationEmail = (recieverEmail, recieverUsername, applied
     subject: "New membership application",
     html
   });
+}
+
+
+const addPlayerToClub = async (clubId, userId, session) => {
+  const club = await Club.findById(clubId, null, { session: session });
+  for(const player of club.players){
+    if(player.user == userId){
+      throwCustomError("User is already in the club", { code: "user-alredy-in-club" });
+    }
+  }
+  club.players.push({ isAdmin: false, user: userId });
+  await club.save({ session: session });
 }
