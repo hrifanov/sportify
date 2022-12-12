@@ -25,7 +25,8 @@ import { timeToString } from 'src/utils/match';
 import { map } from 'lodash';
 
 export const ModalGoal = () => {
-  const { addGoal, editEvent, computed, ui, finishAction, timer } = useInteractiveMatchStore();
+  const { addGoal, editEvent, computed, ui, finishAction, timer, enums } =
+    useInteractiveMatchStore();
   const isOpen = ui.action === INTERACTIVE_MATCH_ACTIONS.GOAL;
   const isEdit = !!ui.props?.event;
   const actionLabel = `${isEdit ? 'Edit' : 'Add'} a goal`;
@@ -41,8 +42,7 @@ export const ModalGoal = () => {
     playerId: yup.string().required().label('Attacker'),
   });
 
-  const GoalTypeEnum = [];
-  const goalTypeOptions = map(GoalTypeEnum, (value, key) => ({
+  const goalTypeOptions = map(enums?.goalTypes ?? [], ({ value, key }) => ({
     value: key,
     label: value,
   }));
@@ -54,7 +54,7 @@ export const ModalGoal = () => {
 
   useEffect(() => {
     formMethods.reset();
-    formMethods.setValue('time', timeToString(timer));
+    formMethods.setValue('time', timeToString(ui.props.event?.time ?? timer));
 
     if (!ui.props?.event) return;
 
@@ -72,19 +72,20 @@ export const ModalGoal = () => {
   if (!isOpen) return;
   const team = computed.teams[ui.props.teamId];
   const onSubmit = (data) => {
+    const input = {
+      time: data.time,
+      data: {
+        teamId: ui.props.teamId,
+        playerId: data.playerId,
+        assistId: data.assistId,
+        secondAssistId: data.secondAssistId,
+      },
+    };
+
     if (isEdit) {
-      editEvent(ui.props.event.id, {
-        time: data.time,
-        data: data,
-      });
+      editEvent(ui.props.event.id, input);
     } else {
-      addGoal({
-        time: data.time,
-        data: {
-          teamId: ui.props.teamId,
-          ...data,
-        },
-      });
+      addGoal(input);
     }
 
     formMethods.reset();
