@@ -27,6 +27,7 @@ export const typeDef = gql`
     imageURL: String
     seasons: [Season]
     matches: [Match]
+    playerStatistics(seasonId: ID!): [PlayerStatistic]!
   }
 
   input ClubInput {
@@ -64,5 +65,10 @@ export const typeDef = gql`
     param: String!
     value: String!
     exact: Boolean
+  }
+
+  type PlayerStatistic{
+    user: User!
+    statistics: MatchSummary!
   }
 `;
