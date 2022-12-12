@@ -13,6 +13,8 @@ export const typeDef = gql`
     verifyUser(token: String!): Boolean!
     refreshToken(token: String!): RefreshTokenResponse!
     invalidateTokens: Boolean!
+    forgottenPassword(username: String!): Boolean!
+    resetPassword(token: String!, password: String!): Boolean!
   }
 
   type User {
