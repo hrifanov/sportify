@@ -38,7 +38,7 @@ const resolvers = {
     async seasons(parent) {
       return Season.find({ club: parent.id });
     },
-    async playerStatistics(club, { seasonId }, context){
+    async playerStatistics(club, { seasonId }){
       return await getTeamStatistics(club.id, seasonId);
     }
   }

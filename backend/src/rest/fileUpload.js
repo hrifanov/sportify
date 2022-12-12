@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 
 const MAX_FILE_MB = 5; // 5MB
 const FILE_SIZE_LIMIT = MAX_FILE_MB * 1024 * 1024;
