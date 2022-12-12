@@ -1,7 +1,9 @@
-import Match from '../../models/Match';
+import Match, { eventNames, events } from '../../models/Match';
 import TeamPlayer from '../../models/TeamPlayer';
 import Event from '../../models/Event';
+import Club from '../../models/Club';
 import { throwCustomError } from '../../libs/error';
+import User from '../../models/User';
 
 
 /**
@@ -55,6 +57,147 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
   summary = addCanadianPoints(summary);
   summary.roles = Array.from(rolesSet);
   return summary;
+}
+
+export const getTeamStatistics = async (clubId, seasonId) => {
+  // Get club
+  const club = await Club.findById(clubId);
+  // Get IDs of club members
+  const members = club.players.map(player => player.user);
+  // Create dictionary of members and their empty stats
+  const membersStats = Object.fromEntries(members.map(memberId => [memberId, createEmptySummary()]));
+  // Create mapping of TeamPlayers onto club members
+  const teamPlayers = await TeamPlayer.find({ user: { $in: members } });
+  const teamPlayersMap = Object.fromEntries(teamPlayers.map(teamPlayer => [teamPlayer.id, { 
+    userId: teamPlayer.user, 
+    role: teamPlayer.role 
+  }]));
+  // Get matches for club and season
+  const matches = await Match.find({club: clubId, season: seasonId});
+  // Get all events for each match in season
+  const matchesMap = Object.fromEntries(matches.map(match => [match.id, {...match._doc}]))
+  const events = await Event.find({ matchId: { $in: Object.keys(matchesMap) }});
+  // Split events by matches
+  for(const event of events){
+    const matchId = event.matchId.toString();
+    if(!matchesMap[matchId].events){
+      matchesMap[matchId].events = [];
+    }
+    matchesMap[matchId].events.push(event);
+  }
+  // Process each match
+  for(const [_, match] of Object.entries(matchesMap)){
+    // Storing goalkeepers for each match
+    const goalkeepers = {
+      home: null,
+      guest: null
+    }
+    const goalkeeperPassedGoals = {
+      home: 0,
+      guest: 0
+    }
+
+    const winnersSide = match.score.home > match.score.guest ? "home" : "guest";
+
+    // Processing each player
+    // Process home players
+    for(const player of match.teams.home.teamPlayers){
+      const teamPlayer = teamPlayersMap[player];
+      if(teamPlayer.role === "goalkeeper"){
+        membersStats[teamPlayer.userId].gamesGoalkeeper++;
+        goalkeepers.home = teamPlayer.userId;
+      } else {
+        membersStats[teamPlayer.userId].gamesAttacker++;
+      }
+      if(winnersSide === "home") membersStats[teamPlayer.userId].winsTotal++;
+      membersStats[teamPlayer.userId].gamesTotal++;
+    }
+    // Process away players
+    for(const player of match.teams.guest.teamPlayers){
+      const teamPlayer = teamPlayersMap[player];
+      if(teamPlayer.role === "goalkeeper"){
+        membersStats[teamPlayer.userId].gamesGoalkeeper++;
+        goalkeepers.guest = teamPlayer.userId;
+      } else {
+        membersStats[teamPlayer.userId].gamesAttacker++;
+      }
+      if(winnersSide === "guest") membersStats[teamPlayer.userId].winsTotal++;
+      membersStats[teamPlayer.userId].gamesTotal++;
+    }
+
+    // Process each event
+    for(const event of match.events){
+      if(event.type === "goal"){
+        // Add goal to player
+        membersStats[event.data.playerId].goals++;
+        // Add assists to players
+        if(membersStats[event.data.assistId]) membersStats[event.data.assistId].assists++;
+        if(membersStats[event.data.secondAssistId]) membersStats[event.data.secondAssistId].assists++;
+        // Add passed goals to goalkeeper
+        const match = matches.find(match => match.id === event.matchId);
+        // Find scoring side
+        let isGoalFromHomeSide = false;
+        for(const teamPlayer of match.teams.home.teamPlayers){
+          if(teamPlayersMap[teamPlayer].userId == event.data.playerId){
+            isGoalFromHomeSide = true;
+            break;
+          }
+        }
+        // Find goalkeeper of opposide side
+        const goalkeeperSide = isGoalFromHomeSide ? "guest" : "home";
+        // If there is a goalkeeper in the game add passed goal
+        if(goalkeepers[goalkeeperSide]){
+          membersStats[goalkeepers[goalkeeperSide]].goalsPassed++;
+          goalkeeperPassedGoals[goalkeeperSide]++;
+        }
+        
+      }
+      if(event.type === "penalty"){
+        membersStats[event.data.playerId].penalties++;
+        membersStats[event.data.playerId].totalPenaltiesLength += getPenaltyLength(event.data.length);
+      }
+    }
+    // Count saved goals for goalkeepers
+    if(goalkeepers.home){
+      membersStats[goalkeepers.home].goalsSaved = match.shots.guest - goalkeeperPassedGoals.home;
+      if(goalkeeperPassedGoals.home === 0){
+        membersStats[goalkeepers.home].matchesWithoutPassedGoals = 0;
+      }
+    }
+    if(goalkeepers.away){
+      membersStats[goalkeepers.away].goalsSaved = match.shots.home - goalkeeperPassedGoals.guest;
+      if(goalkeeperPassedGoals.away === 0){
+        membersStats[goalkeepers.away].matchesWithoutPassedGoals = 0;
+      }
+    }
+  }
+
+  const users = await User.find({ _id: { $in: members } });
+  const usersIdMap = Object.fromEntries(users.map(user => [user.id, {...user._doc}]));
+
+  return Object.entries(membersStats).map(([userId, stats]) => ({
+    user: usersIdMap[userId],
+    statistics: addCanadianPoints(stats)
+  }));
+
+}
+
+const getMatchesWithEvents = async (clubId, seasonId) => {
+  // Get matches for club and season
+  const matches = await Match.find({club: clubId, season: seasonId});
+  // Get all events for each match in season
+  const matchesMap = Object.fromEntries(matches.map(match => [match.id, {...match._doc}]))
+  const events = await Event.find({ matchId: { $in: Object.keys(matchesMap) }});
+  // Split events by matches
+  for(const event of events){
+    const matchId = event.matchId.toString();
+    if(!matchesMap[matchId].events){
+      matchesMap[matchId].events = [];
+    }
+    matchesMap[matchId].events.push(event)
+  }
+
+  return matchesMap
 }
 
 
