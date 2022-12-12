@@ -1,6 +1,6 @@
 import { Route, Routes as RouterRoutes, Navigate } from 'react-router-dom';
 import { NotFoundPage } from 'src/shared/navigation/pages/NotFoundPage';
-import { SignInPage, SignUpPage } from 'src/modules/auth';
+import { SignInPage, SignUpPage, ForgetPasswordPage } from 'src/modules/auth';
 import ClubDetailPage from './modules/clubs/pages/ClubDetailPage';
 import DashboardPage from './modules/clubs/pages/DashboardPage';
 import NewClubPage from './modules/clubs/pages/NewClubPage';
@@ -17,6 +17,7 @@ import { ManageSeasonsPage } from './modules/clubs/pages/ManageSeasonsPage';
 export const route = {
   signIn: () => '/',
   signUp: () => '/auth/signUp',
+  forgetPassword: () => '/auth/forgetPassword',
   clubDetail: (id = ':id') => `/club/${id}`,
   clubEdit: (id = ':id') => `/club/${id}/edit`,
   matches: () => '/matches',
@@ -82,6 +83,14 @@ export function Routes() {
         element={
           <AuthRoute>
             <SignUpPage />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path={route.forgetPassword()}
+        element={
+          <AuthRoute>
+            <ForgetPasswordPage />
           </AuthRoute>
         }
       />
