@@ -5,8 +5,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Button,
-  Flex,
 } from '@chakra-ui/react';
 import { CreateSeasonForm } from './CreateSeasonForm';
 

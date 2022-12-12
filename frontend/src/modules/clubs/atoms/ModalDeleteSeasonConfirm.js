@@ -1,6 +1,5 @@
 import {
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,7 +7,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
 } from '@chakra-ui/react';
 
 export const ModalDeleteSeasonConfirm = ({ modalNewSeason, handleDeleteSeason, seasonId }) => {

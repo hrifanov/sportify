@@ -40,7 +40,7 @@ export const route = {
 const ProtectedRoute = ({ children }) => {
   const toast = useToast();
   const { user } = useAuthClient();
-  console.log('user: ' + JSON.stringify(user));
+  // console.log('user: ' + JSON.stringify(user));
 
   if (!user) {
     toast({

@@ -1,16 +1,17 @@
 import NewClubTemplate from 'src/modules/clubs/templates/NewClubTemplate';
 import { CREATE_CLUB_MUTATION } from 'src/modules/clubs/apollo/mutations';
 import { useMutation } from '@apollo/client';
-// import { Navigate } from 'react-router-dom';
 import { route } from 'src/Routes';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
+import { DISTRICTS_QUERY } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
-import { config } from 'src/config';
 import { uploadLogo } from 'src/utils/match';
 
 export default function NewClubPage(user) {
+  const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
+  const districts = districtsQueryResponse?.data?.enums?.districts;
+
   const navigate = useNavigate();
   user = user?.user;
   const [createClubRequest, createClubRequestState] = useMutation(CREATE_CLUB_MUTATION, {
@@ -22,12 +23,12 @@ export default function NewClubPage(user) {
     },
   });
 
-  // console.log('be url: ' + config.BE_ROOT);
-
-  // console.log('User: ' + user.id);
   const handleCreateClub = useCallback(
     async (variables) => {
-      variables = { ...variables, playerId: user?.id };
+      const key = districts.find((district) => district.value === variables.locality).key;
+      console.log('key: ' + JSON.stringify(key));
+
+      variables = { ...variables, playerId: user?.id, locality: key };
 
       if (variables.logo) {
         const data = await uploadLogo(variables.logo);
@@ -35,7 +36,7 @@ export default function NewClubPage(user) {
       }
       createClubRequest({ variables });
     },
-    [createClubRequest, user?.id],
+    [createClubRequest, user?.id, districts],
     () => {},
   );
 
@@ -45,6 +46,7 @@ export default function NewClubPage(user) {
         error: createClubRequestState.error,
         loading: createClubRequestState.loading,
         onSubmit: handleCreateClub,
+        districts: districts,
       }}
     />
   );

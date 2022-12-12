@@ -12,7 +12,7 @@ import User from '../../models/User';
 import { isAuth } from '../../libs/isAuth';
 
 export const signin = async (_, { userName, password }, { res }) => {
-  const user = await User.findOne({ userName });
+  const user = await User.findOne({ userName: userName.toLowerCase() });
 
   if (!user) {
     throwCustomError(`Could not find user ${userName}`, { ref: 'username' });
@@ -173,4 +173,41 @@ export const refreshToken = async (_, _params, { req, res }) => {
   });
 
   return { accessToken };
+};
+
+export const forgottenPassword = async (_, { username }) => {
+  const user = await User.findOne({ userName: username.toLowerCase() });
+
+  if (!user) {
+    throwCustomError(`User ${username} does not exist`, { ref: 'username' });
+  }
+
+  sendVerificationToken(
+    {
+      user: username,
+      email: user.email,
+    },
+    'reset-password',
+    {
+      to: user.email,
+      subject: 'Reset your password',
+      html: `Hi ${username},<br><br>Click on the link below to reset your password.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
+    }
+  );
+  return true;
+}
+
+export const resetPassword = async (_, { token, password }) => {
+  try {
+    const { user } = jwt.verify(token, GMAIL_API_KEY);
+    const hashedPassword = await argon2.hash(password);
+    await User.findOneAndUpdate(
+      { userName: user },
+      { password: hashedPassword }
+    );
+    return true;
+  } catch (err) {
+    throwCustomError('Cannot decode token', { code: 'token' });
+    return false;
+  }
 };

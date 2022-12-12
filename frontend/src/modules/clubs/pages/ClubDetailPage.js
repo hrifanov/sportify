@@ -1,5 +1,9 @@
 import ClubDetailTemplate from 'src/modules/clubs/templates/ClubDetailTemplate';
-import { CLUB_APPLICATIONS_QUERY, CLUB_BY_ID_QUERY } from 'src/modules/clubs/apollo/queries';
+import {
+  CLUB_APPLICATIONS_QUERY,
+  CLUB_BY_ID_QUERY,
+  DISTRICTS_QUERY,
+} from 'src/modules/clubs/apollo/queries';
 import { useQuery, useMutation } from '@apollo/client';
 import { useAuthClient } from 'src/modules/auth/apollo/client';
 import { Navigate, useParams } from 'react-router-dom';
@@ -23,15 +27,12 @@ export default function ClubDetailPage() {
     variables: { clubId: id },
   });
 
-  const [editApplicationRequest, editApplicationRequestState] = useMutation(
-    EDIT_APLICATION_MUTATION,
-    {
-      onCompleted: () => {},
-      onError: (e) => {
-        console.log(e);
-      },
+  const [editApplicationRequest] = useMutation(EDIT_APLICATION_MUTATION, {
+    onCompleted: () => {},
+    onError: (e) => {
+      console.log(e);
     },
-  );
+  });
 
   const handleApplication = useCallback(
     (applicationId, newState) => {
@@ -48,7 +49,13 @@ export default function ClubDetailPage() {
     [editApplicationRequest, toast],
   );
 
+  const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
+  const districts = districtsQueryResponse?.data?.enums?.districts;
+
   const club = data?.clubByID;
+  const clubLocalityLabel = districts?.find((district) => district?.key === club?.locality)?.value;
+  // console.log('clubLocalityLabel: ' + JSON.stringify(clubLocalityLabel));
+
   const players = club?.players;
   const matches = club?.matches;
   const applications = clubApplicationsQuery?.data?.applications;
@@ -81,6 +88,7 @@ export default function ClubDetailPage() {
   return (
     <ClubDetailTemplate
       club={club}
+      clubLocalityLabel={clubLocalityLabel}
       matches={matches}
       applications={applications}
       handleApplication={handleApplication}

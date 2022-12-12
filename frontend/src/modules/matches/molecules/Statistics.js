@@ -16,6 +16,7 @@ import {
   PopoverBody,
   PopoverContent,
   Box,
+  HStack,
 } from '@chakra-ui/react';
 
 import { filter, groupBy, orderBy } from 'lodash';
@@ -57,7 +58,7 @@ export default function Statistics({
       C: 'canadianPoints',
       G: 'goals',
       A: 'assists',
-      P: 'penalties',
+      P: 'totalPenaltiesLength',
     },
     [RoleEnum.GOALKEEPER]: {
       ...(cumulative
@@ -131,7 +132,11 @@ export default function Statistics({
                   {!isRoleAll ? (
                     <RoleIcon role={role} />
                   ) : (
-                    player.statistics.roles.map((playerRole) => <RoleIcon role={playerRole} />)
+                    <HStack gap={2} justify={'start'}>
+                      {player.statistics.roles.map((playerRole) => (
+                        <RoleIcon role={playerRole} />
+                      ))}
+                    </HStack>
                   )}
                 </Td>
                 {!cumulative && (
@@ -145,9 +150,11 @@ export default function Statistics({
                 <Td textAlign="left" textColor="white">
                   {player.user.name}
                 </Td>
-                {Object.keys(currentLayout).map((label) => (
-                  <Td key={label}>{player.statistics[currentLayout[label]]}</Td>
-                ))}
+                {Object.keys(currentLayout).map((label) => {
+                  const value = player.statistics[currentLayout[label]];
+                  const formattedValue = Math.round(value * 100) / 100;
+                  return <Td key={label}>{formattedValue}</Td>;
+                })}
               </Tr>
             ));
           })}
