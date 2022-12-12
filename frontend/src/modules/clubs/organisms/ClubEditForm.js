@@ -9,10 +9,24 @@ const schema = yup.object().shape({
   locality: yup.string().required().label('Locality'),
 });
 
-export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setIsCompleted }) {
+export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, districts }) {
+  // console.log('districts: ' + JSON.stringify(districts.districts));
+  districts = districts?.districts;
+
+  const districtsLabels = [];
+
+  districts.forEach((district) => {
+    // console.log('district: ' + JSON.stringify(district.value));
+    districtsLabels.push(district.value);
+  });
+
+  const localityValue = districts.find((district) => district?.key === club?.locality)?.value;
+
+  // console.log('localityValue: ' + JSON.stringify(localityValue));
+
   const initialValues = {
     name: club && club.name ? club.name : '',
-    locality: club && club.locality ? club.locality : '',
+    locality: localityValue ? localityValue : '',
     sport: club && club.sport ? club.sport : '',
     logo: '',
   };
@@ -36,8 +50,9 @@ export function ClubEditForm({ club, loading, onSubmit, error, isCompleted, setI
               id="locality"
               name="locality"
               label="Locality"
-              placeholder="Concrete spot on John's yard"
-              autoFocus="autofocus"
+              placeholder="City"
+              input={Combobox}
+              data={districtsLabels}
               autoComplete="on"
               autoCorrect="off"
               autoCapitalize="off"

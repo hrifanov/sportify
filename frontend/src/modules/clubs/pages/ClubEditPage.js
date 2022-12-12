@@ -1,5 +1,5 @@
 import ClubEditTemplate from 'src/modules/clubs/templates/ClubEditTemplate';
-import { CLUB_BY_ID_QUERY, FETCH_CLUBS } from 'src/modules/clubs/apollo/queries';
+import { CLUB_BY_ID_QUERY, DISTRICTS_QUERY } from 'src/modules/clubs/apollo/queries';
 import { useQuery } from '@apollo/client';
 import {
   INVITE_PLAYER_MUTATION,
@@ -19,6 +19,12 @@ import { useClubStore } from 'src/modules/clubs/store/clubStore';
 
 export default function ClubEditPage() {
   const toast = useToast();
+
+  const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
+  const districts = districtsQueryResponse?.data?.enums?.districts;
+
+  // console.log('districts: ' + JSON.stringify(districts));
+
   // const { data, loading, refetch } = useQuery(FETCH_CLUBS);
   const { selectClub } = useClubStore();
 
@@ -35,7 +41,7 @@ export default function ClubEditPage() {
   //   return null;
   // });
 
-  console.log('data: ' + JSON.stringify(data));
+  // console.log('data: ' + JSON.stringify(data));
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();
@@ -77,6 +83,10 @@ export default function ClubEditPage() {
 
   const handleSubmitEditClub = useCallback(
     async (variables, id) => {
+      // console.log('variables.locality: ' + JSON.stringify(variables.locality));
+
+      const key = districts.find((district) => district.value === variables.locality).key;
+      console.log('key: ' + JSON.stringify(key));
       id = club?.id;
       const playerId = club.contactPerson.id;
 
@@ -84,6 +94,7 @@ export default function ClubEditPage() {
         ...variables,
         id,
         playerId,
+        locality: key,
       };
 
       if (variables.logo) {
@@ -97,14 +108,14 @@ export default function ClubEditPage() {
         ...variables,
       });
     },
-    [editClubRequest, club?.id],
+    [editClubRequest, club, districts, selectClub],
   );
 
   const navigate = useNavigate();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [deleteClubRequest, deleteClubRequestState] = useMutation(DELETE_CLUB_MUTATION, {
+  const [deleteClubRequest] = useMutation(DELETE_CLUB_MUTATION, {
     onCompleted: () => {
       console.log('Jsem tu');
       navigate(route.dashboard());
@@ -214,6 +225,7 @@ export default function ClubEditPage() {
         error: makePlayerAdminRequestState.error,
         refetch: refetch,
       }}
+      districts={{ districts }}
     />
   );
 }

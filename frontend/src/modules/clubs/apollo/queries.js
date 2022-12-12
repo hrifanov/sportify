@@ -144,3 +144,11 @@ export const USER_QUERY = gql`
     }
   }
 `;
+
+export const DISTRICTS_QUERY = gql`
+  query {
+    enums {
+      districts
+    }
+  }
+`;

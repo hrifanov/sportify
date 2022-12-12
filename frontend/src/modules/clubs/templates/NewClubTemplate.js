@@ -17,6 +17,14 @@ const schema = yup.object().shape({
 
 export default function NewClubTemplate({ createClubRQ }) {
   // console.log('error: ' + createClubRQ?.error?.message);
+
+  const districts = createClubRQ.districts;
+  const districtsLabels = [];
+
+  districts?.forEach((district) => {
+    districtsLabels.push(district?.value);
+  });
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="New club" />
@@ -70,13 +78,14 @@ export default function NewClubTemplate({ createClubRQ }) {
                       id="locality"
                       name="locality"
                       label="Locality"
-                      placeholder="Concrete spot on John's yard"
+                      placeholder="City"
+                      input={Combobox}
+                      data={districtsLabels}
                       autoFocus="autofocus"
                       autoComplete="on"
                       autoCorrect="off"
                       autoCapitalize="off"
                     />
-
                     <FormField
                       id="sport"
                       name="sport"
@@ -86,7 +95,6 @@ export default function NewClubTemplate({ createClubRQ }) {
                       placeholder={'Sport'}
                       input-height="36px"
                     />
-
                     <FormField
                       id="logo"
                       name="logo"
@@ -94,7 +102,6 @@ export default function NewClubTemplate({ createClubRQ }) {
                       input={FileInput}
                       input-height="36px"
                     ></FormField>
-
                     <Button size="lg" type="submit" variant="primary" w={['100%']} mt="4">
                       Create club
                     </Button>

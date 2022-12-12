@@ -1,16 +1,6 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import {
-  Box,
-  Container,
-  Flex,
-  Heading,
-  Icon,
-  Spacer,
-  Text,
-  Wrap,
-  WrapItem,
-} from '@chakra-ui/react';
-import { Button, Stack, ErrorBanner } from 'src/shared/design-system';
+import { Box, Container, Flex, Icon, Spacer, Text, Wrap, WrapItem } from '@chakra-ui/react';
+import { Button } from 'src/shared/design-system';
 
 import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
@@ -18,7 +8,6 @@ import { FiArrowLeftCircle } from 'react-icons/fi';
 import { ModalCreateSeason } from '../organisms/ModalCreateSeason';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { BsPlusCircle } from 'react-icons/bs';
-import { ModalDeleteSeasonConfirm } from '../atoms/ModalDeleteSeasonConfirm';
 
 export default function ManageSeasonsTemplate({
   isCurrUserAdmin,

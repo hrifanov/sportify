@@ -1,34 +1,23 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import {
-  Box,
-  Container,
-  Flex,
-  Icon,
-  Spinner,
-  Heading,
-  Button,
-  Spacer,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Container, Flex, Icon, Spinner, Heading, Spacer } from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { route } from 'src/Routes';
 import { ClubEditForm } from 'src/modules/clubs/organisms/ClubEditForm';
 import { AddPlayerForm } from '../organisms/AddPlayerForm';
 import { PlayersList } from '../organisms/PlayersList';
-import { useState } from 'react';
 import { ModalDeleteClub } from '../molecules/ModalDeleteClub';
-import { useNavigate } from 'react-router-dom';
 
 export default function ClubEditTemplate(
-  { clubRQ, clubDeleteRQ, invitePlayerRQ, editClubRQ, removePlayerRQ, makePlayerAdminRQ },
+  {
+    clubRQ,
+    clubDeleteRQ,
+    invitePlayerRQ,
+    editClubRQ,
+    removePlayerRQ,
+    makePlayerAdminRQ,
+    districts,
+  },
   { ...props },
 ) {
   // console.log('clubRQ.club.id: ' + clubRQ?.club?.id);
@@ -75,6 +64,7 @@ export default function ClubEditTemplate(
                     error={editClubRQ.error}
                     isCompleted={editClubRQ.isCompleted}
                     setIsCompleted={editClubRQ.setIsCompleted}
+                    districts={districts}
                   />
                 </Box>
                 <Spacer />

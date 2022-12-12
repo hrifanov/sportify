@@ -1,23 +1,10 @@
-import {
-  Box,
-  Flex,
-  Image,
-  Table,
-  TableContainer,
-  Td,
-  Text,
-  Tr,
-  Icon,
-  Tbody,
-} from '@chakra-ui/react';
+import { Box, Flex, Table, TableContainer, Td, Text, Tr, Icon, Tbody } from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle, FiSettings } from 'react-icons/fi';
-import RequestsComp from '../molecules/RequestsComp';
 import { route } from '../../../Routes.js';
-import { beAsset } from 'src/utils/assets';
 import { ClubLogo } from 'src/modules/clubs/atoms/ClubLogo';
 
-export const ClubDetailInformation = ({ club, isCurrUserAdmin }) => {
+export const ClubDetailInformation = ({ club, clubLocalityLabel, isCurrUserAdmin }) => {
   return (
     <Box w="full" bg="brand.boxBackground" borderRadius="base" pt={4} pb={6} px={5}>
       <Flex direction="row" align="center">
@@ -46,7 +33,7 @@ export const ClubDetailInformation = ({ club, isCurrUserAdmin }) => {
                 Locality:
               </Td>
               <Td w="full" py={1} px={0}>
-                {club.locality}
+                {clubLocalityLabel}
               </Td>
             </Tr>
             <Tr>

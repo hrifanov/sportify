@@ -13,6 +13,7 @@ import { StatisticsFilter } from 'src/modules/clubs/molecules/StatisticsFilter';
 
 export default function ClubDetailTemplate({
   club,
+  clubLocalityLabel,
   applications,
   handleApplication,
   loading,
@@ -38,7 +39,11 @@ export default function ClubDetailTemplate({
       {club && (
         <Flex gap={6} h="full" direction={['column', null, 'row']}>
           <Flex direction="column" w={{ md: '20%' }} gap={4}>
-            <ClubDetailInformation club={club} isCurrUserAdmin={isCurrUserAdmin} />
+            <ClubDetailInformation
+              club={club}
+              clubLocalityLabel={clubLocalityLabel}
+              isCurrUserAdmin={isCurrUserAdmin}
+            />
             {isCurrUserAdmin && <ClubDetailSeasons clubId={club?.id} />}
             {isCurrUserAdmin && applications && applications[0] && (
               <RequestsComp
