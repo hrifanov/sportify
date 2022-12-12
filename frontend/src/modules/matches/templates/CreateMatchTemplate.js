@@ -40,6 +40,8 @@ import { useInteractiveMatchStore } from 'src/modules/matches/store/interactiveM
 import { useNavigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
+import { MainSection } from 'src/shared/core/atoms/MainSection';
+import { Heading } from 'src/shared/design-system';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -218,6 +220,27 @@ export default function CreateMatchTemplate({ club, loading }) {
 
   if (loading) {
     return <FullPageSpinner />;
+  }
+
+  if (!club?.seasons?.length) {
+    return (
+      <MainSection>
+        <Container maxW="prose" mt={[4, 10]}>
+          <Box bg="brand.boxBackground" px={[8, 12]} py={[6, 12]} borderRadius="base">
+            <Text fontSize="xl" fontWeight="bold" mb={9}>
+              Before you can create a match, you need to create a season.
+            </Text>
+            <Button
+              colorScheme="teal"
+              variant="outline"
+              onClick={() => navigate(route.manageSeasons(club.id))}
+            >
+              Create season
+            </Button>
+          </Box>
+        </Container>
+      </MainSection>
+    );
   }
 
   return (
