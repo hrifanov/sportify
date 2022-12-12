@@ -54,7 +54,7 @@ export const InteractiveMatchPage = () => {
   }
 
   return (
-    <MainSection containerProps={{ maxW: 'container.lg' }}>
+    <MainSection containerProps={{ maxW: 'container.lg', minW: '330px' }}>
       <Flex direction={'column'} minHeight={'100%'} height={{ md: '100%' }}>
         <MatchDetailHeading match={computed.rawMatch} />
         <Box
@@ -77,10 +77,11 @@ export const InteractiveMatchPage = () => {
           </Flex>
         </Box>
         <MatchDetailEvents events={computed.events} />
-        <Box bg={'brand.boxBackground'} py={3} px={14} mt={1} borderRadius={'base'}>
+        <Box bg={'brand.boxBackground'} py={3} px={[6, 14]} mt={1} borderRadius={'base'}>
           <Flex>
             <Button
               size={'sm'}
+              w={['48%', 'initial']}
               variant={'outline'}
               onClick={() => uiAction(INTERACTIVE_MATCH_ACTIONS.CANCEL_MATCH)}
             >
@@ -89,6 +90,7 @@ export const InteractiveMatchPage = () => {
             <Spacer />
             <Button
               size={'sm'}
+              w={['48%', 'initial']}
               variant={'primary'}
               onClick={() => uiAction(INTERACTIVE_MATCH_ACTIONS.FINISH_MATCH)}
             >
