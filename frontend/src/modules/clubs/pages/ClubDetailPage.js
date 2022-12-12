@@ -52,8 +52,6 @@ export default function ClubDetailPage() {
   const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
   const districts = districtsQueryResponse?.data?.enums?.districts;
 
-  // console.log('districts: ' + JSON.stringify(districts));
-
   const club = data?.clubByID;
   const clubLocalityLabel = districts?.find((district) => district?.key === club?.locality)?.value;
   // console.log('clubLocalityLabel: ' + JSON.stringify(clubLocalityLabel));
