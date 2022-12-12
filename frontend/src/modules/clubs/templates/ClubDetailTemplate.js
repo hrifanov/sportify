@@ -1,4 +1,14 @@
-import { Flex, Text, Tabs, TabList, TabPanel, TabPanels, Tab, Spacer } from '@chakra-ui/react';
+import {
+  Flex,
+  Text,
+  Tabs,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tab,
+  Spacer,
+  Icon,
+} from '@chakra-ui/react';
 import Statistics from 'src/modules/matches/molecules/Statistics';
 import MatchesComp from '../molecules/MatchesComp';
 import RequestsComp from '../molecules/RequestsComp';
@@ -10,6 +20,9 @@ import { RoleEnum } from 'src/modules/matches/enums';
 import { useEffect, useState } from 'react';
 import { find } from 'lodash';
 import { StatisticsFilter } from 'src/modules/clubs/molecules/StatisticsFilter';
+import { RouterLink } from 'src/shared/navigation';
+import { route } from 'src/Routes';
+import { FiSettings } from 'react-icons/fi';
 
 export default function ClubDetailTemplate({
   club,
@@ -37,14 +50,14 @@ export default function ClubDetailTemplate({
   return (
     <MainSection>
       {club && (
-        <Flex gap={6} h="full" direction={['column', null, 'row']}>
-          <Flex direction="column" w={{ md: '20%' }} gap={4}>
+        <Flex px={0} gap={6} h="full" direction={['column', null, 'row']}>
+          <Flex direction="column" w={{ md: '20%' }} minW="250px" gap={4}>
             <ClubDetailInformation
               club={club}
               clubLocalityLabel={clubLocalityLabel}
               isCurrUserAdmin={isCurrUserAdmin}
             />
-            {isCurrUserAdmin && <ClubDetailSeasons clubId={club?.id} />}
+            {/* {isCurrUserAdmin && <ClubDetailSeasons clubId={club?.id} />} */}
             {isCurrUserAdmin && applications && applications[0] && (
               <RequestsComp
                 applications={applications}
@@ -59,7 +72,7 @@ export default function ClubDetailTemplate({
               <Tab>Matches</Tab>
             </TabList>
             <TabPanels>
-              <TabPanel>
+              <TabPanel px={0}>
                 <StatisticsFilter
                   club={club}
                   setRoleFilter={setRoleFilter}
@@ -67,13 +80,13 @@ export default function ClubDetailTemplate({
                 />
                 <Statistics statistics={statistics} cumulative={true} role={roleFilter} />
               </TabPanel>
-              <TabPanel>{matches && <MatchesComp matches={matches}></MatchesComp>}</TabPanel>
+              <TabPanel px={0}>{matches && <MatchesComp matches={matches}></MatchesComp>}</TabPanel>
             </TabPanels>
           </Tabs>
           <Flex
             direction="column"
             w={{ md: '49%' }}
-            minW={0}
+            minW={['440px']}
             h="full"
             bg="brand.boxBackground"
             borderRadius="base"
@@ -104,6 +117,7 @@ export default function ClubDetailTemplate({
             w={{ md: '31%' }}
             h="full"
             gap={4}
+            px={0}
             display={{ base: 'none', md: 'flex' }}
           >
             {matches && <MatchesComp matches={matches}></MatchesComp>}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { route } from 'src/Routes';
 export default function RequestsComp({ applications, handleApplication }) {
   return (
-    <Show above="md" h="full">
+    <Box h="full">
       <Box w="full" h="full" bg="brand.boxBackground" borderRadius="base" py={4} px={5}>
         <Box>
           <Text fontWeight="bold" color="brand.title" fontSize="xl">
@@ -53,6 +53,6 @@ export default function RequestsComp({ applications, handleApplication }) {
           })}
         </Box>
       </Box>
-    </Show>
+    </Box>
   );
 }

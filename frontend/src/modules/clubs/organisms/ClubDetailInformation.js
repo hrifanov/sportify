@@ -6,7 +6,7 @@ import { ClubLogo } from 'src/modules/clubs/atoms/ClubLogo';
 
 export const ClubDetailInformation = ({ club, clubLocalityLabel, isCurrUserAdmin }) => {
   return (
-    <Box w="full" bg="brand.boxBackground" borderRadius="base" pt={4} pb={6} px={5}>
+    <Box h="full" w="full" bg="brand.boxBackground" borderRadius="base" pt={4} pb={6} px={5}>
       <Flex direction="row" align="center">
         <Flex as={RouterLink} to={route.dashboard()} color="brand.title" align="center">
           <Icon as={FiArrowLeftCircle} boxSize={6} />
@@ -48,17 +48,31 @@ export const ClubDetailInformation = ({ club, clubLocalityLabel, isCurrUserAdmin
         </Table>
       </TableContainer>
       {isCurrUserAdmin && (
-        <Flex
-          as={RouterLink}
-          mt={5}
-          to={route.clubEdit(club.id)}
-          color="brand.secondary"
-          alignItems="center"
-          gap={2}
-        >
-          <Icon as={FiSettings} />
-          Manage team
-        </Flex>
+        <>
+          <Flex
+            as={RouterLink}
+            mt={5}
+            to={route.clubEdit(club.id)}
+            color="brand.secondary"
+            alignItems="center"
+            gap={2}
+          >
+            <Icon as={FiSettings} />
+            Manage team
+          </Flex>
+
+          <Flex
+            as={RouterLink}
+            mt={5}
+            to={route.manageSeasons(club.id)}
+            color="brand.secondary"
+            alignItems="center"
+            gap={2}
+          >
+            <Icon as={FiSettings} />
+            Manage Seasons
+          </Flex>
+        </>
       )}
     </Box>
   );

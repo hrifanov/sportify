@@ -9,7 +9,15 @@ export default function MatchesComp({ matches }) {
   const navigate = useNavigate();
   return (
     <>
-      <Box bg="brand.boxBackground" flexGrow={1} borderRadius="base" pt={4} pb={6} px={5}>
+      <Box
+        bg="brand.boxBackground"
+        w="full"
+        flexGrow={1}
+        borderRadius="base"
+        pt={4}
+        pb={6}
+        px={[0, '', '', 3]}
+      >
         <Text
           fontWeight="bold"
           color="brand.title"
@@ -19,10 +27,13 @@ export default function MatchesComp({ matches }) {
           Matches
         </Text>
         <Spacer />
+
         <TableContainer
-          mt={2}
-          px={2}
+          mt={0}
+          mx={0}
+          pl={'7px'}
           maxHeight="100%"
+          w="full"
           overflowY="scroll"
           overflowX="scroll"
           style={{
@@ -31,7 +42,7 @@ export default function MatchesComp({ matches }) {
             },
           }}
         >
-          <Table size={{ base: 'sm' }} variant="base" className="maches-table">
+          <Table mx={0} size={{ base: 'sm' }} variant="base" className="maches-table">
             <Tbody>
               {Object.keys(groupedMatches)
                 .reverse()
@@ -39,18 +50,33 @@ export default function MatchesComp({ matches }) {
                   <>
                     <Tr key={date}>
                       <Td></Td>
-                      <Td textAlign="center" color="brand.secondary">
+                      <Td px={0} w={15} textAlign="center" color="brand.secondary">
                         {formatDate(new Date(+date), 'dd-MM-yyyy')}
                       </Td>
                       <Td></Td>
                     </Tr>
                     {orderBy(groupedMatches[date], 'date').map((match) => (
                       <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
-                        <Td textAlign="left">{match.teams.home.name}</Td>
-                        <Td textAlign="center" fontWeight="bold">
+                        <Td pl={0} pr={0} maxW="90px" overflowX={'hidden'} textAlign="left">
+                          {match.teams.home.name}
+                        </Td>
+                        <Td px={0} w={0} maxW="100px" textAlign="center" fontWeight="bold">
                           {match.score.home}:{match.score.guest}
                         </Td>
-                        <Td textAlign="right">{match.teams.guest.name}</Td>
+                        <Td
+                          px={0}
+                          mx={0}
+                          maxW="90px"
+                          textAlign="right"
+                          overflow={'hidden'}
+                          sx={{
+                            '& > span': {
+                              minW: 0,
+                            },
+                          }}
+                        >
+                          <Text isTruncated>{match.teams.guest.name}</Text>
+                        </Td>
                       </Tr>
                     ))}
                   </>
