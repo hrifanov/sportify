@@ -5,11 +5,10 @@ import { useQuery } from '@apollo/client';
 export default function DashboardPage({ user }) {
   const { data, loading } = useQuery(USER_QUERY, { variables: { userName: user.userName } });
   const clubs = data?.user?.clubs;
-  const errors = useQuery(FETCH_CLUBS, {
-    variables: { param: 'locality', value: 'test', exact: false },
+  const allClubsQuery = useQuery(FETCH_CLUBS, {
+    variables: { param: 'players', value: '639706c7e147c96a882b1377', exact: false },
   });
-  const allClubs = errors?.data?.clubs;
-  console.log(errors);
+  const allClubs = allClubsQuery?.data?.clubs;
 
   return <DashboardTemplate clubs={clubs} allClubs={allClubs} loading={loading} user={user} />;
 }

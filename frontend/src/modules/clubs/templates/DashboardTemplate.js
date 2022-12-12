@@ -1,28 +1,27 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import {
-  Box,
-  Container,
-  Flex,
-  Heading,
-  Grid,
-  Spinner,
-  Stack,
-  Select,
-  Input,
-  Button,
-} from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Grid, Spinner } from '@chakra-ui/react';
 import { MyClubsPanel } from '../organisms/MyClubsPanel';
 import AllClubs from '../organisms/AllClubs';
-import { GiBrandyBottle } from 'react-icons/gi';
-import { parseAndCheckHttpResponse } from '@apollo/client';
-import { Country, State, City } from 'country-state-city';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { JoinClubsFilter } from '../molecules/JoinClubsFilter';
+import ReactPaginate from 'react-paginate';
 
 export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
   const [sportFilter, setSportFilter] = useState(null);
   const [localityFilter, setLocalityFilter] = useState(null);
   const [nameFilter, setNameFilter] = useState(null);
+  const itemsPerPage = 1;
+
+  const [itemOffset, setItemOffset] = useState(0);
+
+  const endOffset = itemOffset + itemsPerPage;
+  const clubsForPagination = allClubs?.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(allClubs?.length / itemsPerPage);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % allClubs?.length;
+    setItemOffset(newOffset);
+  };
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Dashboard" />
@@ -32,7 +31,7 @@ export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
             <Spinner />
           </Flex>
         )}
-        {clubs && (
+        {allClubs && clubs && (
           <Flex gap={6} h="full" direction={['column', null, 'row']}>
             <Flex direction="column" w={{ md: '30%' }} gap={4}>
               <Box
@@ -63,7 +62,7 @@ export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
                 Find your new club
               </Heading>
               <JoinClubsFilter
-                clubs={clubs}
+                clubs={allClubs}
                 setLocalityFilter={setLocalityFilter}
                 setSportFilter={setSportFilter}
                 setNameFilter={setNameFilter}
@@ -74,51 +73,130 @@ export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
               >
                 {(() => {
                   if (sportFilter && nameFilter && localityFilter) {
-                    const filteredClubs = clubs.filter(
+                    const filteredClubs = allClubs.filter(
                       (club) =>
                         club.sport.includes(sportFilter) &&
                         club.locality.includes(localityFilter) &&
                         club.name.toLowerCase().includes(nameFilter.toLowerCase()),
                     );
-                    return <AllClubs clubs={filteredClubs} />;
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else if (nameFilter && sportFilter) {
-                    const filteredClubs = clubs.filter(
+                    const filteredClubs = allClubs.filter(
                       (club) =>
                         club.sport.includes(sportFilter) &&
                         club.name.toLowerCase().includes(nameFilter.toLowerCase()),
                     );
-                    return <AllClubs clubs={filteredClubs} />;
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else if (localityFilter && nameFilter) {
-                    const filteredClubs = clubs.filter(
+                    const filteredClubs = allClubs.filter(
                       (club) =>
                         club.locality.includes(localityFilter) &&
                         club.name.toLowerCase().includes(nameFilter.toLowerCase()),
                     );
-                    return <AllClubs clubs={filteredClubs} />;
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else if (sportFilter && localityFilter) {
-                    const filteredClubs = clubs.filter(
+                    const filteredClubs = allClubs.filter(
                       (club) =>
                         club.sport.includes(sportFilter) && club.locality.includes(localityFilter),
                     );
-                    return <AllClubs clubs={filteredClubs} />;
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else if (sportFilter) {
-                    const filteredClubs = clubs.filter((club) => club.sport.includes(sportFilter));
-                    return <AllClubs clubs={filteredClubs} />;
+                    const filteredClubs = allClubs.filter((club) =>
+                      club.sport.includes(sportFilter),
+                    );
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else if (nameFilter) {
-                    const filteredClubs = clubs.filter((club) =>
+                    const filteredClubs = allClubs.filter((club) =>
                       club.name.toLowerCase().includes(nameFilter.toLowerCase()),
                     );
-                    return <AllClubs clubs={filteredClubs} />;
-                  } else if (localityFilter) {
-                    const filteredClubs = clubs.filter((club) =>
-                      club.name.toLowerCase().includes(localityFilter.toLowerCase()),
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
                     );
-                    return <AllClubs clubs={filteredClubs} />;
+                  } else if (localityFilter) {
+                    const filteredClubs = allClubs.filter((club) =>
+                      club.locality.toLowerCase().includes(localityFilter.toLowerCase()),
+                    );
+                    console.log(filteredClubs);
+                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
+                    console.log(filteredPagination);
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={filteredPagination}
+                        user={user}
+                      />
+                    );
                   } else {
-                    return <AllClubs clubs={clubs} user={user} />;
+                    return (
+                      <AllClubs
+                        itemsPerPage={itemsPerPage}
+                        allClubs={clubsForPagination}
+                        user={user}
+                      />
+                    );
                   }
                 })()}
               </Grid>
+              <ReactPaginate
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                marginPagesDisplayed={2}
+                pageCount={pageCount}
+                previousLabel="< previous"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakLabel="..."
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination"
+                activeClassName="active"
+                renderOnZeroPageCount={null}
+              />
             </Flex>
           </Flex>
         )}

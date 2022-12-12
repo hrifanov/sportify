@@ -1,40 +1,98 @@
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #9FB2D1 transparent;
+    scrollbar-width: thin;
+    scrollbar-color: #9FB2D1 transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+    width: 6px;
+    height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 *::-webkit-scrollbar-corner {
-  background: rgba(0, 0, 0, 0);
+    background: rgba(0, 0, 0, 0);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #9FB2D1;
-  border-radius: 10px;
-  border: 3px solid transparent;
+    background-color: #9FB2D1;
+    border-radius: 10px;
+    border: 3px solid transparent;
 }
 
-html, body, #root {
-  height: 100%;
+html,
+body,
+#root {
+    height: 100%;
 }
 
 .statistics-table td:nth-child(1),
 .statistics-table th:nth-child(1),
 .statistics-table td:nth-child(2),
-.statistics-table th:nth-child(2)
-{
-  width: 0;
-  padding: 0.25rem;
+.statistics-table th:nth-child(2) {
+    width: 0;
+    padding: 0.25rem;
 }
 
 .label-nowrap {
-  white-space: nowrap;
+    white-space: nowrap;
+}
+
+.pagination {
+    justify-content: center;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-top: auto;
+}
+
+ul.pagination li {
+    display: inline-block;
+    padding: 4px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+}
+
+ul.pagination li:first-child {
+    width: 130px;
+}
+
+ul.pagination li:last-child {
+    width: 130px;
+}
+
+ul.pagination li a {
+    text-decoration: none;
+    color: #9FB2D1;
+    font-size: 14px;
+}
+
+ul.pagination li.active a {
+    color: white;
+}
+
+ul.pagination li.active {
+    background-color: #9FB2D1;
+    border-radius: 4px;
+}
+
+ul.pagination li a:hover,
+ul.pagination li a.active {
+    color: #FB7143;
+}
+
+.page-selection {
+    width: 48px;
+    height: 30px;
+    color: #9FB2D1;
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }

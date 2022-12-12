@@ -1,9 +1,9 @@
 import { ClubListItem } from '../molecules/ClubListItem';
 
-export default function AllClubs({ clubs, user }) {
+export default function AllClubs({ allClubs, itemsPerPage, user }) {
   const userId = user.id;
   const ClubsList = () =>
-    clubs.map((club) => {
+    allClubs.map((club) => {
       return <ClubListItem key={club.id} club={club} joinable={true} userId={userId} />;
     });
 

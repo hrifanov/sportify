@@ -15,6 +15,7 @@ export const clubs = async (_, { filter }, context) => {
         if(exact){
           return club[param] == value;
         }
+        //tady jsem se to snažil nějak upravit, aby to vracelo kluby, jejichž nejsem členem - skoro to i šlo podle mě, ale hlásilo to nějakou chybu v index.js kvůli userovi
         return !club[param].includes(value);
       })
     }
