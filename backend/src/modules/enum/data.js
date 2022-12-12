@@ -152,7 +152,7 @@ export const districts = [
   { value: 'Uherské Hradiště', key: "CZ0722" },
   { value: 'Ústí nad Labem', key: "CZ0427" },
   { value: 'Ústí nad Orlicí', key: "CZ0534" },
-  { value: 'území Hlavního města Prahy', key: "CZ0100" },
+  { value: 'Praha', key: "CZ0100" },
   { value: 'Vsetín', key: "CZ0723" },
   { value: 'Vyškov', key: "CZ0646" },
   { value: 'Zlín', key: "CZ0724" },

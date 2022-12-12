@@ -63,7 +63,7 @@ export const ModalPenalty = () => {
 
   useEffect(() => {
     formMethods.reset();
-    formMethods.setValue('time', timeToString(timer));
+    formMethods.setValue('time', timeToString(ui.props.event?.time ?? timer));
 
     if (!ui.props?.event) return;
 
@@ -75,17 +75,21 @@ export const ModalPenalty = () => {
   if (!isOpen) return;
   const team = computed.teams[ui.props.teamId];
   const onSubmit = (data) => {
+    const input = {
+      type: EventEnum.PENALTY,
+      time: data.time,
+      data: {
+        teamId: ui.props.teamId,
+        playerId: data.playerId,
+        length: data.length,
+        type: data.type,
+      },
+    };
+
     if (isEdit) {
-      editEvent(ui.props.event.id, { data });
+      editEvent(ui.props.event.id, input);
     } else {
-      addEvent({
-        type: EventEnum.PENALTY,
-        time: data.time,
-        data: {
-          teamId: ui.props.teamId,
-          ...data,
-        },
-      });
+      addEvent(input);
     }
     finishAction();
   };
