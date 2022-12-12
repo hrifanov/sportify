@@ -507,7 +507,7 @@ export default function CreateMatchTemplate({ club, loading }) {
               return <option value={season.id}>{season.name}</option>;
             })}
           </Select>
-          <Stack direction={['row']} align={'center'} gap={10}>
+          <Stack direction={['column', 'row']} align={'center'} gap={[3, '', 10]}>
             <Stack direction={['column', '', 'row']} alignItems="center">
               <label className="label-nowrap" htmlFor="date-of-match">
                 Past match:
@@ -524,7 +524,7 @@ export default function CreateMatchTemplate({ club, loading }) {
               />
             </Stack>
             {showDate ? (
-              <Stack direction="row" alignItems="center">
+              <Stack direction={['column', '', 'row']} alignItems="center" mt="0">
                 <label className="label-nowrap" htmlFor="date-of-match">
                   Date of the match:
                 </label>
