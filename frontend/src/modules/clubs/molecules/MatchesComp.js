@@ -58,7 +58,7 @@ export default function MatchesComp({ matches }) {
                     {orderBy(groupedMatches[date], 'date').map((match) => (
                       <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
                         <Td pl={0} pr={0} maxW="90px" overflowX={'hidden'} textAlign="left">
-                          <Text isTruncated>{match.teams.home.name}</Text>
+                          <Text>{truncate(match.teams.home.name, { length: 12 })}</Text>
                         </Td>
                         <Td px={0} w={0} maxW="100px" textAlign="center" fontWeight="bold">
                           {match.score.home}:{match.score.guest}
@@ -75,7 +75,7 @@ export default function MatchesComp({ matches }) {
                             },
                           }}
                         >
-                          <Text isTruncated>{match.teams.guest.name}</Text>
+                          <Text>{truncate(match.teams.guest.name, { length: 12 })}</Text>
                         </Td>
                       </Tr>
                     ))}

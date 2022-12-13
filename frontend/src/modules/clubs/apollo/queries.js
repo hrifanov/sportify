@@ -55,7 +55,6 @@ export const FETCH_MATCHES = gql`
 `;
 
 export const CLUB_BY_ID_QUERY = gql`
-  ${UserStatisticsFragment}
   query clubByID($id: ID!) {
     clubByID(id: $id) {
       id
@@ -76,18 +75,6 @@ export const CLUB_BY_ID_QUERY = gql`
         name
         email
       }
-      seasons {
-        id
-        name
-        statistics {
-          user {
-            name
-          }
-          statistics {
-            ...UserStatistics
-          }
-        }
-      }
       matches {
         id
         date
@@ -102,6 +89,26 @@ export const CLUB_BY_ID_QUERY = gql`
           guest {
             name
           }
+        }
+      }
+      seasons {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const CLUB_STATISTICS_QUERY = gql`
+  ${UserStatisticsFragment}
+  query clubStatistics($clubId: ID!, $seasonId: ID!) {
+    clubByID(id: $clubId) {
+      playerStatistics(seasonId: $seasonId) {
+        user {
+          name
+        }
+        statistics {
+          ...UserStatistics
         }
       }
     }

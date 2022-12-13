@@ -87,7 +87,7 @@ export const getTeamStatistics = async (clubId, seasonId) => {
   }
 
   const users = await User.find({ _id: { $in: members } });
-  const usersIdMap = Object.fromEntries(users.map(user => [user.id, {...user._doc}]));
+  const usersIdMap = Object.fromEntries(users.map(user => [user.id, {...user._doc, id: user._doc._id }]));
 
   return Object.entries(membersStats).map(([userId, stats]) => ({
     user: usersIdMap[userId],
@@ -166,9 +166,15 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
     const teamPlayer = teamPlayersMap[player.toString()];
 
     if(teamPlayer.role === "goalkeeper"){
+      if(!membersStats[teamPlayer.userId].roles.includes("goalkeeper")) {
+        membersStats[teamPlayer.userId].roles.push("goalkeeper");
+      }
       membersStats[teamPlayer.userId].gamesGoalkeeper++;
       goalkeepers[side] = teamPlayer.userId;
     } else {
+      if(!membersStats[teamPlayer.userId].roles.includes("attack")) {
+        membersStats[teamPlayer.userId].roles.push("attack");
+      }
       membersStats[teamPlayer.userId].gamesAttacker++;
     }
     if(winnerSide == side) membersStats[teamPlayer.userId].winsTotal++;
@@ -306,7 +312,8 @@ const createEmptySummary = () => ({
   gamesGoalkeeper: 0,
   gamesTotal: 0,
   winsTotal: 0,
-  matchesWithoutPassedGoals: 0
+  matchesWithoutPassedGoals: 0,
+  roles: []
 });
 
 

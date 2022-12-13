@@ -13,16 +13,13 @@ import Statistics from 'src/modules/matches/molecules/Statistics';
 import MatchesComp from '../molecules/MatchesComp';
 import RequestsComp from '../molecules/RequestsComp';
 import { ClubDetailInformation } from '../organisms/ClubDetailInformation';
-import { ClubDetailSeasons } from '../organisms/ClubDetailSeasons';
 import { MainSection } from 'src/shared/core/atoms/MainSection';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { RoleEnum } from 'src/modules/matches/enums';
 import { useEffect, useState } from 'react';
-import { find } from 'lodash';
 import { StatisticsFilter } from 'src/modules/clubs/molecules/StatisticsFilter';
-import { RouterLink } from 'src/shared/navigation';
-import { route } from 'src/Routes';
-import { FiSettings } from 'react-icons/fi';
+import { useQuery } from '@apollo/client';
+import { CLUB_STATISTICS_QUERY } from 'src/modules/clubs/apollo/queries';
 
 export default function ClubDetailTemplate({
   club,
@@ -36,6 +33,12 @@ export default function ClubDetailTemplate({
 }) {
   const [roleFilter, setRoleFilter] = useState(RoleEnum.ALL);
   const [seasonFilter, setSeasonFilter] = useState(null);
+  const { data: statisticsData, loading: statisticsLoading } = useQuery(CLUB_STATISTICS_QUERY, {
+    variables: { clubId: club?.id, seasonId: seasonFilter },
+    skip: !seasonFilter,
+  });
+
+  console.log({ statisticsLoading });
 
   useEffect(() => {
     setSeasonFilter(club?.seasons?.[0]?.id);
@@ -45,7 +48,7 @@ export default function ClubDetailTemplate({
     return <FullPageSpinner />;
   }
 
-  const statistics = find(club?.seasons, { id: seasonFilter })?.statistics;
+  const statistics = statisticsData?.clubByID?.playerStatistics;
 
   return (
     <MainSection>
@@ -78,7 +81,12 @@ export default function ClubDetailTemplate({
                   setRoleFilter={setRoleFilter}
                   setSeasonFilter={setSeasonFilter}
                 />
-                <Statistics statistics={statistics} cumulative={true} role={roleFilter} />
+                <Statistics
+                  statistics={statistics}
+                  cumulative={true}
+                  role={roleFilter}
+                  loading={statisticsLoading}
+                />
               </TabPanel>
               <TabPanel px={0}>{matches && <MatchesComp matches={matches}></MatchesComp>}</TabPanel>
             </TabPanels>
@@ -109,7 +117,12 @@ export default function ClubDetailTemplate({
                 setSeasonFilter={setSeasonFilter}
               />
             </Flex>
-            <Statistics statistics={statistics} cumulative={true} role={roleFilter}></Statistics>
+            <Statistics
+              statistics={statistics}
+              cumulative={true}
+              role={roleFilter}
+              loading={statisticsLoading}
+            ></Statistics>
           </Flex>
           <Flex
             direction="column"
