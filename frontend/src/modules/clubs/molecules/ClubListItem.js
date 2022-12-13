@@ -8,8 +8,10 @@ import { CREATE_APLICATION_MUTATION } from '../apollo/mutations';
 import { useToast } from '@chakra-ui/react';
 import { useMutation } from '@apollo/client';
 import { useCallback, useState } from 'react';
+import { useDistricts } from 'src/shared/core/hooks/useDistricts';
 
 export const ClubListItem = ({ club, joinable, userId }) => {
+  const { formatDistrictLabel } = useDistricts();
   const toast = useToast();
   const navigate = useNavigate();
   const { selectClub } = useClubStore();
@@ -119,7 +121,7 @@ export const ClubListItem = ({ club, joinable, userId }) => {
             <Flex direction="column" align="flex-start" textAlign="left" w="100%">
               <Text fontWeight="600">{club.name}</Text>
               <Text fontSize="12px" color="brand.secondary">
-                {club.locality}
+                {formatDistrictLabel(club.locality)}
               </Text>
               <Text fontSize="12px" color="brand.secondary">
                 {club.sport}
@@ -145,7 +147,7 @@ export const ClubListItem = ({ club, joinable, userId }) => {
           <Flex direction="column" align="flex-start" textAlign="left" w="100%">
             <Text fontWeight="600">{club.name}</Text>
             <Text fontSize="12px" color="brand.secondary">
-              {club.locality}
+              {formatDistrictLabel(club.locality)}
             </Text>
             <Text fontSize="12px" color="brand.secondary">
               {club.sport}

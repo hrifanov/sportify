@@ -7,16 +7,22 @@ import { JoinClubsFilter } from '../molecules/JoinClubsFilter';
 import ReactPaginate from 'react-paginate';
 
 export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
-  const [sportFilter, setSportFilter] = useState(null);
-  const [localityFilter, setLocalityFilter] = useState(null);
-  const [nameFilter, setNameFilter] = useState(null);
-  const itemsPerPage = 1;
+  const [filters, setFilters] = useState(null);
+  const itemsPerPage = 12;
 
   const [itemOffset, setItemOffset] = useState(0);
 
   const endOffset = itemOffset + itemsPerPage;
-  const clubsForPagination = allClubs?.slice(itemOffset, endOffset);
   const pageCount = Math.ceil(allClubs?.length / itemsPerPage);
+
+  const filteredClubs = (allClubs ?? []).filter((club) => {
+    if (filters?.name && !club.name.toLowerCase().includes(filters.name.toLowerCase()))
+      return false;
+    if (filters?.sport?.key && club.sport !== filters.sport.key) return false;
+    if (filters?.locality?.key && club.locality !== filters.locality.key) return false;
+    return true;
+  });
+  const paginatedClubs = filteredClubs.slice(itemOffset, endOffset);
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % allClubs?.length;
@@ -61,121 +67,12 @@ export default function DashboardTemplate({ clubs, allClubs, loading, user }) {
               <Heading size={'lg'} mb={4}>
                 Find your new club
               </Heading>
-              <JoinClubsFilter
-                clubs={allClubs}
-                setLocalityFilter={setLocalityFilter}
-                setSportFilter={setSportFilter}
-                setNameFilter={setNameFilter}
-              />
+              <JoinClubsFilter clubs={allClubs} setFilters={setFilters} />
               <Grid
                 templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(3, 1fr)']}
                 gap={['0', '4', '4']}
               >
-                {(() => {
-                  if (sportFilter && nameFilter && localityFilter) {
-                    const filteredClubs = allClubs.filter(
-                      (club) =>
-                        club.sport.includes(sportFilter) &&
-                        club.locality.includes(localityFilter) &&
-                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (nameFilter && sportFilter) {
-                    const filteredClubs = allClubs.filter(
-                      (club) =>
-                        club.sport.includes(sportFilter) &&
-                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (localityFilter && nameFilter) {
-                    const filteredClubs = allClubs.filter(
-                      (club) =>
-                        club.locality.includes(localityFilter) &&
-                        club.name.toLowerCase().includes(nameFilter.toLowerCase()),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (sportFilter && localityFilter) {
-                    const filteredClubs = allClubs.filter(
-                      (club) =>
-                        club.sport.includes(sportFilter) && club.locality.includes(localityFilter),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (sportFilter) {
-                    const filteredClubs = allClubs.filter((club) =>
-                      club.sport.includes(sportFilter),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (nameFilter) {
-                    const filteredClubs = allClubs.filter((club) =>
-                      club.name.toLowerCase().includes(nameFilter.toLowerCase()),
-                    );
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else if (localityFilter) {
-                    const filteredClubs = allClubs.filter((club) =>
-                      club.locality.toLowerCase().includes(localityFilter.toLowerCase()),
-                    );
-                    console.log(filteredClubs);
-                    const filteredPagination = filteredClubs.slice(itemOffset, endOffset);
-                    console.log(filteredPagination);
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={filteredPagination}
-                        user={user}
-                      />
-                    );
-                  } else {
-                    return (
-                      <AllClubs
-                        itemsPerPage={itemsPerPage}
-                        allClubs={clubsForPagination}
-                        user={user}
-                      />
-                    );
-                  }
-                })()}
+                <AllClubs allClubs={paginatedClubs} user={user} />
               </Grid>
               <ReactPaginate
                 nextLabel="next >"

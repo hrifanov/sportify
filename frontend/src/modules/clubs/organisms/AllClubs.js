@@ -1,6 +1,6 @@
 import { ClubListItem } from '../molecules/ClubListItem';
 
-export default function AllClubs({ allClubs, itemsPerPage, user }) {
+export default function AllClubs({ allClubs, user }) {
   const userId = user.id;
   const ClubsList = () =>
     allClubs.map((club) => {
