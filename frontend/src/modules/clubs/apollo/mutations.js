@@ -108,25 +108,3 @@ export const EDIT_APLICATION_MUTATION = gql`
     }
   }
 `;
-
-export const CREATE_APLICATION_MUTATION = gql`
-  mutation createApplication($userId: ID!, $clubId: ID!) {
-    createClubApplication(applicationInput: { userId: $userId, clubId: $clubId }) {
-      id
-      user {
-        id
-        userName
-        name
-        email
-      }
-      club {
-        id
-        name
-        sport
-        locality
-      }
-      state
-      dateApplied
-    }
-  }
-`;

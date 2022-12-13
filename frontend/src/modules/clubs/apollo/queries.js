@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import { UserStatisticsFragment } from 'src/modules/matches/apollo/fragments';
 
 export const FETCH_CLUBS = gql`
-  query clubs($param: String!, $value: String!, $exact: Boolean) {
-    clubs(filter: { param: $param, value: $value, exact: $exact }) {
+  query {
+    clubs {
       id
       name
       sport

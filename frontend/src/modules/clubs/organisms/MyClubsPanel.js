@@ -4,7 +4,9 @@ import { BsPlusCircle } from 'react-icons/bs';
 import { RouterLink } from 'src/shared/navigation';
 import { route } from 'src/Routes';
 
-export const MyClubsPanel = ({ clubs }) => {
+export const MyClubsPanel = (clubs) => {
+  clubs = clubs.clubs;
+
   const ClubsList = () =>
     clubs.map((club) => {
       return <ClubListItem key={club.id} club={club} />;
