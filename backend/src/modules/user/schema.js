@@ -62,7 +62,7 @@ export const typeDef = gql`
     matchesWithoutPassedGoals: Int!
     penalties: Int!
     totalPenaltiesLength: Float!
-    roles: [String]
+    roles: [String]!
     winsTotal: Int!
   }
 `;
