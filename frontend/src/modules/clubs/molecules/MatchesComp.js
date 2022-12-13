@@ -1,5 +1,5 @@
 import { Table, TableContainer, Td, Text, Tr, Tbody, Spacer, Button, Box } from '@chakra-ui/react';
-import _, { orderBy } from 'lodash';
+import _, { orderBy, truncate } from 'lodash';
 import { FiPlayCircle } from 'react-icons/fi';
 import { route } from '../../../Routes.js';
 import { useNavigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ export default function MatchesComp({ matches }) {
                     {orderBy(groupedMatches[date], 'date').map((match) => (
                       <Tr cursor={'pointer'} onClick={() => navigate(route.matchDetail(match.id))}>
                         <Td pl={0} pr={0} maxW="90px" overflowX={'hidden'} textAlign="left">
-                          {match.teams.home.name}
+                          <Text isTruncated>{match.teams.home.name}</Text>
                         </Td>
                         <Td px={0} w={0} maxW="100px" textAlign="center" fontWeight="bold">
                           {match.score.home}:{match.score.guest}
