@@ -8,7 +8,7 @@ export const clubs = async (_, { filter }, context) => {
   isAuth(context);
 
   const userId = context.payload.userId;
-  const clubs = await Club.find({ players: { $elemMatch: { user: { $ne: userId } } } });
+  const clubs = await Club.find({ 'players.user': { $ne: userId } });
 
   // TODO: Enable this when FE is fixed
 
