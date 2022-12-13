@@ -1,64 +1,22 @@
 import { Button, ErrorBanner, Flex, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
-
 const initialValues = {
-  email: '',
-  name: '',
   password: '',
-  passwordConfirmation: '',
-  userName: '',
 };
-
 const schema = yup.object().shape({
-  email: yup.string().email().required().label('Email'),
-  name: yup.string().required().label('Name'),
   password: yup.string().required().label('Password'),
   passwordConfirmation: yup
     .string()
     .required()
     .oneOf([yup.ref('password'), null], 'Passwords must match')
     .label('Password Confirmation'),
-  userName: yup.string().required().label('Username'),
 });
 
-export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
-  console.log('isLoading:', isLoading);
-  console.log('errorMessage:', errorMessage);
+export function ResetPasswordForm({ isLoading, errorMessage, onSubmit, children }) {
   return (
     <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
       <Stack spacing="3">
         {errorMessage && <ErrorBanner title={errorMessage} />}
-        <FormField
-          id="name"
-          name="name"
-          label="Name"
-          type="text"
-          placeholder="John Doe"
-          autoFocus="autofocus"
-          autoComplete="on"
-          autoCorrect="off"
-          autoCapitalize="off"
-        />
-        <FormField
-          id="userName"
-          name="userName"
-          label="Username"
-          type="text"
-          placeholder="jDoe98"
-          autoComplete="on"
-          autoCorrect="off"
-          autoCapitalize="off"
-        />
-        <FormField
-          id="email"
-          name="email"
-          label="Email"
-          type="text"
-          placeholder="john@doe.com"
-          autoComplete="on"
-          autoCorrect="off"
-          autoCapitalize="off"
-        />
         <FormField
           id="password"
           name="password"
@@ -88,7 +46,7 @@ export function SignUpForm({ isLoading, errorMessage, onSubmit, children }) {
             w={['100%']}
             mt="4"
           >
-            Sign Up
+            Reset password
           </Button>
         </Flex>
       </Stack>
