@@ -17,6 +17,7 @@ import {
   PopoverContent,
   Box,
   HStack,
+  Spinner,
 } from '@chakra-ui/react';
 
 import { filter, groupBy, orderBy } from 'lodash';
@@ -27,11 +28,21 @@ import { RoleIcon } from 'src/modules/matches/atoms/RoleIcon';
 
 export default function Statistics({
   cumulative = false,
+  loading,
   statistics,
   match,
   role = RoleEnum.ALL,
   ...props
 }) {
+  if (loading) {
+    return (
+      <HStack spacing={4} px={5} py={4}>
+        <Spinner />
+        <Text py={5}>Statistics are loading</Text>
+      </HStack>
+    );
+  }
+
   if (!statistics)
     return (
       <Box px={5} py={4}>
@@ -82,7 +93,7 @@ export default function Statistics({
   const isRoleAll = role === RoleEnum.ALL;
 
   const filteredStatistics = !isRoleAll
-    ? filter(statistics, (player) => player.statistics.roles.includes(role))
+    ? filter(statistics, (player) => player.statistics.roles?.includes(role))
     : statistics;
 
   const statisticsGroupedByPoints = groupBy(filteredStatistics, pointsKeyByRole[role]);
@@ -133,7 +144,7 @@ export default function Statistics({
                     <RoleIcon role={role} />
                   ) : (
                     <HStack gap={2} justify={'start'}>
-                      {player.statistics.roles.map((playerRole) => (
+                      {player.statistics.roles?.map((playerRole) => (
                         <RoleIcon role={playerRole} />
                       ))}
                     </HStack>

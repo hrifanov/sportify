@@ -4,6 +4,7 @@ import * as mutations from './mutation';
 import User from '../../models/User';
 import Season from '../../models/Season';
 import Match from '../../models/Match';
+import { getTeamStatistics } from '../user/statistics';
 
 export { typeDef, resolvers };
 
@@ -37,5 +38,8 @@ const resolvers = {
     async seasons(parent) {
       return Season.find({ club: parent.id });
     },
-  },
+    async playerStatistics(club, { seasonId }){
+      return await getTeamStatistics(club.id, seasonId);
+    }
+  }
 };
