@@ -92,7 +92,7 @@ export default function Statistics({
     <TableContainer
       {...props}
       mt={2}
-      px={2}
+      px={[0, '', '', 5]}
       overflowY="scroll"
       style={{
         td: {

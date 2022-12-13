@@ -61,12 +61,13 @@ export const MatchDetailPage = () => {
   }
 
   return (
-    <MainSection containerProps={{ maxW: 'container.lg' }}>
+    <MainSection containerProps={{ maxW: 'container.lg', minW: '330px' }}>
       {!loading && data && (
         <>
           <Flex direction={'column'} height={'100%'}>
             <MatchDetailHeading match={data.match} />
             <Flex
+              direction={['column', 'row']}
               bg={'brand.boxBackground'}
               py={3}
               px={14}
@@ -74,7 +75,9 @@ export const MatchDetailPage = () => {
               align={'center'}
               borderRadius={'base'}
             >
-              <Box flex={1}>{data.match.season.name}</Box>
+              <Box flex={1} mb={[3, 0]}>
+                {data.match.season.name}
+              </Box>
               <Flex gap={4} mx={'auto'}>
                 <Button
                   size={'sm'}
@@ -131,9 +134,10 @@ export const MatchDetailPage = () => {
               </Flex>
             )}
             <Box bg={'brand.boxBackground'} py={3} px={14} mt={1} borderRadius={'base'}>
-              <Flex>
+              <Flex justify="center" align="center" direction={['column', 'row']}>
                 <Button
                   size={'sm'}
+                  w={['full', 'initial']}
                   colorScheme={'red'}
                   onClick={() =>
                     openConfirm({
@@ -142,16 +146,24 @@ export const MatchDetailPage = () => {
                       callback: deleteMatch,
                     })
                   }
-                  mr={3}
+                  mr={[0, 3]}
                 >
                   Delete match
                 </Button>
-                <Button size={'sm'} variant={'outline'} onClick={editMatch}>
+                <Button
+                  size={'sm'}
+                  w={['full', 'initial']}
+                  mt={[3, 0]}
+                  variant={'outline'}
+                  onClick={editMatch}
+                >
                   Edit match
                 </Button>
                 <Spacer />
                 <Button
                   size={'sm'}
+                  w={['full', 'initial']}
+                  mt={[3, 0]}
                   variant={'primary'}
                   onClick={() => navigate(route.clubDetail(activeClub.id))}
                 >

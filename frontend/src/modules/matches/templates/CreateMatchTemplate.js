@@ -246,7 +246,14 @@ export default function CreateMatchTemplate({ club, loading }) {
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Create a match" />
-      <Container maxW="container.xl" h="full" minHeight={0} my={[2, 3, 5]} position="relative">
+      <Container
+        maxW="container.xl"
+        h="full"
+        minHeight={0}
+        minW="400px"
+        my={[2, 3, 5]}
+        position="relative"
+      >
         {openPlayers ? (
           <Box
             position="absolute"
@@ -511,15 +518,20 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Stack>
         )}
       </Container>
-      <Container mb={6} maxW="container.xl">
-        <HStack align={'center'} justify={'space-between'} spacing={4}>
-          <HStack align={'center'} gap={10}>
-            <Select w={'52'} onChange={(e) => setSeasonId(e.target.value)}>
-              {club.seasons.map((season) => {
-                return <option value={season.id}>{season.name}</option>;
-              })}
-            </Select>
-            <Stack direction="row" alignItems="center">
+      <Container mb={6} minW="400px" maxW="container.xl">
+        <Stack
+          direction={['column', '', 'row']}
+          align={'center'}
+          justify={'space-between'}
+          spacing={4}
+        >
+          <Select w={['full', '', '52']} onChange={(e) => setSeasonId(e.target.value)}>
+            {club.seasons.map((season) => {
+              return <option value={season.id}>{season.name}</option>;
+            })}
+          </Select>
+          <Stack direction={['column', 'row']} align={'center'} gap={[3, '', 10]}>
+            <Stack direction={['column', '', 'row']} alignItems="center">
               <label className="label-nowrap" htmlFor="date-of-match">
                 Past match:
               </label>
@@ -535,7 +547,7 @@ export default function CreateMatchTemplate({ club, loading }) {
               />
             </Stack>
             {showDate ? (
-              <Stack direction="row" alignItems="center">
+              <Stack direction={['column', '', 'row']} alignItems="center" mt="0">
                 <label className="label-nowrap" htmlFor="date-of-match">
                   Date of the match:
                 </label>
@@ -550,9 +562,10 @@ export default function CreateMatchTemplate({ club, loading }) {
                 />
               </Stack>
             ) : null}
-          </HStack>
+          </Stack>
           <Button
-            w="259px"
+            w={['full', '', '259px']}
+            minW="100px"
             variant="primary"
             onClick={async () => {
               const homeTeam = [];
@@ -600,7 +613,7 @@ export default function CreateMatchTemplate({ club, loading }) {
           >
             Start match
           </Button>
-        </HStack>
+        </Stack>
       </Container>
     </Flex>
   );
