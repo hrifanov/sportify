@@ -6,20 +6,23 @@ const Club = require('../../models/Club');
 
 export const clubs = async (_, { filter }, context) => {
   isAuth(context);
-  
-  const clubs = await Club.find();
-  if(filter){
-    const { param , value, exact } = filter;
-    if(Object.keys(Club.schema.paths).includes(param)){
-      return clubs.filter((club) => {
-        if(exact){
-          return club[param] == value;
-        }
-        return club[param].toString().toLowerCase().includes(value.toLowerCase());
-      })
-    }
-    throwCustomError("Invalid filter parameter.", { code: "invalid-filter" });
-  }
+
+  const userId = context.payload.userId;
+  const clubs = await Club.find({ players: { $elemMatch: { user: { $ne: userId } } } });
+
+  // TODO: Enable this when FE is fixed
+
+  // if(filter){
+  //   const { param , value, exact } = filter;
+  //   if(Object.keys(Club.schema.paths).includes(param)){
+  //     return clubs.filter((club) => {
+  //       if(exact){
+  //         return club[param] == value;
+  //       }
+  //     })
+  //   }
+  //   throwCustomError("Invalid filter parameter.", { code: "invalid-filter" });
+  // }
   return clubs;
 };
 
