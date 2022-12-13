@@ -1,25 +1,29 @@
 import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { FORGET_PASSWORD_MUTATION } from 'src/modules/auth/apollo/mutations';
-import { ForgetPasswordTemplate } from 'src/modules/auth/templates';
+import { RESET_PASSWORD_MUTATION } from 'src/modules/auth/apollo/mutations';
+import { ResetPasswordTemplate } from 'src/modules/auth/templates';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
-export function ForgetPasswordPage() {
+export function ResetPasswordPage() {
+  const { token } = useParams();
+
   const [isPasswordResetCompleted, setIsPasswordResetCompleted] = useState(false);
 
-  const [resetPasswordRequest, resetPasswordRequestState] = useMutation(FORGET_PASSWORD_MUTATION, {
+  const [resetPasswordRequest, resetPasswordRequestState] = useMutation(RESET_PASSWORD_MUTATION, {
     onCompleted: () => setIsPasswordResetCompleted(true),
     onError: () => {},
   });
 
   const handlePasswordResetFormSubmit = useCallback(
     (variables) => {
-      resetPasswordRequest({ variables });
+      resetPasswordRequest({ variables: { ...variables, token } });
     },
-    [resetPasswordRequest],
+    [resetPasswordRequest, token],
   );
 
   return (
-    <ForgetPasswordTemplate
+    <ResetPasswordTemplate
+      token={token}
       isPasswordResetCompleted={isPasswordResetCompleted}
       setIsPasswordResetCompleted={setIsPasswordResetCompleted}
       isLoading={resetPasswordRequestState.loading}

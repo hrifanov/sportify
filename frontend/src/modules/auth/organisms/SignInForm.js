@@ -1,6 +1,8 @@
 // import { Link } from '@chakra-ui/react';
 import { Button, ErrorBanner, Flex, Stack } from 'src/shared/design-system';
 import { Form, FormField, yup, yupResolver } from 'src/shared/hook-form';
+import { RouterLink } from 'src/shared/navigation';
+import { route } from 'src/Routes';
 
 const initialValues = {
   userName: '',
@@ -37,9 +39,17 @@ export function SignInForm({ isLoading, errorMessage, onSubmit, children }) {
           autoCorrect="off"
           autoCapitalize="off"
         />
-        {/* <Flex justify="right"> */}
-        {/*   <Link>Forgot password?</Link> */}
-        {/* </Flex> */}
+        <Flex
+          as={RouterLink}
+          justify="right"
+          mt={5}
+          to={route.forgetPassword()}
+          color="brand.secondary"
+          alignItems="center"
+          gap={2}
+        >
+          Forgot password?
+        </Flex>
         <Flex align="center" justify="center">
           <Button
             size="lg"
