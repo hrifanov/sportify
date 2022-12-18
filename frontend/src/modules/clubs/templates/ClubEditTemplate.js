@@ -1,5 +1,21 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Icon, Spinner, Heading, Spacer } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Icon,
+  Spinner,
+  Heading,
+  Spacer,
+  Button,
+  Text,
+  Tabs,
+  TabPanels,
+  TabPanel,
+  Tab,
+  TabList,
+  Stack,
+} from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { route } from 'src/Routes';
@@ -7,6 +23,9 @@ import { ClubEditForm } from 'src/modules/clubs/organisms/ClubEditForm';
 import { AddPlayerForm } from '../organisms/AddPlayerForm';
 import { PlayersList } from '../organisms/PlayersList';
 import { ModalDeleteClub } from '../molecules/ModalDeleteClub';
+import { BsPlusCircle } from 'react-icons/bs';
+import { useState } from 'react';
+import { FormField, Form } from 'src/shared/hook-form';
 
 export default function ClubEditTemplate(
   {
@@ -23,6 +42,8 @@ export default function ClubEditTemplate(
   // console.log('clubRQ.club.id: ' + clubRQ?.club?.id);
 
   // const [isDeleteButtonVisible, setIsDeleteButtonVisible] = useState(false);
+
+  const [addTemporaryPlayer, setAddTemporaryPlayer] = useState(false);
 
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
@@ -92,19 +113,67 @@ export default function ClubEditTemplate(
                 <Heading as="h3">Players</Heading>
               </Flex>
 
-              <AddPlayerForm
-                isLoading={invitePlayerRQ.loading}
-                onSubmit={invitePlayerRQ.onSubmit}
-                error={invitePlayerRQ.error}
-                isCompleted={invitePlayerRQ.isCompleted}
-                setIsCompleted={invitePlayerRQ.setIsCompleted}
-                emailFromInvitation={invitePlayerRQ.emailFromInvitation}
-              />
-              <PlayersList
-                club={clubRQ.club}
-                removePlayerRQ={removePlayerRQ}
-                makePlayerAdminRQ={makePlayerAdminRQ}
-              />
+              <Tabs isFitted>
+                <TabList>
+                  <Tab _selected={{ color: 'brand.primary', borderColor: 'brand.primary' }}>Real players</Tab>
+                  <Tab _selected={{ color: 'brand.primary', borderColor: 'brand.primary' }}>Temporary players</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel px={0}>
+                    <AddPlayerForm
+                      isLoading={invitePlayerRQ.loading}
+                      onSubmit={invitePlayerRQ.onSubmit}
+                      error={invitePlayerRQ.error}
+                      isCompleted={invitePlayerRQ.isCompleted}
+                      setIsCompleted={invitePlayerRQ.setIsCompleted}
+                      emailFromInvitation={invitePlayerRQ.emailFromInvitation}
+                    />
+                    <PlayersList
+                      club={clubRQ.club}
+                      removePlayerRQ={removePlayerRQ}
+                      makePlayerAdminRQ={makePlayerAdminRQ}
+                    />
+                  </TabPanel>
+                  <TabPanel px={0}>
+                    {/*<Flex fontWeight={600} alignItems="center">
+                      <Text mr={2}>Add temporary player</Text>
+                      <Button colorScheme="orange" onClick={() => setAddTemporaryPlayer(true)}>
+                        <BsPlusCircle size={20} />
+                      </Button>
+                    </Flex>
+                    {addTemporaryPlayer && (
+                      <Box>
+                        fddf
+                        <Button colorScheme="orange" onClick={() => setAddTemporaryPlayer(false)}>
+                          <BsPlusCircle size={20} />
+                        </Button>
+                      </Box>
+                    )}*/}
+                    <Form>
+                      <Stack
+                        direction="row"
+                        spacing="3"
+                        w={['250px', '300px', '350px']}
+                        alignItems="end"
+                      >
+                        <FormField
+                          id="name"
+                          name="name"
+                          label="Add temporary player"
+                          placeholder="Set a name"
+                          pr={0}
+                          mr={0}
+                        />
+                        <Flex pt={4}>
+                          <Button colorScheme="orange">
+                            <BsPlusCircle size={20} />
+                          </Button>
+                        </Flex>
+                      </Stack>
+                    </Form>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
             </Flex>
           </Flex>
         )}

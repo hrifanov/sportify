@@ -39,7 +39,7 @@ export function AddPlayerForm({
         </>
       )}
       {!isCompleted && (
-        <Stack w={350}>
+        <Stack w={['250px', '300px', '350px']}>
           <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
             <Stack direction="row" spacing="3">
               <FormField
