@@ -82,15 +82,15 @@ export const signup = async (_, { userInput }) => {
 
   sendVerificationToken(
     {
-      user: userName,
+      user: userName.toLowerCase(),
       email,
     },
     'verify-account',
     {
       to: email,
       subject: 'Please confirm your registration',
-      html: `Hi ${userName},<br><br>Thank you for your registration.<br><br>Please confirm your email by clicking the link below.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
-    }
+      html: `Hi ${userName},<br><br>Thank you for your registration.<br><br>Please confirm your email by clicking the link below.<br><a href='{url}'>{url}</a><br><br>Thanks,<br>The Sportify Team`,
+    },
   );
 
   return true;
@@ -191,11 +191,11 @@ export const forgottenPassword = async (_, { username }) => {
     {
       to: user.email,
       subject: 'Reset your password',
-      html: `Hi ${username},<br><br>Click on the link below to reset your password.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
-    }
+      html: `Hi ${username},<br><br>Click on the link below to reset your password.<br><a href='{url}'>{url}</a><br><br>Thanks,<br>The Sportify Team`,
+    },
   );
   return true;
-}
+};
 
 export const resetPassword = async (_, { token, password }) => {
   try {
@@ -203,7 +203,7 @@ export const resetPassword = async (_, { token, password }) => {
     const hashedPassword = await argon2.hash(password);
     await User.findOneAndUpdate(
       { userName: user },
-      { password: hashedPassword }
+      { password: hashedPassword },
     );
     return true;
   } catch (err) {

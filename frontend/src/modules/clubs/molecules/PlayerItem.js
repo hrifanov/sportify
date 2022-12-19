@@ -1,5 +1,5 @@
 import { Box, Flex, Image, Text, Spacer } from '@chakra-ui/react';
-import { BsFillPersonFill, BsQuestionLg } from 'react-icons/bs';
+import { BsFillPersonFill, BsFillStarFill, BsQuestionLg } from 'react-icons/bs';
 import { PlayerPopoverMenu } from './PlayerPopoverMenu';
 import { useState } from 'react';
 
@@ -20,12 +20,9 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
           borderRadius={8}
           w="full"
         >
-          <Image
-            src={`https://i.pravatar.cc/100?u=${player.id}`}
-            alt="Dan Abramov"
-            boxSize="30px"
-            borderRadius="50%"
-          />
+          <Flex boxSize={'25px'} justify={'center'}>
+            {player.isAdmin ? <BsFillStarFill size={'20px'} /> : <BsFillPersonFill size={'25px'} />}
+          </Flex>
           <Flex direction={['column', '', '', 'row']} align={['baseline']}>
             <Text ml={5} width="150px">
               {player.name}
@@ -33,17 +30,13 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
             <Text>{player.email}</Text>
           </Flex>
           <Spacer />
-          <Box>
-            {hasAccepted && <BsFillPersonFill size={20} />}
-            {!hasAccepted && <BsQuestionLg size={20} />}
-          </Box>
           <Box ml={2} position="relative">
             <PlayerPopoverMenu
               clubId={clubId}
               removePlayerRQ={removePlayerRQ}
               isAdmin={player.isAdmin}
               makePlayerAdminRQ={makePlayerAdminRQ}
-              playerId={player.id}
+              player={player}
               setDisplayPlayer={setDisplayPlayer}
               minW={100}
             />

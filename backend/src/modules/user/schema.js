@@ -19,9 +19,9 @@ export const typeDef = gql`
 
   type User {
     id: ID!
-    userName: String!
+    userName: String
     name: String!
-    email: String!
+    email: String
     statisticsClub(clubId: ID!, seasonId: ID!): MatchSummary!
     statisticsMatch(matchId: ID!): MatchSummary!
     clubs: [Club]

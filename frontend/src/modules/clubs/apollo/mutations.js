@@ -130,3 +130,9 @@ export const CREATE_APLICATION_MUTATION = gql`
     }
   }
 `;
+
+export const CREATE_TEMPORARY_PLAYER = gql`
+  mutation createTemporaryPlayer($clubId: ID!, $name: String!) {
+    createTemporaryPlayer(clubId: $clubId, name: $name)
+  }
+`;

@@ -32,7 +32,7 @@ export const createClub = async (_, { clubInput }, context) => {
 };
 
 export const editClub = async (_, { editClubInput }, context) => {
-  const {id, name, sport, locality, players, contactPerson, imageURL} = editClubInput;
+  const { id, name, sport, locality, players, contactPerson, imageURL } = editClubInput;
   isAuth(context, id);
   await isClubAdmin(id, context.payload.userId);
 
@@ -40,8 +40,8 @@ export const editClub = async (_, { editClubInput }, context) => {
     throwCustomError('No data to update', { code: 400 });
   }
 
-  const club = await Club.findByIdAndUpdate(id, { 
-    name, locality, sport, players, contactPerson, imageURL 
+  const club = await Club.findByIdAndUpdate(id, {
+    name, locality, sport, players, contactPerson, imageURL,
   });
 
   if (!club) {
@@ -56,20 +56,20 @@ export const deleteClub = async (_, { clubId }, context) => {
   await isClubAdmin(clubId, context.payload.userId);
 
   const session = await context.client.startSession();
-  try{
+  try {
     session.startTransaction();
-    await Club.deleteOne({ _id: clubId}, {session});
-    await Match.deleteMany({ club: clubId }, {session});
+    await Club.deleteOne({ _id: clubId }, { session });
+    await Match.deleteMany({ club: clubId }, { session });
     await session.commitTransaction();
-  } catch(err){
+  } catch (err) {
     console.error(err);
     await session.abortTransaction();
     throwCustomError(err.message);
-  } finally{
+  } finally {
     session.endSession();
   }
   return true;
-}
+};
 
 export const invitePlayer = async (_, { clubId, email }, context) => {
   isAuth(context);
@@ -86,7 +86,7 @@ export const invitePlayer = async (_, { clubId, email }, context) => {
   sendVerificationToken({ clubId, email }, 'accept-invite', {
     to: email,
     subject: 'New Sportify invitation',
-    html: `Hi,<br><br>You've been invited to join the ${club.name} club.<br><br>To accept the invitation please click the link below.<br><a href="{url}">{url}</a><br><br>Thanks,<br>The Sportify Team`,
+    html: `Hi,<br><br>You've been invited to join the ${club.name} club.<br><br>To accept the invitation please click the link below.<br><a href='{url}'>{url}</a><br><br>Thanks,<br>The Sportify Team`,
   });
 
   return true;
@@ -156,7 +156,7 @@ export const removePlayer = async (_, { clubId, userId }, context) => {
 export const setClubAdminStatus = async (
   _,
   { clubId, userId, isAdmin },
-  context
+  context,
 ) => {
   isAuth(context);
   await isClubAdmin(clubId, context.payload.userId);
@@ -176,8 +176,37 @@ export const setClubAdminStatus = async (
 
   await Club.updateOne(
     { 'players.user': userId, id: clubId },
-    { $set: { 'players.$.isAdmin': isAdmin } }
+    { $set: { 'players.$.isAdmin': isAdmin } },
   );
+
+  return true;
+};
+
+export const createTemporaryPlayer = async (_, { clubId, name }, context) => {
+  isAuth(context);
+  await isClubAdmin(clubId, context.payload.userId);
+
+  const club = await Club.findById(clubId).select('name');
+
+  if (!club) {
+    throwCustomError(`Club with id ${clubId} does not exits`, {
+      code: 'no-club',
+    });
+  }
+
+  const user = await new User({
+    name,
+  }).save();
+
+  if (!user) {
+    throwCustomError(`User could not be created.`, {
+      code: 'user-not-created',
+    });
+  }
+
+  await club.updateOne({
+    $push: { players: { user: user._id, isAdmin: false } },
+  });
 
   return true;
 };

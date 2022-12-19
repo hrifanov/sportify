@@ -1,5 +1,21 @@
 import AppHeader from 'src/shared/core/organisms/AppHeader';
-import { Box, Container, Flex, Icon, Spinner, Heading, Spacer } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Icon,
+  Spinner,
+  Heading,
+  Spacer,
+  Button,
+  Text,
+  Tabs,
+  TabPanels,
+  TabPanel,
+  Tab,
+  TabList,
+  Stack,
+} from '@chakra-ui/react';
 import { RouterLink } from 'src/shared/navigation';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { route } from 'src/Routes';
@@ -7,6 +23,10 @@ import { ClubEditForm } from 'src/modules/clubs/organisms/ClubEditForm';
 import { AddPlayerForm } from '../organisms/AddPlayerForm';
 import { PlayersList } from '../organisms/PlayersList';
 import { ModalDeleteClub } from '../molecules/ModalDeleteClub';
+import { BsPlusCircle } from 'react-icons/bs';
+import { useState } from 'react';
+import { FormField, Form } from 'src/shared/hook-form';
+import { AddTemporaryPlayerForm } from 'src/modules/clubs/organisms/AddTemporaryPlayerForm';
 
 export default function ClubEditTemplate(
   {
@@ -16,6 +36,7 @@ export default function ClubEditTemplate(
     editClubRQ,
     removePlayerRQ,
     makePlayerAdminRQ,
+    addTemporaryPlayerRQ,
     districts,
   },
   { ...props },
@@ -24,11 +45,29 @@ export default function ClubEditTemplate(
 
   // const [isDeleteButtonVisible, setIsDeleteButtonVisible] = useState(false);
 
+  const [addTemporaryPlayer, setAddTemporaryPlayer] = useState(false);
+
+  const players = (clubRQ.club?.players ?? []).reduce(
+    (acc, player) => {
+      if (!!player.userName) {
+        acc.invited.push(player);
+      } else {
+        acc.temporary.push(player);
+      }
+
+      return acc;
+    },
+    {
+      invited: [],
+      temporary: [],
+    },
+  );
+
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
       <Container maxW="container.xl" h="full" minHeight={0} my={5}>
-        {clubRQ.loading && (
+        {!clubRQ.club && clubRQ.loading && (
           <Flex h="full" bg="brand.boxBackground" alignItems="center" justifyContent="center">
             <Spinner />
           </Flex>
@@ -92,19 +131,45 @@ export default function ClubEditTemplate(
                 <Heading as="h3">Players</Heading>
               </Flex>
 
-              <AddPlayerForm
-                isLoading={invitePlayerRQ.loading}
-                onSubmit={invitePlayerRQ.onSubmit}
-                error={invitePlayerRQ.error}
-                isCompleted={invitePlayerRQ.isCompleted}
-                setIsCompleted={invitePlayerRQ.setIsCompleted}
-                emailFromInvitation={invitePlayerRQ.emailFromInvitation}
-              />
-              <PlayersList
-                club={clubRQ.club}
-                removePlayerRQ={removePlayerRQ}
-                makePlayerAdminRQ={makePlayerAdminRQ}
-              />
+              <Tabs isFitted>
+                <TabList>
+                  <Tab _selected={{ color: 'brand.primary', borderColor: 'brand.primary' }}>
+                    Invited players
+                  </Tab>
+                  <Tab _selected={{ color: 'brand.primary', borderColor: 'brand.primary' }}>
+                    Temporary players
+                  </Tab>
+                </TabList>
+                <TabPanels h={'full'}>
+                  <TabPanel px={0} h={'full'}>
+                    <AddPlayerForm
+                      isLoading={invitePlayerRQ.loading}
+                      onSubmit={invitePlayerRQ.onSubmit}
+                      error={invitePlayerRQ.error}
+                      isCompleted={invitePlayerRQ.isCompleted}
+                      setIsCompleted={invitePlayerRQ.setIsCompleted}
+                      emailFromInvitation={invitePlayerRQ.emailFromInvitation}
+                    />
+                    <PlayersList
+                      clubId={clubRQ.club?.id}
+                      players={players.invited}
+                      removePlayerRQ={removePlayerRQ}
+                      makePlayerAdminRQ={makePlayerAdminRQ}
+                    />
+                  </TabPanel>
+                  <TabPanel px={0} h={'full'}>
+                    <AddTemporaryPlayerForm
+                      isLoading={addTemporaryPlayerRQ.loading}
+                      onSubmit={addTemporaryPlayerRQ.onSubmit}
+                    />
+                    <PlayersList
+                      clubId={clubRQ.club?.id}
+                      players={players.temporary}
+                      removePlayerRQ={removePlayerRQ}
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
             </Flex>
           </Flex>
         )}
