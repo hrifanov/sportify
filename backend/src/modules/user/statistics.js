@@ -49,7 +49,7 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
     const matchRole = await getPlayerRole(userId, match);
     if(!matchRole) continue;
     rolesSet.add(matchRole.role);
-    
+
     const eventDocs = await Event.find({matchId: match.id});
     const matchSummary = await getPlayerEventSummary(userId, eventDocs, matchRole, match.shots, match.score);
     summary = addSumaries(summary, matchSummary);
@@ -61,9 +61,9 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
 
 /**
  * Counts statistics of all player in club for given season.
- * 
- * @param {import('mongoose').ObjectId} clubId 
- * @param {import('mongoose').ObjectId} seasonId 
+ *
+ * @param {import('mongoose').ObjectId} clubId
+ * @param {import('mongoose').ObjectId} seasonId
  * @returns {Promise<PlayerStatistic[]>} Array of `PlayerStatistics` from GraphQL schema.
  */
 export const getTeamStatistics = async (clubId, seasonId) => {
@@ -75,9 +75,9 @@ export const getTeamStatistics = async (clubId, seasonId) => {
   const membersStats = Object.fromEntries(members.map(memberId => [memberId, createEmptySummary()]));
   // Create mapping of TeamPlayers onto club members
   const teamPlayers = await TeamPlayer.find({ user: { $in: members } });
-  const teamPlayersMap = Object.fromEntries(teamPlayers.map(teamPlayer => [teamPlayer.id, { 
-    userId: teamPlayer.user, 
-    role: teamPlayer.role 
+  const teamPlayersMap = Object.fromEntries(teamPlayers.map(teamPlayer => [teamPlayer.id, {
+    userId: teamPlayer.user,
+    role: teamPlayer.role
   }]));
   // Get all events for each match in season
   const matchesMap = await getMatchesWithEvents(clubId, seasonId);
@@ -99,9 +99,9 @@ export const getTeamStatistics = async (clubId, seasonId) => {
 /**
  * Fetches all matches for given team in single season and appends their events to the
  * Match object instance.
- * 
- * @param {import('mongoose').ObjectId} clubId 
- * @param {import('mongoose').ObjectId} seasonId 
+ *
+ * @param {import('mongoose').ObjectId} clubId
+ * @param {import('mongoose').ObjectId} seasonId
  * @returns {Object} Object where keys are matchIds and values are instances of `Match` with
  * attached `Event` array as `event` attribute.
  */
@@ -126,9 +126,9 @@ const getMatchesWithEvents = async (clubId, seasonId) => {
 
 /**
  * Runs through everything that happend in a game and updates player statistics.
- * 
+ *
  * @param {Match} match Instance of `Match` object.
- * @param {Object} teamPlayersMap Object with userIds as keys and 
+ * @param {Object} teamPlayersMap Object with userIds as keys and
  * instances of `TeamPlayer` as values.
  * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
  */
@@ -164,6 +164,7 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
   for(const player of teams[side].teamPlayers){
     // Get TeamPlayer instance for teamPlayerId in player
     const teamPlayer = teamPlayersMap[player.toString()];
+    if (!teamPlayer) continue;
 
     if(teamPlayer.role === "goalkeeper"){
       if(!membersStats[teamPlayer.userId].roles.includes("goalkeeper")) {
@@ -185,12 +186,12 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
 
 /**
  * Counts for both goalkeepers how many goals they saved and updates their statistics.
- * 
- * @param {Object} goalkeeperUsers Object with keys `home` and `away` 
+ *
+ * @param {Object} goalkeeperUsers Object with keys `home` and `away`
  * where values are userIds of goalkeepers for given match.
- * @param {Object} passedGoals Object with keys `home` and `away` 
+ * @param {Object} passedGoals Object with keys `home` and `away`
  * where values are sums of goals of opossite side.
- * @param {Object} shots Object with keys `home` and `away` 
+ * @param {Object} shots Object with keys `home` and `away`
  * where values are sums of shots for given side.
  * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
  */
@@ -213,21 +214,21 @@ const countSavedGoalsForGoalkeepers = (goalkeeperUsers, passedGoals, shots, memb
 
 /**
  * Processes single events and updates statistics of all players involved in event.
- * 
+ *
  * @param {Event} event Instance of `Event`.
  * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
- * @param {Object} goalkeeperUsers Object with keys `home` and `away` 
+ * @param {Object} goalkeeperUsers Object with keys `home` and `away`
  * where values are userIds of goalkeepers for given match.
- * @param {Object} passedGoals Object with keys `home` and `away` 
+ * @param {Object} passedGoals Object with keys `home` and `away`
  * where values are sums of goals of opossite side.
- * @param {Object} teamPlayersMap Object with userIds as keys and 
+ * @param {Object} teamPlayersMap Object with userIds as keys and
  * instances of `TeamPlayer` as values.
  * @param {Object} teams Instance of `Team` object from `Match`
  */
 const processEvent = (event, membersStats, goalkeeperUsers, passedGoals, teamPlayersMap, teams) => {
   if(event.type === "goal"){
     // Add goal to player
-    membersStats[event.data.playerId].goals++;
+    if(membersStats[event.data.playerId]) membersStats[event.data.playerId].goals++;
     // Add assists to players
     if(membersStats[event.data.assistId]) membersStats[event.data.assistId].assists++;
     if(membersStats[event.data.secondAssistId]) membersStats[event.data.secondAssistId].assists++;
@@ -244,14 +245,14 @@ const processEvent = (event, membersStats, goalkeeperUsers, passedGoals, teamPla
     const goalkeeperSide = isGoalFromHomeSide ? "guest" : "home";
     // If there is a goalkeeper in the game add passed goal
     if(goalkeeperUsers[goalkeeperSide]){
-      membersStats[goalkeeperUsers[goalkeeperSide]].goalsPassed++;
+      if (membersStats[goalkeeperUsers[goalkeeperSide]]) membersStats[goalkeeperUsers[goalkeeperSide]].goalsPassed++;
       passedGoals[goalkeeperSide]++;
     }
-    
+
   }
   if(event.type === "penalty"){
-    membersStats[event.data.playerId].penalties++;
-    membersStats[event.data.playerId].totalPenaltiesLength += getPenaltyLength(event.data.length);
+    if(membersStats[event.data.playerId]) membersStats[event.data.playerId].penalties++;
+    if(membersStats[event.data.playerId]) membersStats[event.data.playerId].totalPenaltiesLength += getPenaltyLength(event.data.length);
   }
 }
 
@@ -334,7 +335,7 @@ const addSumaries = (sum1, sum2) => {
 
 /**
  * Counts canadian points and their average and creates new summary object containg those two additional attributes.
- * 
+ *
  * @param {Object} summary
  * @returns New summary object.
  */
@@ -442,8 +443,8 @@ const processPenaltyEvent = (userId, event) => {
 /**
  * Penalties can be in two forms either as single number or sum of two numbers.
  * This function handles both cases and returns single number for given length string.
- * 
- * @param {string} lengthString 
+ *
+ * @param {string} lengthString
  * @returns length of a penalty in minutes
  */
 const getPenaltyLength = (lengthString) => {

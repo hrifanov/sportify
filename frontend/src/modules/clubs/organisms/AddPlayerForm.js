@@ -12,12 +12,9 @@ export function AddPlayerForm({
   onSubmit,
   isLoading,
   emailFromInvitation,
-  error,
-  clubID,
 }) {
   const initialValues = {
     email: '',
-    clubID: '636ecd9840d0be5c9a93e4f2',
   };
 
   return (
@@ -33,7 +30,7 @@ export function AddPlayerForm({
               '.
             </Text>
             <Button ml={4} variant={'primary'} onClick={() => setIsCompleted(false)}>
-              Add a new player
+              Invite another player
             </Button>
           </Flex>
         </>
@@ -45,8 +42,8 @@ export function AddPlayerForm({
               <FormField
                 id="email"
                 name="email"
-                label="Add Players"
-                placeholder="Email of a player"
+                label="Invite a player"
+                placeholder="Email of the player"
                 autoFocus="autofocus"
                 autoComplete="on"
                 autoCorrect="off"
@@ -63,11 +60,10 @@ export function AddPlayerForm({
                   w={['100%']}
                   mt="4"
                 >
-                  Add
+                  Invite
                 </Button>
               </Flex>
             </Stack>
-            {/* <FormField id="clubID" name="clubID" display="none" /> */}
           </Form>
         </Stack>
       )}

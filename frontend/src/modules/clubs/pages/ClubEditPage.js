@@ -7,6 +7,7 @@ import {
   REMOVE_PLAYER_MUTATION,
   SET_CLUB_ADMIN_STATUS,
   DELETE_CLUB_MUTATION,
+  CREATE_TEMPORARY_PLAYER,
 } from 'src/modules/clubs/apollo/mutations';
 import { useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
@@ -23,9 +24,6 @@ export default function ClubEditPage() {
   const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
   const districts = districtsQueryResponse?.data?.enums?.districts;
 
-  // console.log('districts: ' + JSON.stringify(districts));
-
-  // const { data, loading, refetch } = useQuery(FETCH_CLUBS);
   const { selectClub } = useClubStore();
 
   const { id } = useParams();
@@ -33,15 +31,6 @@ export default function ClubEditPage() {
   const { data, loading, refetch } = useQuery(CLUB_BY_ID_QUERY, { variables: { id: id } });
 
   const club = data?.clubByID;
-
-  // const club = data?.clubs?.find((club) => {
-  //   if (club.id === id && id) {
-  //     return club;
-  //   }
-  //   return null;
-  // });
-
-  // console.log('data: ' + JSON.stringify(data));
   const clubRQ = { club, loading };
 
   const { user } = useAuthClient();
@@ -49,6 +38,27 @@ export default function ClubEditPage() {
   //** Request for inviting a player */
   const [isInvitePlayerCompleted, setIsInvitePlayerCompleted] = useState(false);
   const [emailFromInvitation, setEmailForInvitation] = useState('');
+
+  const [addTemporaryPlayerRequest, addTemporaryPlayerRequestState] = useMutation(
+    CREATE_TEMPORARY_PLAYER,
+    {
+      onCompleted: () => {},
+      onError: (e) => {
+        console.log(e);
+      },
+    },
+  );
+
+  const clubId = club?.id;
+  const handleSubmitAddTemporaryPlayer = useCallback(
+    async (variables, ...args) => {
+      console.log({ args });
+      variables = { ...variables, clubId };
+      await addTemporaryPlayerRequest({ variables });
+      await refetch();
+    },
+    [refetch, addTemporaryPlayerRequest, clubId],
+  );
 
   const [invitePlayerRequest, invitePlayerRequestState] = useMutation(INVITE_PLAYER_MUTATION, {
     onCompleted: () => {
@@ -83,8 +93,6 @@ export default function ClubEditPage() {
 
   const handleSubmitEditClub = useCallback(
     async (variables, id) => {
-      // console.log('variables.locality: ' + JSON.stringify(variables.locality));
-
       const key = districts.find((district) => district.value === variables.locality).key;
       console.log('key: ' + JSON.stringify(key));
       id = club?.id;
@@ -134,8 +142,6 @@ export default function ClubEditPage() {
   };
 
   //** Request for removing a player */
-  // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
-
   const [removePlayerRequest, removePlayerRequestState] = useMutation(REMOVE_PLAYER_MUTATION, {
     onCompleted: () => {
       // setIsEditClubRequestCompleted(true);
@@ -224,6 +230,10 @@ export default function ClubEditPage() {
         loading: makePlayerAdminRequestState.loading,
         error: makePlayerAdminRequestState.error,
         refetch: refetch,
+      }}
+      addTemporaryPlayerRQ={{
+        onSubmit: handleSubmitAddTemporaryPlayer,
+        loading: addTemporaryPlayerRequestState.loading,
       }}
       districts={{ districts }}
     />

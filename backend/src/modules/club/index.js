@@ -20,10 +20,15 @@ const resolvers = {
       return User.findById(parent.contactPerson);
     },
     async players(parent) {
-      return Promise.all(parent.players.map(async (player) => {
+      const players = await Promise.all(parent.players.map(async (player) => {
         const user = await User.findById(player.user).select(
           'id userName name email',
         );
+
+        if (!user) {
+          await parent.update({ $pull: { players: { user: player.user } } });
+          return null;
+        }
 
         return {
           ...user.toObject(),
@@ -31,6 +36,8 @@ const resolvers = {
           isAdmin: player.isAdmin,
         };
       }));
+
+      return players.filter(Boolean);
     },
     async matches(parent) {
       return Match.find({ club: parent.id });

@@ -15,6 +15,7 @@ export const typeDef = gql`
     acceptInvite(token: String!): Boolean!
     setClubAdminStatus(clubId: ID!, userId: ID!, isAdmin: Boolean!): Boolean!
     removePlayer(clubId: ID!, userId: ID!): Boolean!
+    createTemporaryPlayer(clubId: ID!, name: String!): Boolean!
   }
 
   type Club {
@@ -50,9 +51,9 @@ export const typeDef = gql`
 
   type Player {
     id: ID!
-    userName: String!
+    userName: String
     name: String!
-    email: String!
+    email: String
     isAdmin: Boolean
   }
 
