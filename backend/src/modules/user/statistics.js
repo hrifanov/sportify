@@ -156,7 +156,7 @@ const processMatchPlayers = async (match, teamPlayersMap, membersStats) => {
     processEvent(event, membersStats, goalkeepers, goalkeeperPassedGoals, teamPlayersMap, match.teams);
   }
   
-  countSavedGoalsForGoalkeepers(goalkeepers, goalkeeperPassedGoals, match.shots, membersStats);
+  countStatsForGoalkeepers(goalkeepers, goalkeeperPassedGoals, match.shots, membersStats);
 }
 
 /**
@@ -207,16 +207,17 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
  * where values are sums of shots for given side.
  * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
  */
-const countSavedGoalsForGoalkeepers = (goalkeeperUsers, passedGoals, shots, membersStats) => {
-
+const countStatsForGoalkeepers = (goalkeeperUsers, passedGoals, shots, membersStats) => {
   // Count saved goals for goalkeepers
   if(goalkeeperUsers.home){
+    membersStats[goalkeeperUsers.home].goalsPassed += passedGoals.home;
     membersStats[goalkeeperUsers.home].goalsSaved += shots.guest - passedGoals.home;
     if(passedGoals.home === 0){
       membersStats[goalkeeperUsers.home].matchesWithoutPassedGoals++;
     }
   }
   if(goalkeeperUsers.guest){
+    membersStats[goalkeeperUsers.guest].goalsPassed += passedGoals.guest;
     membersStats[goalkeeperUsers.guest].goalsSaved += shots.home - passedGoals.guest;
     if(passedGoals.guest === 0){
       membersStats[goalkeeperUsers.guest].matchesWithoutPassedGoals++;
@@ -249,18 +250,15 @@ const processEvent = (event, membersStats, goalkeeperUsers, passedGoals, teamPla
     // Find scoring side
     let isGoalFromHomeSide = false;
     for(const teamPlayer of teams.home.teamPlayers){
-      if(teamPlayersMap[teamPlayer].userId === event.data.playerId){
+      if(teamPlayersMap[teamPlayer].userId.toString('hex') === event.data.playerId){
         isGoalFromHomeSide = true;
         break;
       }
     }
+    
     // Find goalkeeper of opposide side
     const goalkeeperSide = isGoalFromHomeSide ? "guest" : "home";
-    // If there is a goalkeeper in the game add passed goal
-    if(goalkeeperUsers[goalkeeperSide]){
-      if (membersStats[goalkeeperUsers[goalkeeperSide]]) membersStats[goalkeeperUsers[goalkeeperSide]].goalsPassed++;
-      passedGoals[goalkeeperSide]++;
-    }
+    passedGoals[goalkeeperSide]++;
 
   }
   if(event.type === "penalty"){
