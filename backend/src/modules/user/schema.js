@@ -53,6 +53,7 @@ export const typeDef = gql`
     assists: Int!
     avgCanadianPoints: Float!
     canadianPoints: Int!
+    draws: Int!
     gamesGoalkeeper: Int!
     gamesAttacker: Int!
     gamesTotal: Int!

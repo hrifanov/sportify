@@ -12,10 +12,13 @@ import User from '../../models/User';
 import { isAuth } from '../../libs/isAuth';
 
 export const signin = async (_, { userName, password }, { res }) => {
-  const user = await User.findOne({ userName: userName.toLowerCase() });
-
-  if (!user) {
-    throwCustomError(`Could not find user ${userName}`, { ref: 'username' });
+  let user;
+  if(userName.includes('@')){
+    user = await User.findOne({ email: userName.toLowerCase() });
+    if (!user) throwCustomError(`Could not find user with email ${userName}`, { ref: 'email' });
+  } else {
+    user = await User.findOne({ userName: userName.toLowerCase() });
+    if (!user) throwCustomError(`Could not find user ${userName}`, { ref: 'username' });
   }
 
   if (!user.verified) {
