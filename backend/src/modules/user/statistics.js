@@ -45,7 +45,7 @@ export const getUserStatisticsForTeam = async (userId, clubId, seasonId ) => {
   const rolesSet = new Set();
   for(const match of matches){
     const events = await Event.find({ matchId: match.id });
-    if(!events || events.length == 0) continue;
+    if(!events || events.length === 0) continue;
     const matchRole = await getPlayerRole(userId, match);
     if(!matchRole) continue;
     rolesSet.add(matchRole.role);
@@ -144,7 +144,7 @@ const processMatchPlayers = async (match, teamPlayersMap, membersStats) => {
     guest: 0
   }
   // Evaluate what side won the match.
-  const winnersSide = match.score.home > match.score.guest ? "home" : "guest";
+  const winnersSide = getWinnersSide(match.score.home, match.score.guest);
 
   // Processing each player.
   // Process home players.
@@ -155,10 +155,21 @@ const processMatchPlayers = async (match, teamPlayersMap, membersStats) => {
   for(const event of match.events){
     processEvent(event, membersStats, goalkeepers, goalkeeperPassedGoals, teamPlayersMap, match.teams);
   }
-  countSavedGoalsForGoalkeepers(goalkeepers, goalkeeperPassedGoals, match.shots, membersStats);
+  
+  countStatsForGoalkeepers(goalkeepers, goalkeeperPassedGoals, match.shots, membersStats);
 }
 
-
+/**
+ * 
+ * @param {Object} teams Object with keys `home` and `guest`.
+ * @param {string} side Match team for currently processed players. Value must be `home` or `guest`.
+ * @param {Object} goalkeepers Object with keys `home` and `guest`
+ * where values are userIds of goalkeepers for given match.
+ * @param {string} winnerSide What side has won the match. Values must be `home` or `guest` or `draw`.
+ * @param {Object} teamPlayersMap Object with userIds as keys and
+ * instances of `TeamPlayer` as values.
+ * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
+ */
 const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, teamPlayersMap, membersStats) => {
   // For all players on current side
   for(const player of teams[side].teamPlayers){
@@ -178,7 +189,8 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
       }
       membersStats[teamPlayer.userId].gamesAttacker++;
     }
-    if(winnerSide == side) membersStats[teamPlayer.userId].winsTotal++;
+    if(winnerSide === side) membersStats[teamPlayer.userId].winsTotal++;
+    else if(winnerSide === "draw") membersStats[teamPlayer.userId].draws++;
     membersStats[teamPlayer.userId].gamesTotal++;
   }
 }
@@ -195,18 +207,20 @@ const processTotalGamesForTeamPlayers = (teams, side, goalkeepers, winnerSide, t
  * where values are sums of shots for given side.
  * @param {Object} membersStats Object with userIds as keys and matchSummaries as values.
  */
-const countSavedGoalsForGoalkeepers = (goalkeeperUsers, passedGoals, shots, membersStats) => {
+const countStatsForGoalkeepers = (goalkeeperUsers, passedGoals, shots, membersStats) => {
   // Count saved goals for goalkeepers
   if(goalkeeperUsers.home){
-    membersStats[goalkeeperUsers.home].goalsSaved = shots.guest - passedGoals.home;
+    membersStats[goalkeeperUsers.home].goalsPassed += passedGoals.home;
+    membersStats[goalkeeperUsers.home].goalsSaved += shots.guest - passedGoals.home;
     if(passedGoals.home === 0){
       membersStats[goalkeeperUsers.home].matchesWithoutPassedGoals++;
     }
   }
-  if(goalkeeperUsers.away){
-    membersStats[goalkeeperUsers.away].goalsSaved = shots.home - passedGoals.guest;
-    if(passedGoals.away === 0){
-      membersStats[goalkeeperUsers.away].matchesWithoutPassedGoals++;
+  if(goalkeeperUsers.guest){
+    membersStats[goalkeeperUsers.guest].goalsPassed += passedGoals.guest;
+    membersStats[goalkeeperUsers.guest].goalsSaved += shots.home - passedGoals.guest;
+    if(passedGoals.guest === 0){
+      membersStats[goalkeeperUsers.guest].matchesWithoutPassedGoals++;
     }
   }
 }
@@ -236,18 +250,15 @@ const processEvent = (event, membersStats, goalkeeperUsers, passedGoals, teamPla
     // Find scoring side
     let isGoalFromHomeSide = false;
     for(const teamPlayer of teams.home.teamPlayers){
-      if(teamPlayersMap[teamPlayer].userId == event.data.playerId){
+      if(teamPlayersMap[teamPlayer].userId.toString('hex') === event.data.playerId){
         isGoalFromHomeSide = true;
         break;
       }
     }
+    
     // Find goalkeeper of opposide side
     const goalkeeperSide = isGoalFromHomeSide ? "guest" : "home";
-    // If there is a goalkeeper in the game add passed goal
-    if(goalkeeperUsers[goalkeeperSide]){
-      if (membersStats[goalkeeperUsers[goalkeeperSide]]) membersStats[goalkeeperUsers[goalkeeperSide]].goalsPassed++;
-      passedGoals[goalkeeperSide]++;
-    }
+    passedGoals[goalkeeperSide]++;
 
   }
   if(event.type === "penalty"){
@@ -272,7 +283,7 @@ const getPlayerRole = async (userId, match) => {
   }
   const homeTeamPlayers = await TeamPlayer.find({ _id: { $in: homePlayerIds } });
   for (const teamPlayer of homeTeamPlayers) {
-    if (userId == teamPlayer.user.id.toString('hex')) {
+    if (userId === teamPlayer.user.id.toString('hex')) {
       return {
         role: teamPlayer.role,
         teamSide: "home"
@@ -286,7 +297,7 @@ const getPlayerRole = async (userId, match) => {
   }
   const guestTeamPlayers = await TeamPlayer.find({ _id: { $in: guestPlayerIds } });
   for (const teamPlayer of guestTeamPlayers) {
-    if (userId == teamPlayer.user.id.toString('hex')) {
+    if (userId === teamPlayer.user.id.toString('hex')) {
       return {
         role: teamPlayer.role,
         teamSide: "guest"
@@ -314,7 +325,8 @@ const createEmptySummary = () => ({
   gamesTotal: 0,
   winsTotal: 0,
   matchesWithoutPassedGoals: 0,
-  roles: []
+  roles: [],
+  draws: 0
 });
 
 
@@ -380,16 +392,18 @@ const getPlayerEventSummary = async (userId, events, teamRole, shots, score) => 
         }
       }
     }
-    const opponentSide = teamRole.teamSide == "home" ? "guest" : "home";
-    if(teamRole.role == "goalkeeper"){
+    const opponentSide = teamRole.teamSide === "home" ? "guest" : "home";
+    if(teamRole.role === "goalkeeper"){
       summary.goalsSaved = shots[opponentSide] - summary.goalsPassed;
-      if(summary.goalsPassed == 0){
+      if(summary.goalsPassed === 0){
         summary.matchesWithoutPassedGoals = 1
       }
       summary.gamesGoalkeeper = 1;
     } else summary.gamesAttacker = 1;
     if(score[teamRole.teamSide] > score[opponentSide]){
       summary.winsTotal = 1;
+    } else if(score[teamRole.teamSide] === score[opponentSide]){
+      summary.draws = 1
     }
     summary.gamesTotal = 1;
     resolve(summary);
@@ -411,12 +425,24 @@ const processGoalEvent = (userId, event, teamRole) => {
     assists: 0,
     goalsPassed: 0
   }
-  if(event.data.playerId == userId) result.goals = 1;
-  if(event.data.assistId == userId || event.data.secondAssistId == userId) result.assists = 1;
-  if(teamRole.role == "goalkeeper" && event.data.teamId != teamRole.teamSide){
+  if(event.data.playerId === userId) result.goals = 1;
+  if(event.data.assistId === userId || event.data.secondAssistId === userId) result.assists = 1;
+  if(teamRole.role === "goalkeeper" && event.data.teamId !== teamRole.teamSide){
     result.goalsPassed = 1;
   }
   return result;
+}
+
+/**
+ * Gets the side that has won the match or return if draw has happened.
+ * 
+ * @param {number} scoreHome Score of home team
+ * @param {number} scoreGuest Score of guest team
+ * @returns `home` if home side won, `guest` if guest side won or `draw` if both scores are equal.
+ */
+const getWinnersSide = (scoreHome, scoreGuest) => {
+  if(scoreHome === scoreGuest) return "draw";
+  return scoreHome > scoreGuest ? "home" : "guest";
 }
 
 
@@ -433,7 +459,7 @@ const processPenaltyEvent = (userId, event) => {
     penalty: 0,
     length: 0
   }
-  if(event.data.playerId == userId){
+  if(event.data.playerId === userId){
     result.penalty = 1;
     result.length = getPenaltyLength(event.data.length);
   }
