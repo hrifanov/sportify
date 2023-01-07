@@ -96,3 +96,7 @@ ul.pagination li a.active {
     justify-content: space-between;
     margin-top: 10px;
 }
+
+.SelectRoles .css-cymxv7 {
+    right: 4px !important;
+}

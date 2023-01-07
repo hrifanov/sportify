@@ -26,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { MainSection } from 'src/shared/core/atoms/MainSection';
+import { initial } from 'lodash';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -204,7 +205,7 @@ export default function CreateMatchTemplate({ club, loading }) {
   const [value, setValue] = useState(selectedRole);
   const options = [
     { value: 'attack', label: 'Attacker' },
-    { value: 'goalkeeper', label: 'Goalkeeper' },
+    { value: 'goalkeeper', label: 'Goalie' },
   ];
 
   if (loading) {
@@ -303,7 +304,13 @@ export default function CreateMatchTemplate({ club, loading }) {
           </Box>
         ) : null}
         {club && (
-          <Stack spacing={[2, 3, 5]} direction={['column', null, 'row']} h="full">
+          <Stack
+            spacing={[2, 3, 5]}
+            direction={['column', null, 'row']}
+            h="full"
+            w={['95%', '100%', null]}
+            m="auto"
+          >
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
               {Object.entries(columns).map(([columnId, column], columnIndex) => {
                 return (
@@ -362,12 +369,26 @@ export default function CreateMatchTemplate({ club, loading }) {
                                         borderRadius="base"
                                         alignItems="center"
                                       >
-                                        <Text>{item.name}</Text>
-                                        <Stack spacing={3}>
+                                        <Text
+                                          whiteSpace="initial !important"
+                                          maxWidth={['130px !important', 'unset', null]}
+                                        >
+                                          {item.name}
+                                        </Text>
+                                        <Stack
+                                          spacing={3}
+                                          ml="auto !important"
+                                          mr={['8px !important', '0 !important', null]}
+                                          className="SelectRoles"
+                                        >
                                           <Select
                                             bg="brand.boxBackground"
                                             variant="filled"
                                             colorScheme="brand.boxBackground"
+                                            style={{
+                                              paddingInlineStart: '6px',
+                                              paddingInlineEnd: '24px',
+                                            }}
                                             _hover={{
                                               bg: 'brand.dark',
                                               cursor: 'pointer',
@@ -414,8 +435,8 @@ export default function CreateMatchTemplate({ club, loading }) {
                                         </Stack>
                                         <Stack
                                           direction="row"
-                                          w="100%"
-                                          mt="8px !important"
+                                          w={['70px', '100%', '100%']}
+                                          mt={['0', '8px !important', '8px !important']}
                                           marginInlineStart="0 !important"
                                         >
                                           {column.id !== 0 ? (
