@@ -7,41 +7,25 @@ import {
   Container,
   Flex,
   Button,
-  Spinner,
   Stack,
   Input,
   useNumberInput,
-  InputGroup,
-  InputRightAddon,
   Text,
   Select,
   IconButton,
   Switch,
-  Radio,
-  RadioGroup,
   Hide,
-  HStack,
 } from '@chakra-ui/react';
-import {
-  FiPlus,
-  FiXCircle,
-  FiArrowRight,
-  FiArrowLeft,
-  FiArrowDown,
-  FiArrowUp,
-} from 'react-icons/fi';
+import { FiXCircle, FiArrowRight, FiArrowLeft, FiArrowDown, FiArrowUp } from 'react-icons/fi';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { teamsColumns } from '../teamsColumns';
 import EditableHeading from 'src/shared/design-system/molecules/EditableHeading';
-import { useMutation } from '@apollo/client';
-import { CREATE_MATCH_MUTATION } from '../apollo/mutations';
 import { useInteractiveMatchStore } from 'src/modules/matches/store/interactiveMatchStore';
 import { useNavigate } from 'react-router-dom';
 import { route } from 'src/Routes';
 import { FullPageSpinner } from 'src/shared/design-system/atoms/FullPageSpinner';
 import { MainSection } from 'src/shared/core/atoms/MainSection';
-import { Heading } from 'src/shared/design-system';
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -123,8 +107,6 @@ export default function CreateMatchTemplate({ club, loading }) {
   const handleClosePlayers = () => {
     setOpenPlayers(false);
   };
-
-  const [value, setValue] = React.useState('1');
 
   const Players = () =>
     club?.players.map((item, itemIndex) => {
@@ -217,6 +199,13 @@ export default function CreateMatchTemplate({ club, loading }) {
       },
     });
   };
+
+  const [selectedRole, setSelectedRole] = useState('');
+  const [value, setValue] = useState(selectedRole);
+  const options = [
+    { value: 'attack', label: 'Attacker' },
+    { value: 'goalkeeper', label: 'Goalkeeper' },
+  ];
 
   if (loading) {
     return <FullPageSpinner />;
@@ -384,28 +373,43 @@ export default function CreateMatchTemplate({ club, loading }) {
                                               cursor: 'pointer',
                                             }}
                                             size="sm"
-                                            defaultValue="attack"
+                                            value={item.role}
                                             onChange={(selectedOption) => {
-                                              const modifiedColumns = [...Object.values(columns)];
-                                              modifiedColumns[columnIndex].items[itemIndex] = {
-                                                ...column.items[itemIndex],
-                                                role: selectedOption.target.value,
-                                              };
+                                              const columnsArray = Object.values(columns);
+                                              const modifiedColumns = columnsArray.map(
+                                                (column, i) => {
+                                                  if (i !== columnIndex) {
+                                                    return column;
+                                                  }
+                                                  return {
+                                                    ...column,
+                                                    items: column.items.map((item, j) => {
+                                                      if (j !== itemIndex) {
+                                                        return item;
+                                                      }
+                                                      return {
+                                                        ...item,
+                                                        role: selectedOption.target.value,
+                                                      };
+                                                    }),
+                                                  };
+                                                },
+                                              );
                                               setColumns(modifiedColumns);
                                             }}
                                           >
-                                            <option
-                                              style={{ backgroundColor: '#283555', color: 'white' }}
-                                              value="attack"
-                                            >
-                                              Attacker
-                                            </option>
-                                            <option
-                                              style={{ backgroundColor: '#283555', color: 'white' }}
-                                              value="goalkeeper"
-                                            >
-                                              Goalkeeper
-                                            </option>
+                                            {options.map((option) => (
+                                              <option
+                                                style={{
+                                                  backgroundColor: '#283555',
+                                                  color: 'white',
+                                                }}
+                                                key={option.value}
+                                                value={option.value}
+                                              >
+                                                {option.label}
+                                              </option>
+                                            ))}
                                           </Select>
                                         </Stack>
                                         <Stack
