@@ -9,20 +9,23 @@ const schema = yup.object().shape({
   locality: yup.string().required().label('Locality'),
 });
 
-export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, districts }) {
-  // console.log('districts: ' + JSON.stringify(districts.districts));
+export function ClubEditForm({
+  club,
+  onSubmit,
+  isCompleted,
+  setIsCompleted,
+  districts,
+  isCurrUserAdmin,
+}) {
   districts = districts?.districts;
 
   const districtsLabels = [];
 
   districts.forEach((district) => {
-    // console.log('district: ' + JSON.stringify(district.value));
     districtsLabels.push(district.value);
   });
 
   const localityValue = districts.find((district) => district?.key === club?.locality)?.value;
-
-  // console.log('localityValue: ' + JSON.stringify(localityValue));
 
   const initialValues = {
     name: club && club.name ? club.name : '',
@@ -30,7 +33,6 @@ export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, dist
     sport: club && club.sport ? club.sport : '',
     logo: '',
   };
-
   return (
     <Form onSubmit={onSubmit} defaultValues={initialValues} resolver={yupResolver(schema)}>
       {!isCompleted && (
@@ -45,6 +47,7 @@ export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, dist
               autoComplete="on"
               autoCorrect="off"
               autoCapitalize="off"
+              readOnly={!isCurrUserAdmin}
             />
             <FormField
               id="locality"
@@ -56,6 +59,7 @@ export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, dist
               autoComplete="on"
               autoCorrect="off"
               autoCapitalize="off"
+              readOnly={!isCurrUserAdmin}
             />
             <FormField
               id="sport"
@@ -65,19 +69,24 @@ export function ClubEditForm({ club, onSubmit, isCompleted, setIsCompleted, dist
               data={['Hockey', 'Floorball']}
               placeholder={'Sport'}
               input-height="36px"
+              readOnly={!isCurrUserAdmin}
             />
-            <FormField
-              id="logo"
-              name="logo"
-              label="Logo"
-              input={FileInput}
-              input-height="36px"
-            ></FormField>
-            <Button size="lg" type="submit" variant="primary" w={['100%']}>
-              Update club
-            </Button>
+            {isCurrUserAdmin && (
+              <>
+                <FormField
+                  id="logo"
+                  name="logo"
+                  label="Logo"
+                  input={FileInput}
+                  input-height="36px"
+                ></FormField>
+
+                <Button size="lg" type="submit" variant="primary" w={['100%']}>
+                  Update club
+                </Button>
+              </>
+            )}
           </Stack>
-          {/* <FormField id="clubID" name="clubID" display="none"></FormField> */}
         </>
       )}
       {isCompleted && (

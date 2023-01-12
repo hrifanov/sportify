@@ -46,6 +46,7 @@ export function PlayerPopoverMenu({
               size="sm"
               onClick={() => {
                 removePlayerRQ.onSubmit({ clubId: clubId, userId: player.id }, setDisplayPlayer);
+                makePlayerAdminRQ.refetch();
               }}
             >
               Remove player
@@ -63,8 +64,6 @@ export function PlayerPopoverMenu({
                       userId: player.id,
                       isAdmin: false,
                     });
-                    // navigate(route.clubDetail);
-                    makePlayerAdminRQ.refetch();
                   }}
                 >
                   UnAdmin

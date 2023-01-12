@@ -1,7 +1,10 @@
 import { PlayerItem } from '../molecules/PlayerItem';
 import { Box, Text } from '@chakra-ui/react';
 
-export function PlayersList({ clubId, players, removePlayerRQ, makePlayerAdminRQ }, { ...props }) {
+export function PlayersList(
+  { clubId, players, removePlayerRQ, makePlayerAdminRQ, isCurrUserAdmin },
+  { ...props },
+) {
   return (
     <Box overflowX={'hidden'} minH="150px" h={'full'} maxHeight="600px">
       {players?.map((player) => {
@@ -14,6 +17,7 @@ export function PlayersList({ clubId, players, removePlayerRQ, makePlayerAdminRQ
             removePlayerRQ={removePlayerRQ}
             makePlayerAdminRQ={makePlayerAdminRQ}
             key={player.id}
+            isCurrUserAdmin={isCurrUserAdmin}
           />
         );
       })}
