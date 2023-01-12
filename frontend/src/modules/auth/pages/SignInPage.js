@@ -9,24 +9,27 @@ import { SignInTemplate } from '../templates';
 import { route } from 'src/Routes';
 
 import { getTokenLS } from '../../../utils/TokenLS';
+import { GetTokenInfo } from 'src/modules/clubs/organisms/GetTokenInfo';
 
 export function SignInPage() {
   const navigate = useNavigate();
 
-  const getDestination = () => {
-    const inviteToken = getTokenLS('inviteToken');
-    if (inviteToken && inviteToken !== '') {
+  const inviteToken = getTokenLS('inviteToken');
+  const { email } = GetTokenInfo(inviteToken);
+
+  const getDestination = (user) => {
+    if (inviteToken && email === user.email) {
       return route.acceptInvite(inviteToken);
     }
     return route.dashboard();
   };
 
-  const destination = getDestination();
+  //const destination = getDestination();
 
   const [signInRequest, signInRequestState] = useMutation(SIGN_IN_MUTATION, {
     onCompleted: ({ signin: { user, accessToken } }) => {
       signIn({ accessToken, user });
-      navigate(destination);
+      navigate(getDestination(user));
     },
     onError: () => {},
   });

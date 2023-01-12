@@ -60,7 +60,6 @@ export default function ClubDetailTemplate({
               clubLocalityLabel={clubLocalityLabel}
               isCurrUserAdmin={isCurrUserAdmin}
             />
-            {/* {isCurrUserAdmin && <ClubDetailSeasons clubId={club?.id} />} */}
             {isCurrUserAdmin && applications && applications[0] && (
               <RequestsComp
                 applications={applications}

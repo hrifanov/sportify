@@ -35,7 +35,6 @@ export function AcceptInvitePage() {
     verifyAccountRequest({ variables });
     putTokenLS('inviteToken', '');
     setInvitationIsFinished(true);
-    console.log('tady ten token má být odebraný. ');
   }, [verifyAccountRequest, tokenFromLS]);
 
   //** Main logic */
@@ -84,7 +83,7 @@ export function AcceptInvitePage() {
     // If there is no user signed in, redirect to signin.
     // If the user from the invitation does not even exist, redirect straight to sign up.
     if (!user) {
-      if (doesUserExist === true) {
+      if (doesUserExist) {
         toast({
           title: 'To accept the invitation, you have to be logged in first. ',
           status: 'info',
@@ -93,8 +92,7 @@ export function AcceptInvitePage() {
           isClosable: true,
         });
         return <Navigate to={route.signIn()} replace />;
-      }
-      if (doesUserExist === false) {
+      } else {
         toast({
           title: 'To accept the invitation, you have create your account first. ',
           status: 'info',
@@ -153,9 +151,19 @@ export function AcceptInvitePage() {
           </>
         );
       }
-      // If a user is logged in, but is different from the invited one,
-      // sign him out and clear LS, so he will not see the message again
-      if (user.email !== email && email) {
+      if (email && user.email !== email) {
+        if (!doesUserExist) {
+          toast({
+            title:
+              'The invited user does not exist. Also, somebody else was logged in, so we logged him out for you can create your new account and start playing :)',
+            status: 'error',
+            position: 'top-right',
+            duration: 10000,
+            isClosable: true,
+          });
+          signOut();
+          return <Navigate to={route.signUp()} replace />;
+        }
         toast({
           title:
             'It seems that you were trying to accept an invitation. However, you were logged in as another user, than the invitation was meant for. Try logging in and clicking the link again please. ',
@@ -165,7 +173,6 @@ export function AcceptInvitePage() {
           isClosable: true,
         });
         signOut();
-        putTokenLS('inviteToken', '');
         return <Navigate to={route.signIn()} replace />;
       }
     }

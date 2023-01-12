@@ -3,7 +3,14 @@ import { BsFillPersonFill, BsFillStarFill, BsQuestionLg } from 'react-icons/bs';
 import { PlayerPopoverMenu } from './PlayerPopoverMenu';
 import { useState } from 'react';
 
-export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePlayerAdminRQ }) {
+export function PlayerItem({
+  clubId,
+  player,
+  hasAccepted,
+  removePlayerRQ,
+  makePlayerAdminRQ,
+  isCurrUserAdmin,
+}) {
   //Řešení prozatím (asi)
   const [displayPlayer, setDisplayPlayer] = useState(true);
 
@@ -31,15 +38,17 @@ export function PlayerItem({ clubId, player, hasAccepted, removePlayerRQ, makePl
           </Flex>
           <Spacer />
           <Box ml={2} position="relative">
-            <PlayerPopoverMenu
-              clubId={clubId}
-              removePlayerRQ={removePlayerRQ}
-              isAdmin={player.isAdmin}
-              makePlayerAdminRQ={makePlayerAdminRQ}
-              player={player}
-              setDisplayPlayer={setDisplayPlayer}
-              minW={100}
-            />
+            {isCurrUserAdmin && (
+              <PlayerPopoverMenu
+                clubId={clubId}
+                removePlayerRQ={removePlayerRQ}
+                isAdmin={player.isAdmin}
+                makePlayerAdminRQ={makePlayerAdminRQ}
+                player={player}
+                setDisplayPlayer={setDisplayPlayer}
+                minW={100}
+              />
+            )}
           </Box>
         </Flex>
       </Flex>

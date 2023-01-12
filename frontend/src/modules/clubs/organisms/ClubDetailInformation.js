@@ -47,20 +47,20 @@ export const ClubDetailInformation = ({ club, clubLocalityLabel, isCurrUserAdmin
           </Tbody>
         </Table>
       </TableContainer>
+
+      <Flex
+        as={RouterLink}
+        mt={5}
+        to={route.clubEdit(club.id)}
+        color="brand.secondary"
+        alignItems="center"
+        gap={2}
+      >
+        <Icon as={FiSettings} />
+        Manage team
+      </Flex>
       {isCurrUserAdmin && (
         <>
-          <Flex
-            as={RouterLink}
-            mt={5}
-            to={route.clubEdit(club.id)}
-            color="brand.secondary"
-            alignItems="center"
-            gap={2}
-          >
-            <Icon as={FiSettings} />
-            Manage team
-          </Flex>
-
           <Flex
             as={RouterLink}
             mt={5}

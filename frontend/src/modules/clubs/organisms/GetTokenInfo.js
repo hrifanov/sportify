@@ -7,7 +7,7 @@ export function GetTokenInfo(token) {
   });
   return {
     email: data?.invitationDetail.email,
-    clubName: data?.invitationDetail.clubName,
+    club: data?.invitationDetail.club,
     doesUserExist: data?.invitationDetail.doesUserExist,
   };
 }

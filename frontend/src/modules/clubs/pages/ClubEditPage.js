@@ -17,9 +17,12 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useDisclosure, useToast } from '@chakra-ui/react';
 import { uploadLogo } from 'src/utils/match';
 import { useClubStore } from 'src/modules/clubs/store/clubStore';
+import { useConfirmAlertStore } from 'src/shared/core/confirmAlertStore';
 
 export default function ClubEditPage() {
   const toast = useToast();
+
+  const { openConfirm } = useConfirmAlertStore();
 
   const districtsQueryResponse = useQuery(DISTRICTS_QUERY);
   const districts = districtsQueryResponse?.data?.enums?.districts;
@@ -145,19 +148,43 @@ export default function ClubEditPage() {
   const [removePlayerRequest, removePlayerRequestState] = useMutation(REMOVE_PLAYER_MUTATION, {
     onCompleted: () => {
       // setIsEditClubRequestCompleted(true);
+      refetch();
     },
     onError: (e) => {
       console.log(e);
     },
   });
 
-  const handleSubmitRemovePlayer = useCallback(
-    (variables, setDisplayPlayer) => {
-      removePlayerRequest({ variables });
-      setDisplayPlayer(false);
-    },
-    [removePlayerRequest],
-  );
+  async function removePlayer(variables) {
+    const deleted = await removePlayerRequest({
+      variables,
+    });
+    if (deleted) {
+      toast({
+        title: 'Player deleted',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      // navigate(route.clubDetail(activeClub.id));
+    }
+  }
+
+  // const handleSubmitRemovePlayer = useCallback(
+  //   (variables, setDisplayPlayer) => {
+  //     removePlayerRequest({ variables });
+  //     setDisplayPlayer(false);
+  //   },
+  //   [removePlayerRequest],
+  // );
+  const handleSubmitRemovePlayer = (variables) => {
+    openConfirm({
+      title: 'Do you really want to remove this player?',
+      variant: 'danger',
+      callback: () => removePlayer(variables),
+    });
+  };
 
   //** Request for making a player a admin */
   // const [isEditClubRequestCompleted, setIsEditClubRequestCompleted] = useState(false);
@@ -182,19 +209,10 @@ export default function ClubEditPage() {
     if (player?.email === user.email) {
       return player.isAdmin;
     }
-    return null;
+    return false;
   });
 
-  if (!isCurrUserAdmin && club) {
-    toast({
-      title: 'You naughty naughty :)',
-      status: 'error',
-      position: 'top-right',
-      duration: 4000,
-      isClosable: true,
-    });
-    return <Navigate to={route.clubDetail(clubRQ?.club?.id)} replace />;
-  }
+  console.log('isCurrUserAdmin: ' + isCurrUserAdmin);
 
   return (
     <ClubEditTemplate
@@ -224,6 +242,7 @@ export default function ClubEditPage() {
         onSubmit: handleSubmitRemovePlayer,
         loading: removePlayerRequestState.loading,
         error: removePlayerRequestState.error,
+        refetch: refetch,
       }}
       makePlayerAdminRQ={{
         onSubmit: handleSubmitmakePlayerAdmin,
@@ -236,6 +255,7 @@ export default function ClubEditPage() {
         loading: addTemporaryPlayerRequestState.loading,
       }}
       districts={{ districts }}
+      isCurrUserAdmin={isCurrUserAdmin}
     />
   );
 }

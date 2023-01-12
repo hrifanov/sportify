@@ -5,7 +5,7 @@ export function Form({ children, onSubmit, resetOnSubmit = false, ...rest }) {
   const innerOnSubmit = methods.handleSubmit((data) => {
     onSubmit(data);
 
-    console.log({ data, resetOnSubmit });
+    //console.log({ data, resetOnSubmit });
 
     if (resetOnSubmit) {
       methods.reset();

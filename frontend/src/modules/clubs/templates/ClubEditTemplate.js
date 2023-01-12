@@ -38,6 +38,7 @@ export default function ClubEditTemplate(
     makePlayerAdminRQ,
     addTemporaryPlayerRQ,
     districts,
+    isCurrUserAdmin,
   },
   { ...props },
 ) {
@@ -62,7 +63,6 @@ export default function ClubEditTemplate(
       temporary: [],
     },
   );
-
   return (
     <Flex direction="column" h={{ md: '100vh' }}>
       <AppHeader title="Club detail" />
@@ -104,16 +104,19 @@ export default function ClubEditTemplate(
                     isCompleted={editClubRQ.isCompleted}
                     setIsCompleted={editClubRQ.setIsCompleted}
                     districts={districts}
+                    isCurrUserAdmin={isCurrUserAdmin}
                   />
                 </Box>
                 <Spacer />
 
-                <ModalDeleteClub
-                  isOpen={clubDeleteRQ?.isOpen}
-                  onOpen={clubDeleteRQ?.onOpen}
-                  handleDeleteClub={clubDeleteRQ?.handleDeleteClub}
-                  onClose={clubDeleteRQ?.onClose}
-                />
+                {isCurrUserAdmin && (
+                  <ModalDeleteClub
+                    isOpen={clubDeleteRQ?.isOpen}
+                    onOpen={clubDeleteRQ?.onOpen}
+                    handleDeleteClub={clubDeleteRQ?.handleDeleteClub}
+                    onClose={clubDeleteRQ?.onClose}
+                  />
+                )}
               </Box>
             </Flex>
 
@@ -142,14 +145,16 @@ export default function ClubEditTemplate(
                 </TabList>
                 <TabPanels h={'full'}>
                   <TabPanel px={0} h={'full'}>
-                    <AddPlayerForm
-                      isLoading={invitePlayerRQ.loading}
-                      onSubmit={invitePlayerRQ.onSubmit}
-                      error={invitePlayerRQ.error}
-                      isCompleted={invitePlayerRQ.isCompleted}
-                      setIsCompleted={invitePlayerRQ.setIsCompleted}
-                      emailFromInvitation={invitePlayerRQ.emailFromInvitation}
-                    />
+                    {isCurrUserAdmin && (
+                      <AddPlayerForm
+                        isLoading={invitePlayerRQ.loading}
+                        onSubmit={invitePlayerRQ.onSubmit}
+                        error={invitePlayerRQ.error}
+                        isCompleted={invitePlayerRQ.isCompleted}
+                        setIsCompleted={invitePlayerRQ.setIsCompleted}
+                        emailFromInvitation={invitePlayerRQ.emailFromInvitation}
+                      />
+                    )}
                     <PlayersList
                       clubId={clubRQ.club?.id}
                       players={players.invited}
@@ -158,14 +163,17 @@ export default function ClubEditTemplate(
                     />
                   </TabPanel>
                   <TabPanel px={0} h={'full'}>
-                    <AddTemporaryPlayerForm
-                      isLoading={addTemporaryPlayerRQ.loading}
-                      onSubmit={addTemporaryPlayerRQ.onSubmit}
-                    />
+                    {isCurrUserAdmin && (
+                      <AddTemporaryPlayerForm
+                        isLoading={addTemporaryPlayerRQ.loading}
+                        onSubmit={addTemporaryPlayerRQ.onSubmit}
+                      />
+                    )}
                     <PlayersList
                       clubId={clubRQ.club?.id}
                       players={players.temporary}
                       removePlayerRQ={removePlayerRQ}
+                      isCurrUserAdmin={isCurrUserAdmin}
                     />
                   </TabPanel>
                 </TabPanels>
